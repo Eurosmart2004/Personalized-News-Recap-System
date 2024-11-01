@@ -1,0 +1,15 @@
+# Ignore .env files in all folders
+**/.env
+
+# Ignore pycache folders in all folders
+**/__pycache__/
+
+# Ignore virtual environment folders
+venv/
+.venv/
+
+# Ignore node_modules folders in all folders
+**/node_modules/
+
+# Ignore logs folder in airflow-pipeline
+airflow-pipeline/logs/

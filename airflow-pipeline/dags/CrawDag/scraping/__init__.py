@@ -1,0 +1,1 @@
+from .basic_scraper import scrape_basic_article
