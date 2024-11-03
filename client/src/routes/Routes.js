@@ -4,12 +4,16 @@ import AdminPage from '../pages/AdminPage';
 import UserPage from '../pages/UserPage';
 import LoginPage from '../pages/LoginPage';
 import ConfirmPage from '../pages/ConfirmPage';
+import ResetPasswordPage from '../pages/ResetPasswordPage';
+import ForgotpasswordPage from '../pages/ForgotpasswordPage';
+import RequireConfirmPage from '../pages/RequireConfirmPage';
 import RegisterPage from '../pages/RegisterPage';
+import PreferencePage from '../pages/PreferencePage';
 import App from '../App';
 import UserRoute from './UserRoute';
 import AdminRoute from './AdminRoute';
+import UnLoginRoute from './UnLoginRoute';
 import { useSelector } from 'react-redux';
-import PreferencePage from '../pages/PreferencePage';
 const Router = () => {
     const location = useLocation();
     const auth = useSelector(state => state.auth);
@@ -22,7 +26,7 @@ const Router = () => {
         <Routes>
             <Route path="/" element={<App />} >
                 <Route index element={
-                    isLogin && auth.user.role === 'user' ?
+                    isLogin ?
                         <UserRoute>
                             <HomePage />
                         </UserRoute>
@@ -38,19 +42,43 @@ const Router = () => {
                         <UserPage />
                     </UserRoute>
                 } />
+                <Route path='/confirm' element={
+                    <UserRoute>
+                        <RequireConfirmPage />
+                    </UserRoute>
+                } />
                 <Route path="/admin" element={
                     <AdminRoute>
                         <AdminPage />
                     </AdminRoute>
                 } />
-                <Route path="/login" element={isLogin ? <Navigate to={location.state?.from || '/'} /> : <LoginPage />} />
-                <Route path="/register" element={isLogin ? <Navigate to={location.state?.from || '/'} /> : <RegisterPage />} />
+                <Route path="/login" element={
+                    <UnLoginRoute>
+                        <LoginPage />
+                    </UnLoginRoute>
+                } />
+                <Route path="/register" element={
+                    <UnLoginRoute>
+                        <RegisterPage />
+                    </UnLoginRoute>
+                } />
+                <Route path="/confirm/:token" element={
+                    <UnLoginRoute>
+                        <ConfirmPage />
+                    </UnLoginRoute>
+                } />
+                <Route path="/forgot-password" element={
+                    <UnLoginRoute>
+                        <ForgotpasswordPage />
+                    </UnLoginRoute>
+                } />
+                <Route path='/reset-password/:token' element={
+                    <UnLoginRoute>
+                        <ResetPasswordPage />
+                    </UnLoginRoute>
+                } />
+                <Route path="*" element={<h1>Not Found</h1>} />
             </Route>
-            <Route path="/confirm/:email" element={
-                <UserRoute>
-                    <ConfirmPage />
-                </UserRoute>
-            } />
         </Routes>
     );
 };

@@ -2,9 +2,11 @@ import requests
 from models import User, Preference, UserPreference, UserSchedule, Schedule
 from jwt.exceptions import ExpiredSignatureError
 from database.db import db
+import re
 from dotenv import load_dotenv
-from .tokenService import create_access_token, create_refresh_token, create_confirmation_token, decode_token
+from .tokenService import create_access_token, create_refresh_token, create_forgot_password_token, decode_token, create_confirm_token
 from tasks.sendEmail.sendConfirmation import send_email_confirmation
+from tasks.sendEmail.sendForgotPassword import send_email_forgot_password
 from typing import Union
 from datetime import time
 import secrets
@@ -13,27 +15,45 @@ import os
 
 load_dotenv()
 
+def validate_password(password):
+    if len(password) < 8:
+        raise ValueError('Password must be at least 8 characters long')
+    if not re.search(r'[A-Z]', password):
+        raise ValueError('Password must contain at least one uppercase letter')
+    if not re.search(r'[0-9]', password):
+        raise ValueError('Password must contain at least one number')
+    if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
+        raise ValueError('Password must contain at least one special character')
+
 def get_user(userID: str) -> User:
     user: Union[User, any] = User.query.get(userID)
     if not user:
         raise ValueError('User does not exist')
     return user
 
-def update_user(userID: str, name: str, picture: str) -> User:
+def update_user(userID: str, name: str, picture: str, password: Union[str, None]) -> User:
     user: Union[User, any] = User.query.get(userID)
     if not user:
         raise ValueError('User does not exist')
     user.name = name
     user.picture = picture
+    if password:
+        validate_password(password)
+        salt = os.environ.get('SALT')
+        hashed_password = bcrypt.hashpw(password.encode(), salt.encode())
+        user.password = hashed_password
+
     db.session.commit()
-    return user
+    return user.to_json()
 
 def register(name: str, email:str, password:str, role='user', isConfirmed = False) -> User:
     if User.query.filter_by(email=email).first():
         raise ValueError('Email already exists')
-    key = ['name', 'email', 'password']
-    for k in key:
-        if k == '': raise ValueError(f'Missing required field {k}')
+    if name == '' or email == '' or password == '':
+        raise ValueError('Name, email, password are required')
+    
+    validate_password(password)
+
     salt = os.environ.get('SALT')
     hashed_password = bcrypt.hashpw(password.encode(), salt.encode())
     user = User(name=name, email=email, password=hashed_password, role=role, isConfirmed=isConfirmed)
@@ -56,6 +76,46 @@ def register(name: str, email:str, password:str, role='user', isConfirmed = Fals
         db.session.rollback()
         raise e
 
+def forgot_password(email: str):
+    user: Union[User, any] = User.query.filter_by(email=email).first()
+    if not user:
+        raise ValueError('User does not exist')
+    
+    token = create_forgot_password_token({
+        'id': user.id,
+        'email': user.email,
+        'role': user.role
+    })
+
+    send_email_forgot_password(user, token)
+
+def reset_password(token, password):
+    try:
+        payload = decode_token(token, os.environ.get('FORGOT_PASSWORD_TOKEN_KEY'))
+        user: Union[User, any] = User.query.get(payload['id'])
+        if not user:
+            raise ValueError('User does not exist')
+        
+        validate_password(password)
+
+        salt = os.environ.get('SALT')
+        hashed_password = bcrypt.hashpw(password.encode(), salt.encode())
+        user.password = hashed_password
+        db.session.commit()
+        accessToken = create_access_token({
+            'id': user.id,
+            'email': user.email,
+            'role': user.role
+        })
+
+        refreshToken = create_refresh_token({
+            'id': user.id,
+            'email': user.email,
+            'role': user.role
+        })
+        return accessToken, refreshToken, user.to_json()
+    except ExpiredSignatureError:
+        raise ValueError('The link has expired. Please click to resend the email.')
 
 def get_confirm_user(email: str):
     user: Union[User, any] = User.query.filter_by(email=email).first()
@@ -65,24 +125,24 @@ def get_confirm_user(email: str):
     if user.isConfirmed:
         raise ValueError('User is already confirmed')
     
-    codeNumber = ''.join(str(secrets.randbelow(10)) for _ in range(6))
-    user.codeNumber = codeNumber
-    db.session.commit()
-    send_email_confirmation(user)
+    token = create_confirm_token({
+        'id': user.id,
+        'email': user.email,
+        'role': user.role
+    })
+    print(token)
+    send_email_confirmation(user, token)
 
-def update_confirm_user(email, codeNumber) -> User:
+def update_confirm_user(token) -> User:
     try:
-        user: Union[User, any] = User.query.filter_by(email=email).first()
+        payload = decode_token(token, os.environ.get('CONFIRM_TOKEN_KEY'))
+        user: Union[User, any] = User.query.get(payload['id'])
         if not user:
             raise ValueError('User does not exist')
         if user.isConfirmed:
             raise ValueError('User is already confirmed')
         
-        if user.codeNumber != codeNumber:
-            raise ValueError('Invalid code')
-        
         user.isConfirmed = True
-        user.codeNumber = None
         db.session.commit()
         accessToken = create_access_token({
             'id': user.id,
@@ -98,6 +158,8 @@ def update_confirm_user(email, codeNumber) -> User:
         return accessToken, refreshToken, user.to_json()
     except ValueError as e:
         raise e
+    except ExpiredSignatureError:
+        raise ValueError("Token has expired")
 
 def login(email: str, password: str) -> tuple:
     user: Union[User, any] = User.query.filter_by(email=email).first()
@@ -107,6 +169,8 @@ def login(email: str, password: str) -> tuple:
     if not user.password:
         raise ValueError('User does not have a password set. Please log in with Google.')
     
+    validate_password(password)
+
     if not bcrypt.checkpw(password.encode(), user.password.encode()):
         raise ValueError('Wrong email or password')
     

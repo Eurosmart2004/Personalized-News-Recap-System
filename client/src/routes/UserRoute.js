@@ -8,8 +8,8 @@ const UserRoute = ({ children }) => {
 
     if (!auth.user) return <Navigate to="/login" state={{ from: location }} replace />;
     if (auth.user.role !== 'user') return <Navigate to="/" state={{ from: location }} replace />;
-    if (auth.user.isConfirmed === false && location.pathname !== `/confirm/${auth.user.email}`) {
-        return <Navigate to={`/confirm/${auth.user.email}`} state={{ from: location }} replace />;
+    if (auth.user.isConfirmed === false && location.pathname !== `/confirm`) {
+        return <Navigate to={`/confirm`} state={{ from: location }} replace />;
     }
 
     if (auth.user.isFirstLogin && auth.user.isConfirmed && location.pathname !== '/preference') {

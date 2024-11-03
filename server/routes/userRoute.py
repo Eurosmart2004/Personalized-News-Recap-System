@@ -14,6 +14,14 @@ def init(app: Flask):
             return userController.get_user(request)
         if request.method == 'PUT':
             return userController.update_user(request)
+        
+    @app.route(route + '/forgot-password', methods=['POST'])
+    def forgot_password():
+        return userController.forgot_password(request)
+
+    @app.route(route + '/reset-password', methods=['POST'])
+    def reset_password():
+        return userController.reset_password(request)
     
     @app.route(route + '/register', methods=['POST'])
     def register():

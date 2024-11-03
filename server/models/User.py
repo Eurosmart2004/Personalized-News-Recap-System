@@ -12,7 +12,6 @@ class User(db.Model):
     createdAt = db.Column(db.DateTime, default=datetime.now(timezone.utc))
     isConfirmed = db.Column(db.Boolean, default=False)
     isFirstLogin = db.Column(db.Boolean, default=True)
-    codeNumber = db.Column(db.String(6), nullable=True)
     user_schedule = relationship('UserSchedule', backref='user')
     user_preference = relationship('UserPreference', backref='user')
 

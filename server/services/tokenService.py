@@ -25,10 +25,15 @@ def create_refresh_token(payload: dict) -> str:
                         key=os.environ.get('REFRESH_TOKEN_KEY'), 
                         expiration=int(os.environ.get('REFRESH_TOKEN_EXPIRATION')))
 
-def create_confirmation_token(payload: dict) -> str:
+def create_forgot_password_token(payload: dict) -> str:
     return create_token(payload=payload, 
-                        key=os.environ.get('CONFIRMATION_TOKEN_KEY'), 
-                        expiration=int(os.environ.get('CONFIRMATION_TOKEN_EXPIRATION')))
+                        key=os.environ.get('FORGOT_PASSWORD_TOKEN_KEY'), 
+                        expiration=int(os.environ.get('FORGOT_PASSWORD_TOKEN_EXPIRATION')))
+
+def create_confirm_token(payload: dict) -> str:
+    return create_token(payload=payload, 
+                        key=os.environ.get('CONFIRM_TOKEN_KEY'), 
+                        expiration=int(os.environ.get('CONFIRM_TOKEN_EXPIRATION')))
 
 def decode_token(token: str, key: str) -> any:
     return jwt.decode(

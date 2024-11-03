@@ -22,10 +22,11 @@ def update_user(request: Request) -> Response:
     userID = request.userID
     name = data['name']
     picture = data['picture']
+    password = data['password'] if 'password' in data else None
 
     try:
-        user = userService.update_user(userID, name, picture)
-        return make_response(user.to_json(), 200)
+        user = userService.update_user(userID, name, picture, password)
+        return make_response(user, 200)
     except ValueError as e:
         return make_response(jsonify({'error': str(e)}), 400)
 
@@ -57,6 +58,44 @@ def register(request: Request) -> Response:
     except ValueError as e:
         return make_response(jsonify({'error': str(e)}), 400)
     
+def forgot_password(request: Request) -> Response:
+    data = request.get_json()
+    if 'email' not in data:
+        return make_response(jsonify({'error': 'Missing email field'}), 400)
+    
+    email = data['email']
+    try:
+        userService.forgot_password(email)
+        return make_response(jsonify({'message': 'Please check your email for the code'}), 200)
+    except ValueError as e:
+        return make_response(jsonify({'error': str(e)}), 400)
+
+def reset_password(request: Request) -> Response:
+    data = request.get_json()
+    keys = ['token', 'password']
+    for key in keys:
+        if key not in data:
+            return make_response(jsonify({'error': f'Missing required field {key}'}), 400)
+    
+    token = data['token']
+    password = data['password']
+    try:
+        accessToken, refreshToken, user = userService.reset_password(token, password)
+        response = make_response({
+            'accessToken': accessToken,
+            'user': user
+        }, 200)
+
+        response.set_cookie('refreshToken', 
+                            refreshToken, 
+                            httponly=True, 
+                            samesite='None', 
+                            secure=True, 
+                            max_age=int(os.getenv('REFRESH_TOKEN_EXPIRATION')))
+        return response
+    except ValueError as e:
+        return make_response(jsonify({'error': str(e)}), 400)
+
 def get_confirm_user(request: Request) -> Response:
     email = request.args.get('email')
     print(email)
@@ -69,12 +108,12 @@ def get_confirm_user(request: Request) -> Response:
 def update_confirm_user(request: Request) -> Response:
     data = request.get_json()
 
-    keys = ['code', 'email']
+    keys = ['token']
     for key in keys:
         if key not in data:
             return make_response(jsonify({'error': f'Missing required field {key}'}), 400)
     try:
-        accessToken, refreshToken, user = userService.update_confirm_user(data['email'], data['code'])
+        accessToken, refreshToken, user = userService.update_confirm_user(data['token'])
         response = make_response({
             'accessToken': accessToken,
             'user': user

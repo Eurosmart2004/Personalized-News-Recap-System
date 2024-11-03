@@ -11,6 +11,7 @@ const RegisterPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [name, setName] = useState('');
+    const [registerStatus, setRegisterStatus] = useState(false);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const location = useLocation();
@@ -26,6 +27,7 @@ const RegisterPage = () => {
                 });
                 privateAxios.defaults.headers.common['Authorization'] = `Bearer ${response.data.accessToken}`;
                 dispatch(setAuth(response.data));
+                navigate(from, { replace: true });
             } catch (error) {
                 console.log('error:', error);
             }
@@ -59,13 +61,18 @@ const RegisterPage = () => {
             });
             const confirm = await publicAxios.get(`/user/confirm?email=${email}`);
             dispatch(setAuth(response.data));
-            navigate('/confirm/' + email);
+            setRegisterStatus(true);
 
         } catch (error) {
             console.log('error:', error);
             toast.error(error.response.data.error);
         }
     };
+
+
+    if (registerStatus) {
+        navigate('/confirm');
+    }
 
     return (
         <>

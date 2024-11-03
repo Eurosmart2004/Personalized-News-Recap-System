@@ -38,7 +38,7 @@ def init_db(app: Flask):
 
         # Add admin account
         try:
-            admin = User.query.filter_by(name=os.getenv("ADMIN_USERNAME")).one()
+            admin = User.query.filter_by(email=os.getenv("ADMIN_EMAIL")).one()
         except NoResultFound:
             name = os.getenv("ADMIN_USERNAME")
             email = os.getenv("ADMIN_EMAIL")
