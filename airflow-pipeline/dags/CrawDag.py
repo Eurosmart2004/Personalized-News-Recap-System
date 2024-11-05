@@ -4,7 +4,7 @@ from airflow import DAG
 from airflow.operators.python import PythonOperator
 from CrawDag.models import News
 from CrawDag.crawling import crawl_rss
-from CrawDag.scraping import scrape_basic_article
+from CrawDag.scraping import scrape_basic_article, scrape_news_v2
 from CrawDag.saving_db import save_articles_to_db
 import pytz
 import os
@@ -21,6 +21,8 @@ topic_url = {
     'sport': ['https://vnexpress.net/rss/the-thao.rss',
               'https://thanhnien.vn/rss/the-thao.rss,'
               ],
+    'politic': ['https://vnexpress.net/rss/the-gioi.rss',
+                'https://thanhnien.vn/rss/chinh-tri.rss']
 }
 
 def crawl_all_newspapers(**context):
@@ -38,7 +40,8 @@ def scrape_all_articles(**context):
     news_list_json = context['ti'].xcom_pull(task_ids='crawl_task', key='crawl_news')
     news = [News.from_json(news_json) for news_json in news_list_json]
     for new in news:
-        scrape_basic_article(new)
+        # scrape_basic_article(new)
+        scrape_news_v2(new)
 
     context['ti'].xcom_push(key='scrape_news', value=[new.to_json() for new in news])
 

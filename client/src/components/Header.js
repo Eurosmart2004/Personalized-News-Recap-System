@@ -3,7 +3,7 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import ThemeButton from './ThemeButton';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { publicAxios } from '../axios/axios';
 import { removeAuth } from '../redux/reducer/authReducer';
@@ -12,12 +12,13 @@ function Header() {
     const auth = useSelector((state) => state.auth);
     const theme = useSelector((state) => state.theme.theme);
     const dispatch = useDispatch();
-
+    const navigate = useNavigate();
     const logOut = async () => {
         try {
             const res = await publicAxios.post('/user/logout');
             console.log('res:', res);
             dispatch(removeAuth());
+            navigate('/');
         } catch (err) {
             console.log(err);
         }

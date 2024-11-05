@@ -6,7 +6,6 @@ import { useState } from 'react';
 import { jwtDecode } from "jwt-decode";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
 
 const ResetPasswordPage = () => {
     const { token } = useParams();
@@ -14,6 +13,7 @@ const ResetPasswordPage = () => {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const navigate = useNavigate();
+    const [success, setSuccess] = useState(false);
     console.log(token);
 
     const handleSubmit = async (e) => {
@@ -25,8 +25,8 @@ const ResetPasswordPage = () => {
 
         try {
             const response = await publicAxios.post('/user/reset-password', { token, password });
-            dispatch(setAuth(response.data));
-            navigate('/');
+            toast.success(response.data.message);
+            setSuccess(true);
         } catch (error) {
             console.log(error);
             toast.error(error.response.data.error);
@@ -42,6 +42,20 @@ const ResetPasswordPage = () => {
             console.log(error);
         }
     };
+
+    if (success) {
+        return (
+            <div className="container mt-5">
+                <div className="card">
+                    <div className="card-body text-center">
+                        <h1 className="card-title">Reset Password</h1>
+                        <p className="card-text">Password reset successfully. Please login with your new password.</p>
+                        <button className='btn btn-primary' onClick={() => { navigate('/login'); }}>Login</button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="container mt-5">

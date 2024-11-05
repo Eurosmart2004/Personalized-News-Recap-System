@@ -19,9 +19,9 @@ const Router = () => {
     const auth = useSelector(state => state.auth);
     const isLogin = auth.user !== null;
     const isFirstLogin = auth.user?.isFirstLogin;
-    console.log('isFirstLogin:', isFirstLogin);
-    console.log('auth:', auth);
-    console.log('isLogin:', isLogin);
+    // console.log('isFirstLogin:', isFirstLogin);
+    // console.log('auth:', auth);
+    // console.log('isLogin:', isLogin);
     return (
         <Routes>
             <Route path="/" element={<App />} >
@@ -42,7 +42,7 @@ const Router = () => {
                         <UserPage />
                     </UserRoute>
                 } />
-                <Route path='/confirm' element={
+                <Route path='/require-confirm' element={
                     <UserRoute>
                         <RequireConfirmPage />
                     </UserRoute>
@@ -63,9 +63,7 @@ const Router = () => {
                     </UnLoginRoute>
                 } />
                 <Route path="/confirm/:token" element={
-                    <UnLoginRoute>
-                        <ConfirmPage />
-                    </UnLoginRoute>
+                    <ConfirmPage />
                 } />
                 <Route path="/forgot-password" element={
                     <UnLoginRoute>

@@ -1,10 +1,10 @@
 import requests
-from models import User, Preference, UserPreference, UserSchedule, Schedule
+from models import User, Preference, UserPreference, UserSchedule, Schedule, Token
 from jwt.exceptions import ExpiredSignatureError
 from database.db import db
 import re
 from dotenv import load_dotenv
-from .tokenService import create_access_token, create_refresh_token, create_forgot_password_token, decode_token, create_confirm_token
+from .tokenService import create_access_token, create_refresh_token, create_forgot_password_token, decode_token, create_confirm_token, find_token
 from tasks.sendEmail.sendConfirmation import send_email_confirmation
 from tasks.sendEmail.sendForgotPassword import send_email_forgot_password
 from typing import Union
@@ -81,11 +81,19 @@ def forgot_password(email: str):
     if not user:
         raise ValueError('User does not exist')
     
+    
+    lastToken = find_token(user.id, 'forgot_password')
+    if lastToken:
+        lastToken.valid = False
+    
     token = create_forgot_password_token({
         'id': user.id,
         'email': user.email,
         'role': user.role
     })
+
+    db.session.add(Token(user_id=user.id, token=token, type='forgot_password'))
+    db.session.commit()
 
     send_email_forgot_password(user, token)
 
@@ -96,24 +104,18 @@ def reset_password(token, password):
         if not user:
             raise ValueError('User does not exist')
         
+        lastToken = find_token(user.id, 'forgot_password')
+        if not lastToken:
+            raise ValueError('The link has expired. Please click to resend the email.')
+        if lastToken.token != token:
+            raise ValueError('The link has expired. Please click to resend the email.')
         validate_password(password)
-
+        
+        lastToken.valid = False
         salt = os.environ.get('SALT')
         hashed_password = bcrypt.hashpw(password.encode(), salt.encode())
         user.password = hashed_password
         db.session.commit()
-        accessToken = create_access_token({
-            'id': user.id,
-            'email': user.email,
-            'role': user.role
-        })
-
-        refreshToken = create_refresh_token({
-            'id': user.id,
-            'email': user.email,
-            'role': user.role
-        })
-        return accessToken, refreshToken, user.to_json()
     except ExpiredSignatureError:
         raise ValueError('The link has expired. Please click to resend the email.')
 
@@ -124,16 +126,35 @@ def get_confirm_user(email: str):
 
     if user.isConfirmed:
         raise ValueError('User is already confirmed')
-    
-    token = create_confirm_token({
-        'id': user.id,
-        'email': user.email,
-        'role': user.role
-    })
-    print(token)
-    send_email_confirmation(user, token)
+    lastToken = find_token(user.id, 'confirm')
+    if lastToken:
+        try:
+            decode_token(lastToken.token, os.environ.get('CONFIRM_TOKEN_KEY'))
+        except ExpiredSignatureError:
+            lastToken.valid = False
+            
+            token = create_confirm_token({
+                'id': user.id,
+                'email': user.email,
+                'role': user.role
+            })
 
-def update_confirm_user(token) -> User:
+            db.session.add(Token(user_id=user.id, token=token, type='confirm'))
+            db.session.commit()
+            send_email_confirmation(user, token)
+    else:
+        token = create_confirm_token({
+            'id': user.id,
+            'email': user.email,
+            'role': user.role
+        })
+
+        db.session.add(Token(user_id=user.id, token=token, type='confirm'))
+        db.session.commit()
+        send_email_confirmation(user, token)
+
+def update_confirm_user(token):
+
     try:
         payload = decode_token(token, os.environ.get('CONFIRM_TOKEN_KEY'))
         user: Union[User, any] = User.query.get(payload['id'])
@@ -142,20 +163,17 @@ def update_confirm_user(token) -> User:
         if user.isConfirmed:
             raise ValueError('User is already confirmed')
         
+        lastToken = find_token(user.id, 'confirm')
+        if not lastToken:
+            raise ValueError('Invalid token')
+        
+        if lastToken.token != token:
+            raise ValueError('Invalid token')
+        
         user.isConfirmed = True
+        lastToken.valid = False
         db.session.commit()
-        accessToken = create_access_token({
-            'id': user.id,
-            'email': user.email,
-            'role': user.role
-        })
-
-        refreshToken = create_refresh_token({
-            'id': user.id,
-            'email': user.email,
-            'role': user.role
-        })
-        return accessToken, refreshToken, user.to_json()
+        return user.to_json()
     except ValueError as e:
         raise e
     except ExpiredSignatureError:
@@ -191,7 +209,6 @@ def login(email: str, password: str) -> tuple:
 
 def login_with_google(token) -> tuple:
     try:
-
         userinfo = requests.get(f'https://www.googleapis.com/oauth2/v3/userinfo',
                                 headers={'Authorization': f'Bearer {token}'}).json()
         if 'error' in userinfo:

@@ -7,9 +7,6 @@ from database.db import db
 from .getNews import get_article_from_ids
 from typing import Union
 from .language import languages
-def clean_content(text: str) -> str:
-    """Helper function to clean article content."""
-    return text.strip().replace("\n", " ").replace("\t", " ")
 
 def ai_summarize_worker(article_ids: list[str]) -> str:
     model = ChatOpenAI(model="gpt-3.5-turbo")
@@ -17,20 +14,19 @@ def ai_summarize_worker(article_ids: list[str]) -> str:
 
     # Define the summarization and check templates
     system_summarize_prompt = """
-Viết một đoạn tóm tắt ngắn gọn và hấp dẫn về bài báo đã cho.
+Tóm tắt cần các yếu tố chính của bài báo, nhấn mạnh những thông tin cần thiết, đặc biệt là số liệu quan trọng, trong 2 đến 3 câu.
 
 # Steps
-1. Đọc kỹ bài báo để hiểu sâu nội dung, thông điệp chính và những ý tưởng độc đáo.
-2. Xác định yếu tố tạo điểm nhấn (như sự kiện nổi bật, số liệu ấn tượng hoặc thông điệp chính).
-3. Tóm tắt bằng văn phong gợi mở, không chỉ nhắc lại nội dung mà khơi gợi sự tò mò, khuyến khích người đọc muốn tìm hiểu thêm.
-4. Tránh liệt kê thông tin hay tóm tắt theo trình tự y nguyên của bài báo. Thay vào đó, tập trung vào cảm xúc, thông điệp chính hoặc giá trị bất ngờ từ nội dung.
+1. Đọc kỹ bài báo để hiểu nội dung chính và các thông tin quan trọng.
+2. Xác định các số liệu hoặc sự kiện nổi bật cần được đưa vào tóm tắt để làm nổi bật thông điệp chính của bài báo.
+3. Viết đoạn tóm tắt 2 đến 3 câu, tập trung vào các thông tin cốt lõi và số liệu quan trọng.
+4. Sử dụng ngôn ngữ sinh động, hấp dẫn để người đọc muốn khám phá tiếp nội dung của bài báo.
 
 # Output Format
-1. Đoạn văn ngắn 2 đến 3 câu, không bắt đầu bằng cụm từ như "Bài báo nói về" hoặc "Bài báo kể về," mà thay vào đó sử dụng ngôn ngữ sinh động và hấp dẫn.
-2. Sử dụng giọng văn tự nhiên, thu hút, và có tính khơi gợi để người đọc tò mò muốn khám phá nội dung bài viết.
-3. Đoạn văn phải thể hiện nội dung chính của bài báo một cách cô đọng và hấp dẫn, truyền tải thông điệp hoặc giá trị độc đáo mà bài viết muốn chia sẻ.
-4. Đảm bảo sử dụng từ ngữ trang trọng, phù hợp với ngữ cảnh và có tính chất văn viết, tránh những từ địa phương hoặc không phù hợp.
-
+- Đoạn văn ngắn 2 đến 3 câu.
+- Không bắt đầu bằng cụm từ như “Bài báo nói về” hoặc “Bài báo kể về", thay vào đó sử dụng ngôn ngữ tự nhiên và có sức thu hút.
+- Phải thể hiện được thông tin chính của bài báo một cách ngắn gọn và nhấn mạnh vào các số liệu hoặc sự kiện nổi bật.
+  
 # Notes
 Giữ đúng tinh thần và ngôn ngữ của bài báo gốc ({language}), tránh làm mất đi sắc thái nội dung ban đầu.
 """
@@ -54,8 +50,8 @@ Giữ đúng tinh thần và ngôn ngữ của bài báo gốc ({language}), tr�
     for article in articles:
         news: Union[News, any] = News.query.filter_by(topic=article['topic'], title=article['title']).first()
         if news:
-            if clean_content(news.content) != clean_content(article['content']):
-                news.content = clean_content(article['content'])
+            if news.content.strip() != article['content'].strip():
+                news.content = article['content'].strip()
                 news.date = article['date']
                 news_list_update.append(news)
         else:

@@ -1,1 +1,1 @@
-from .basic_scraper import scrape_basic_article
+from .basic_scraper import scrape_basic_article, scrape_news_v2

@@ -13,7 +13,6 @@ class Schedule(db.Model):
     
     def to_json(self):
         return {
-            'id': self.id,
             'hour': self.time.hour,
             'minute': self.time.minute
         }

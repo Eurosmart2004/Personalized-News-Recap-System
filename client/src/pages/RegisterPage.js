@@ -59,7 +59,7 @@ const RegisterPage = () => {
                 email,
                 password,
             });
-            const confirm = await publicAxios.get(`/user/confirm?email=${email}`);
+            // const confirm = await publicAxios.get(`/user/confirm?email=${email}`);
             dispatch(setAuth(response.data));
             setRegisterStatus(true);
 
@@ -71,7 +71,7 @@ const RegisterPage = () => {
 
 
     if (registerStatus) {
-        navigate('/confirm');
+        navigate('/require-confirm');
     }
 
     return (

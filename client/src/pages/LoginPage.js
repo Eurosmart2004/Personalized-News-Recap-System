@@ -1,11 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useGoogleLogin } from '@react-oauth/google';
 import { useSelector, useDispatch } from 'react-redux';
 import { setAuth } from '../redux/reducer/authReducer';
 import { publicAxios, privateAxios } from '../axios/axios';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import ThemeButton from '../components/ThemeButton';
+import 'react-toastify/dist/ReactToastify.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 const LoginPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -17,7 +20,6 @@ const LoginPage = () => {
 
     const loginGoogle = useGoogleLogin({
         onSuccess: async (res) => {
-            console.log('Login Success:', res);
             try {
                 const response = await publicAxios.post('/user/login/google', {
                     token: res.access_token,
@@ -50,56 +52,68 @@ const LoginPage = () => {
         }
     };
 
-
     return (
         <>
             <ToastContainer />
             <div className="container mt-5">
                 <div className="row justify-content-center">
                     <div className="col-md-6">
-                        <div className="card">
+                        <div className="card shadow-lg">
                             <div className="card-body">
-                                <h3 className="card-title text-center">Login</h3>
-                                <form>
-                                    <div className="form-group">
+                                <h3 className="card-title text-center mb-4">Login</h3>
+                                <form onSubmit={login}>
+                                    <div className="form-group mb-3">
                                         <label htmlFor="email">Email address</label>
                                         <input
                                             type="email"
-                                            className="form-control my-2"
+                                            className="form-control"
                                             id="email"
                                             placeholder="Enter email"
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
+                                            required
                                         />
                                     </div>
-                                    <div className="form-group">
+                                    <div className="form-group mb-3">
                                         <label htmlFor="password">Password</label>
                                         <input
                                             type="password"
-                                            className="form-control my-2"
+                                            className="form-control"
                                             id="password"
                                             placeholder="Password"
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
+                                            required
                                         />
                                     </div>
-                                    <button onClick={login} type="submit" className="btn btn-primary btn-block">Login</button>
+                                    <button type="submit" className="btn btn-primary btn-block">Login</button>
                                 </form>
                                 <hr />
                                 <div className="text-center">
                                     <button
                                         onClick={loginGoogle}
-                                        className="btn btn-danger btn-block"
+                                        className="btn btn-danger btn-block w-100"
                                     >
                                         Login with Google
                                     </button>
+                                </div>
+                                <div className="text-center mt-3">
+                                    <Link to={"/forgot-password"}>Forgot Password?</Link>
+                                </div>
+                                <div className="text-center mt-2">
+                                    <span>Don't have an account? </span>
+                                    <Link to={"/register"} >Register</Link>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <button className='btn btn-outline-primary' onClick={() => navigate('/')}>Back to Home</button>
-                <ThemeButton />
+                <div className="text-center mt-4">
+                    <button className='btn btn-outline-primary' onClick={() => navigate('/')}>Back to Home</button>
+                </div>
+                <div className="text-center mt-2">
+                    <ThemeButton />
+                </div>
             </div>
         </>
     );

@@ -3,48 +3,76 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { publicAxios } from '../axios/axios';
 import { ToastContainer, toast } from 'react-toastify';
 import { setAuth } from '../redux/reducer/authReducer';
-import { useDispatch } from 'react-redux';
 import { jwtDecode } from 'jwt-decode';
+import { removeAuth } from '../redux/reducer/authReducer';
+import { useSelector, useDispatch } from 'react-redux';
+import { socket } from '../socket';
 const ConfirmPage = () => {
     const { token } = useParams();
-    const dispatch = useDispatch();
     const [loading, setLoading] = useState(true);
     const [confirm, setConfirm] = useState(false);
+    const [isAlreadyConfirmed, setIsAlreadyConfirmed] = useState(false);
+    const dispatch = useDispatch();
     const navigate = useNavigate();
-    const handleChoosePreference = () => { navigate('/preference'); };
     useEffect(() => {
-        const confirm = async () => {
-            try {
-                const res = await publicAxios.put('/user/confirm', { token });
-                console.log(res.data);
-                dispatch(setAuth(res.data));
-                setConfirm(true);
+        confirmFunction();
+    }, []);
+
+
+    const confirmFunction = async () => {
+        try {
+            const res = await publicAxios.put('/user/confirm', { token });
+            console.log(res);
+            setConfirm(true);
+            setIsAlreadyConfirmed(false);
+            setLoading(false);
+            socket.emit('confirmation', { email: res.data.email });
+
+        } catch (error) {
+            console.log(error);
+            if (error.response && error.response.data.error == "User is already confirmed") {
+                setConfirm(false);
+                setIsAlreadyConfirmed(true);
                 setLoading(false);
-            } catch (error) {
-                console.log(error);
+
+            }
+            else {
                 try {
                     const payload = jwtDecode(token);
                     const res = await publicAxios.get(`/user/confirm?email=${payload.email}`);
-                    setLoading(false);
                     setConfirm(false);
+                    setIsAlreadyConfirmed(false);
+                    setLoading(false);
                 }
                 catch (error) {
                     console.log(error);
                 }
             }
-        };
-        confirm();
-    }, []);
+        }
+    };
+
     if (!token) { navigate('/'); }
     if (loading) { return <></>; }
+
     if (confirm) {
         return (
             <div className="container mt-5">
                 <div className="card">
                     <div className="card-body text-center">
                         <h1 className="card-title">Account Confirmed</h1>
-                        <p className="card-text">Your account has been confirmed successfully. You can now login.</p>
-                        <button onClick={handleChoosePreference} className="btn btn-primary">Let choose your preference</button>
+                        <p className="card-text">Your account has been confirmed successfully</p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+    if (isAlreadyConfirmed) {
+        return (
+            <div className="container mt-5">
+                <div className="card">
+                    <div className="card-body text-center">
+                        <h1 className="card-title">Already Confirmed</h1>
+                        <p className="card-text">Your account has already been confirmed.</p>
                     </div>
                 </div>
             </div>

@@ -80,25 +80,13 @@ def reset_password(request: Request) -> Response:
     token = data['token']
     password = data['password']
     try:
-        accessToken, refreshToken, user = userService.reset_password(token, password)
-        response = make_response({
-            'accessToken': accessToken,
-            'user': user
-        }, 200)
-
-        response.set_cookie('refreshToken', 
-                            refreshToken, 
-                            httponly=True, 
-                            samesite='None', 
-                            secure=True, 
-                            max_age=int(os.getenv('REFRESH_TOKEN_EXPIRATION')))
-        return response
+        userService.reset_password(token, password)
+        return make_response(jsonify({'message': 'Password reset successful'}), 200)
     except ValueError as e:
         return make_response(jsonify({'error': str(e)}), 400)
 
 def get_confirm_user(request: Request) -> Response:
     email = request.args.get('email')
-    print(email)
     try:
         userService.get_confirm_user(email)
         return make_response(jsonify({'message': 'Please confirm the email'}), 200)
@@ -113,18 +101,12 @@ def update_confirm_user(request: Request) -> Response:
         if key not in data:
             return make_response(jsonify({'error': f'Missing required field {key}'}), 400)
     try:
-        accessToken, refreshToken, user = userService.update_confirm_user(data['token'])
+        user = userService.update_confirm_user(data['token'])
+        
         response = make_response({
-            'accessToken': accessToken,
-            'user': user
+            'email': user['email'],
         }, 200)
 
-        response.set_cookie('refreshToken', 
-                            refreshToken, 
-                            httponly=True, 
-                            samesite='None', 
-                            secure=True, 
-                            max_age=int(os.getenv('REFRESH_TOKEN_EXPIRATION')))
         return response
     except ValueError as e:
         return make_response(jsonify({'error': str(e)}), 400)

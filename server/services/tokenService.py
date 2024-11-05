@@ -3,6 +3,7 @@ from jwt.exceptions import ExpiredSignatureError
 import os
 from datetime import datetime, timedelta, timezone
 from dotenv import load_dotenv
+from models import Token, User
 load_dotenv()
 
 def create_token(payload: dict, key: str, expiration: int) -> str:
@@ -52,3 +53,6 @@ def refresh_token(token: str) -> tuple:
     accessToken = create_access_token(payload)
     refreshToken = create_refresh_token(payload)
     return accessToken, refreshToken, user.to_json()
+
+def find_token(user_id:str, type:str, valid:bool = True) -> Token:
+    return Token.query.filter_by(user_id=user_id, type=type, valid=valid).first()
