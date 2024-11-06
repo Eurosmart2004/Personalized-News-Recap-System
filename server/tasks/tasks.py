@@ -10,7 +10,7 @@ def init(celery: Celery):
             return ai_summarize_worker(article_ids)
         except Exception as e:
             logging.exception("Error in summarize task")
-            raise
+            raise e
 
     @celery.task(name='send_news', queue='send_news_queue', acks_late=True)
     def send_news():
@@ -18,7 +18,7 @@ def init(celery: Celery):
             return send_news_worker()
         except Exception as e:
             logging.exception("Error in send_news task")
-            raise
+            raise e
 
 
 

@@ -1,11 +1,12 @@
-from database.db import db
-from routes import userRoute, tokenRoute, newsRoute, preferenceRoute
 from flask import Flask
-from dotenv import load_dotenv
-import os
+from routes import userRoute, tokenRoute, newsRoute, preferenceRoute
+from database.db import db
+from flask_socketio import SocketIO
+from sio.services import init_socket
 from .celery_config import make_celery
 from .config import DevConfig, ProdConfig
-
+from dotenv import load_dotenv
+import os
 load_dotenv()
 env = os.getenv('FLASK_ENV', 'development')
 Config = None
@@ -14,6 +15,7 @@ if env == 'production':
 else:
     Config = DevConfig
 
+sio = SocketIO()
 
 def create_app():
     app = Flask(__name__)
@@ -25,19 +27,20 @@ def create_app():
     app.config['CELERY_CONFIG'] = { 
         'broker_url': Config.broker_url,
         'result_backend': Config.result_backend,
+        'broker_connection_retry_on_startup': True,
         'timezone': Config.timezone,
         'enable_utc': Config.enable_utc,
         'beat_schedule': Config.beat_schedule,
-        'task_routes': Config.task_routes
+        'task_routes': Config.task_routes,
     }
 
     celery = make_celery(app)
     db.init_app(app)
 
+    sio.init_app(app, cors_allowed_origins="*")
+    init_socket(sio)
     userRoute.init(app)
     tokenRoute.init(app)
     newsRoute.init(app)
     preferenceRoute.init(app)
     return app, celery
-
-

@@ -26,7 +26,6 @@ const ConfirmPage = () => {
             setConfirm(true);
             setIsAlreadyConfirmed(false);
             setLoading(false);
-            socket.emit('confirmation', { email: res.data.email });
 
         } catch (error) {
             console.log(error);

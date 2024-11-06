@@ -94,6 +94,7 @@ def get_confirm_user(request: Request) -> Response:
         return make_response(jsonify({'error': str(e)}), 400)
 
 def update_confirm_user(request: Request) -> Response:
+    from config.app_config import sio as socketio
     data = request.get_json()
 
     keys = ['token']
@@ -106,7 +107,7 @@ def update_confirm_user(request: Request) -> Response:
         response = make_response({
             'email': user['email'],
         }, 200)
-
+        socketio.emit('confirmation', {'message': f'Confirmation email sent to {user["email"]}'}, to=user['email'])
         return response
     except ValueError as e:
         return make_response(jsonify({'error': str(e)}), 400)

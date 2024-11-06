@@ -19,3 +19,4 @@ def init_socket(socketio: SocketIO):
         email = data['email']
         emit('confirmation', {'message': f'Confirmation email sent to {email}'}, to=email)
 
+

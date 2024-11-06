@@ -7,16 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 
 const PreferencePage = () => {
-    const [time, setTime] = useState([
-        {
-            hour: 9,
-            minute: 0
-        },
-        {
-            hour: 18,
-            minute: 0
-        }
-    ]);
+    const [time, setTime] = useState();
     const [preferences] = useState(['sport', 'economic', 'politic', 'health']);
     const [selectedPreferences, setSelectedPreferences] = useState([]);
     const [updateSuccess, setUpdateSuccess] = useState(false);
@@ -45,7 +36,7 @@ const PreferencePage = () => {
             preferences: selectedPreferences,
         };
 
-        console.log(data); // Log data for debugging
+        console.log("Data before post update", data); // Log data for debugging
         try {
             const res_pre = await privateAxios.put('/user/preferences', {
                 preferences: selectedPreferences
@@ -57,6 +48,7 @@ const PreferencePage = () => {
         }
         catch (err) {
             console.log(err);
+            toast.error(err.response.data.error);
         }
     };
 
@@ -88,23 +80,26 @@ const PreferencePage = () => {
                 console.log("Response schedule: ", res);
                 if (res.data.schedule.length != 0) {
                     setTime(res.data.schedule);
+                } else {
+                    setTime([{ hour: 9, minute: 0 }, { hour: 18, minute: 0 }]);
                 }
             }
             catch (err) {
                 console.log(err);
             }
         };
-        fetchPreferences();
-        fetchSchedule();
-        setLoading(false);
+        const fetchData = async () => {
+            await Promise.all([fetchPreferences(), fetchSchedule()]);
+            setLoading(false);
+        };
+
+        fetchData();
     }, []);
 
-    console.log("Time: ", time);
-    console.log(selectedPreferences); // Log selected preferences for debugging
+
     if (loading) return <></>;
 
     if (updateSuccess) {
-        toast.success('Update preferences successfully');
         return (
             <div className="container mt-4">
                 <h1>Preferences Updated</h1>
