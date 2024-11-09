@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useGoogleLogin } from '@react-oauth/google';
 import { useSelector, useDispatch } from 'react-redux';
 import { setAuth } from '../redux/reducer/authReducer';
-import { publicAxios, privateAxios } from '../axios/axios';
+import { useAxios } from '../axios/axios';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const RegisterPage = () => {
+    const { publicAxios, privateAxios } = useAxios();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [name, setName] = useState('');

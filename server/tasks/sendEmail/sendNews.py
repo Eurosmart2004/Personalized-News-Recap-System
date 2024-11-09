@@ -1,4 +1,5 @@
-from datetime import datetime, time
+from datetime import datetime, timedelta, time
+from sqlalchemy import func
 import pytz
 from models import User, News, UserSchedule, Schedule, UserPreference, Preference, UserNews
 from sqlalchemy.exc import SQLAlchemyError
@@ -37,13 +38,16 @@ def send_news_worker():
     results = (
         db.session.query(User, News)
         .join(UserSchedule, User.id == UserSchedule.user_id)
-        .filter(UserSchedule.schedule_id == schedule.id and User.role == 'user')  # Users with the current schedule
+        .filter(User.role == 'user')
+        .filter(User.isConfirmed == True)
+        .filter(UserSchedule.schedule_id == schedule.id)  # Users with the current schedule
 
         .join(UserPreference, User.id == UserPreference.user_id)
         .join(Preference, Preference.id == UserPreference.preference_id)
         .join(News, News.topic == Preference.name)
 
         .outerjoin(UserNews, (User.id == UserNews.user_id) & (News.id == UserNews.news_id))
+        .filter(News.date >= User.createdAt)  # Only news after user registration
         .filter(UserNews.news_id.is_(None))  # Only unsent news
         .all()
     )

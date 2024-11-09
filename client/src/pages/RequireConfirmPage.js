@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { publicAxios, privateAxios } from "../axios/axios";
+import { useAxios } from "../axios/axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux';
 import { setAuth } from "../redux/reducer/authReducer";
 import { socket } from "../socket";
 const RequireConfirmPage = () => {
+    const { publicAxios, privateAxios } = useAxios();
     const [isConfirmed, setIsConfirmed] = useState(false);
     const [loading, setLoading] = useState(true);
     const auth = useSelector((state) => state.auth);

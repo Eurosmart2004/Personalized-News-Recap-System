@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { publicAxios } from '../axios/axios';
+import { useAxios } from '../axios/axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const ForgotpasswordPage = () => {
+    const { publicAxios } = useAxios();
     const [email, setEmail] = useState('');
     const [success, setSuccess] = useState(false);
     const handleSubmit = async (e) => {

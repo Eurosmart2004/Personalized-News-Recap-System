@@ -58,7 +58,7 @@ def sent_all_articles(**context):
     news_list_id = context['ti'].xcom_pull(task_ids='save_to_db_task', key='news_list_id')
     print("news_list_id", news_list_id)
     print("Length of news_list_id", len(news_list_id))
-    response = requests.post('http://server:5000/api/news/summarize', json=news_list_id)
+    response = requests.post('http://nginx:5000/api/news/summarize', json=news_list_id)
     try:
         response_json = response.json()
         print(response_json)

@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import HomePage from '../pages/HomePage';
 import AdminPage from '../pages/AdminPage';
 import UserPage from '../pages/UserPage';
@@ -10,47 +10,38 @@ import RequireConfirmPage from '../pages/RequireConfirmPage';
 import RegisterPage from '../pages/RegisterPage';
 import PreferencePage from '../pages/PreferencePage';
 import App from '../App';
-import UserRoute from './UserRoute';
-import AdminRoute from './AdminRoute';
+import RoleRoute from './RoleRoute';
 import UnLoginRoute from './UnLoginRoute';
 import { useSelector } from 'react-redux';
+
 const Router = () => {
-    const location = useLocation();
     const auth = useSelector(state => state.auth);
-    const isLogin = auth.user !== null;
-    const isFirstLogin = auth.user?.isFirstLogin;
-    // console.log('isFirstLogin:', isFirstLogin);
-    // console.log('auth:', auth);
-    // console.log('isLogin:', isLogin);
     return (
         <Routes>
             <Route path="/" element={<App />} >
                 <Route index element={
-                    isLogin ?
-                        <UserRoute>
-                            <HomePage />
-                        </UserRoute>
-                        : <HomePage />}
-                />
-                <Route path='/preference' element={
-                    <UserRoute>
+                    auth.user ?
+                        <RoleRoute roles={['user', 'admin']}> <HomePage /> </RoleRoute> :
+                        <HomePage />} />
+                <Route path="/preference" element={
+                    <RoleRoute roles={['user']}>
                         <PreferencePage />
-                    </UserRoute>
+                    </RoleRoute>
                 } />
                 <Route path="/user" element={
-                    <UserRoute>
+                    <RoleRoute roles={['user']}>
                         <UserPage />
-                    </UserRoute>
+                    </RoleRoute>
                 } />
-                <Route path='/require-confirm' element={
-                    <UserRoute>
+                <Route path="/require-confirm" element={
+                    <RoleRoute roles={['user']}>
                         <RequireConfirmPage />
-                    </UserRoute>
+                    </RoleRoute>
                 } />
                 <Route path="/admin" element={
-                    <AdminRoute>
+                    <RoleRoute roles={['admin']}>
                         <AdminPage />
-                    </AdminRoute>
+                    </RoleRoute>
                 } />
                 <Route path="/login" element={
                     <UnLoginRoute>
@@ -62,15 +53,13 @@ const Router = () => {
                         <RegisterPage />
                     </UnLoginRoute>
                 } />
-                <Route path="/confirm/:token" element={
-                    <ConfirmPage />
-                } />
+                <Route path="/confirm/:token" element={<ConfirmPage />} />
                 <Route path="/forgot-password" element={
                     <UnLoginRoute>
                         <ForgotpasswordPage />
                     </UnLoginRoute>
                 } />
-                <Route path='/reset-password/:token' element={
+                <Route path="/reset-password/:token" element={
                     <UnLoginRoute>
                         <ResetPasswordPage />
                     </UnLoginRoute>

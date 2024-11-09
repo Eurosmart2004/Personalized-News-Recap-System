@@ -1,7 +1,7 @@
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { Outlet, useLocation, useNavigate, matchPath } from "react-router-dom";
-import { privateAxios } from './axios/axios';
+import { useAxios } from './axios/axios';
 import { setAuth } from './redux/reducer/authReducer';
 import { removeAuth } from "./redux/reducer/authReducer";
 import { useSelector, useDispatch } from 'react-redux';
@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import { socket } from "./socket";
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 const App = () => {
+	const { privateAxios } = useAxios();
 	const [loading, setLoading] = useState(true);
 	const auth = useSelector((state) => state.auth);
 	const themeStore = useSelector((state) => state.theme.theme);

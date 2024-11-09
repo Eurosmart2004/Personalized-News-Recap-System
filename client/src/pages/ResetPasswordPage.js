@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { publicAxios } from '../axios/axios';
+import { useAxios } from '../axios/axios';
 import { setAuth } from '../redux/reducer/authReducer';
 import { useDispatch } from 'react-redux';
 import { useState } from 'react';
@@ -8,6 +8,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const ResetPasswordPage = () => {
+    const { publicAxios } = useAxios();
     const { token } = useParams();
     const dispatch = useDispatch();
     const [password, setPassword] = useState('');

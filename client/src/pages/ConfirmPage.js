@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { publicAxios } from '../axios/axios';
-import { ToastContainer, toast } from 'react-toastify';
-import { setAuth } from '../redux/reducer/authReducer';
+import { useAxios } from '../axios/axios';
 import { jwtDecode } from 'jwt-decode';
 import { removeAuth } from '../redux/reducer/authReducer';
 import { useSelector, useDispatch } from 'react-redux';
-import { socket } from '../socket';
 const ConfirmPage = () => {
+    const { publicAxios } = useAxios();
     const { token } = useParams();
     const [loading, setLoading] = useState(true);
     const [confirm, setConfirm] = useState(false);

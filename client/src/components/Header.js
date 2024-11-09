@@ -5,10 +5,11 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 import ThemeButton from './ThemeButton';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { publicAxios } from '../axios/axios';
+import { useAxios } from '../axios/axios';
 import { removeAuth } from '../redux/reducer/authReducer';
 
 function Header() {
+    const { publicAxios } = useAxios();
     const auth = useSelector((state) => state.auth);
     const theme = useSelector((state) => state.theme.theme);
     const dispatch = useDispatch();

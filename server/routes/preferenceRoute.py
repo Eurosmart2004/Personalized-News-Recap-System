@@ -6,7 +6,6 @@ route = ROUTE['preference']
 def init(app: Flask):
     @app.route(route, methods=['GET'])
     @authentication
-    @authorization(['admin'])
     def get_preference():
         return preferenceController.get_preference(request)
     

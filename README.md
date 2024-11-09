@@ -16,5 +16,5 @@
 3. **Run Docker Compose:**
 
    ```
-   docker-compose up
+   docker-compose up -d --build --scale server=3
    ```

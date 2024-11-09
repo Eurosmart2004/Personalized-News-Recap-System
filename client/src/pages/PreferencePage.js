@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import Time from '../components/Time';
-import { privateAxios } from '../axios/axios';
+import { useAxios } from '../axios/axios';
 import { setAuth } from '../redux/reducer/authReducer';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 
 const PreferencePage = () => {
+    const { privateAxios } = useAxios();
     const [time, setTime] = useState();
-    const [preferences] = useState(['sport', 'economic', 'politic', 'health']);
+    const [preferences, setPreferences] = useState([]);
     const [selectedPreferences, setSelectedPreferences] = useState([]);
     const [updateSuccess, setUpdateSuccess] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -69,6 +70,11 @@ const PreferencePage = () => {
                 const res = await privateAxios.get('/user/preferences');
                 console.log("Response preferences: ", res);
                 setSelectedPreferences(res.data.preferences);
+                const res2 = await privateAxios.get('/preference');
+                console.log("Response preferences all: ", res2);
+                for (let i = 0; i < res2.data.preferences.length; i++) {
+                    setPreferences((prev) => [...prev, res2.data.preferences[i].name]);
+                }
             }
             catch (err) {
                 console.log(err);
