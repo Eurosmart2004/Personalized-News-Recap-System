@@ -1,4 +1,4 @@
-from database.db import db
+from server.database.database import db
 class UserSchedule(db.Model):
     __tablename__ = 'user_schedule'
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)

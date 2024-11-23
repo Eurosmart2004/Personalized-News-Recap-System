@@ -1,4 +1,4 @@
-from database.db import db
+from server.database.database import db
 from datetime import datetime, timezone
 import pytz
 

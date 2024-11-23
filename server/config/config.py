@@ -36,10 +36,6 @@ class Config:
             'task': 'send_news',
             'schedule': crontab(minute='*/1'),
         },
-        # 'send-email-test': {
-        #     'task': 'send_news',
-        #     'schedule': crontab(hour=22, minute=30),
-        # },
     }
     task_routes = {
         'send_news': {'queue': 'send_news_queue'},

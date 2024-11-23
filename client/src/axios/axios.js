@@ -6,14 +6,15 @@ import { setAuth } from '../redux/reducer/authReducer';
 export const useAxios = () => {
     const auth = useSelector((state) => state.auth);
     const dispatch = useDispatch();
+    const baseURL = `${process.env.REACT_APP_SERVER_URL}/api` || 'http://localhost:5000/api';
 
     const publicAxios = axios.create({
-        baseURL: 'http://localhost:5000/api',
+        baseURL: baseURL,
         withCredentials: true,
     });
 
     const privateAxios = axios.create({
-        baseURL: 'http://localhost:5000/api',
+        baseURL: baseURL,
         withCredentials: true,
     });
 
@@ -33,7 +34,13 @@ export const useAxios = () => {
                     originalRequest._retry = true;
 
                     try {
-                        const response = await publicAxios.post('/token/refresh');
+                        var isRemember = localStorage.getItem('isRemember');
+                        isRemember = isRemember !== null ? isRemember === 'true' : false;
+                        console.log(isRemember);
+                        console.log(typeof isRemember);
+                        const response = await publicAxios.post('/token/refresh', {
+                            isRemember
+                        });
                         dispatch(setAuth({ accessToken: response.data.accessToken }));
                         privateAxios.defaults.headers.common['Authorization'] = `Bearer ${response.data.accessToken}`;
                         originalRequest.headers.Authorization = `Bearer ${response.data.accessToken}`;

@@ -13,3 +13,24 @@ def summarize(request: Request) -> Response:
         return make_response(jsonify({'error': e}), 500)
     
 
+def get_user_news(request: Request) -> Response:
+    user_id = request.userID
+    data = request.get_json()
+    before_time = data['before_time'] if 'before_time' in data else None
+    after_time = data['after_time'] if 'after_time' in data else None
+    limit = data['limit'] if 'limit' in data else None
+
+    if limit is None:
+        return jsonify({'error': 'Missing required field limit'}), 400
+    
+    
+    try:
+        news = newsService.get_user_news(user_id, before_time, after_time, int(limit))
+        return jsonify({
+            'news': news
+        })
+    except ValueError as e:
+        return make_response(jsonify({'error': str(e)}), 400)
+
+
+

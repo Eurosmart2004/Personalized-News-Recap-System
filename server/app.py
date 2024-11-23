@@ -5,12 +5,14 @@ from routes import userRoute, tokenRoute, newsRoute
 from flask import Flask
 from config.app_config import create_app
 from database.initDB import init_db
-from database.db import db
+from server.database.database import db
 from flask_pymongo import PyMongo
 from flask_cors import CORS
+from dotenv import load_dotenv
+import os
 
 app, celery = create_app()
-cors = CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}}, supports_credentials=True)
+cors = CORS(app, resources={r"/*": {"origins": ["http://localhost:3000", os.getenv("CLIENT_URL")]}}, supports_credentials=True)
 mongo = PyMongo(app)
 
 if __name__ == '__main__':

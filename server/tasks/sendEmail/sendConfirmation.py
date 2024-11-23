@@ -13,8 +13,8 @@ env = Environment(loader=FileSystemLoader(dir_path))
 template = env.get_template('templates/account_confirmation.html')
 
 def send_email_confirmation(user: User, token: str):
-    client_url = os.getenv('FRONTEND_URL') or 'http://localhost:3000'
+    client_url = os.getenv('CLIENT_URL') if os.getenv('CLIENT_URL') else 'http://localhost:3000'
     url = client_url + f'/confirm/{token}'
     # Render the template with the news
     body = template.render(user=user, url=url)
-    send_email(user, 'Xác nhận email', body)
+    send_email(user, 'Email confirmation', body)

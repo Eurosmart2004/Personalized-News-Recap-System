@@ -1,5 +1,5 @@
 from sqlalchemy.orm import relationship
-from database.db import db
+from server.database.database import db
 from datetime import time
 
 class Schedule(db.Model):

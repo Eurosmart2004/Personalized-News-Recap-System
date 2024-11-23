@@ -1,10 +1,10 @@
 from datetime import datetime, timedelta, time
-from sqlalchemy import func
+from sqlalchemy import func, text
 import pytz
 from models import User, News, UserSchedule, Schedule, UserPreference, Preference, UserNews
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import join
-from database.db import db
+from server.database.database import db
 from jinja2 import Environment, FileSystemLoader
 from .sendEmail import send_email
 from services import userService
@@ -47,7 +47,7 @@ def send_news_worker():
         .join(News, News.topic == Preference.name)
 
         .outerjoin(UserNews, (User.id == UserNews.user_id) & (News.id == UserNews.news_id))
-        .filter(News.date >= User.createdAt)  # Only news after user registration
+        .filter(News.date >= func.date_sub(User.createdAt, text("INTERVAL 1 DAY")))
         .filter(UserNews.news_id.is_(None))  # Only unsent news
         .all()
     )
@@ -59,7 +59,7 @@ def send_news_worker():
 
     # Format the date as dd/mm/yyyy
     date = now.strftime('%d/%m/%Y')
-    title = f"Bảng tin buổi {'sáng' if now.hour < 12 else 'tối'} {date}"
+    title = f"Your Daily News {date}"
 
     for user, news_list in user_news_map.items():
         # Sort news by date (most recent first)

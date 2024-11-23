@@ -1,16 +1,21 @@
-import Container from 'react-bootstrap/Container';
-import Nav from 'react-bootstrap/Nav';
-import Navbar from 'react-bootstrap/Navbar';
-import NavDropdown from 'react-bootstrap/NavDropdown';
-import ThemeButton from './ThemeButton';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { LuSettings, LuLogOut, LuNewspaper, LuLogIn } from "react-icons/lu";
+import { VscColorMode } from "react-icons/vsc";
+import { FiMenu } from "react-icons/fi";
+import { CiLight } from "react-icons/ci";
+import { MdNightlightRound, MdAutorenew } from "react-icons/md";
 import { useSelector, useDispatch } from 'react-redux';
+import { useState, useEffect } from 'react';
 import { useAxios } from '../axios/axios';
+import { setTheme } from '../redux/reducer/themeReducer';
 import { removeAuth } from '../redux/reducer/authReducer';
+import Sidebar, { SidebarItem, SidebarDropdown } from './Sidebar';
 
-function Header() {
+
+function Header({ expanded, setExpanded }) {
     const { publicAxios } = useAxios();
     const auth = useSelector((state) => state.auth);
+    const [modal, setModal] = useState(false);
     const theme = useSelector((state) => state.theme.theme);
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -25,35 +30,85 @@ function Header() {
         }
     };
 
+    // Handle screen resize to toggle modal/expanded states
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth >= 640) {
+                setModal(false); // No modal on larger screens
+                setExpanded(true); // Always expanded on larger screens
+            }
+            else {
+                setModal(false);
+                setExpanded(false);
+            }
+        };
 
+        window.addEventListener("resize", handleResize);
+        handleResize(); // Run on initial render
+        return () => window.removeEventListener("resize", handleResize);
+    }, [setExpanded]);
 
     return (
-        <Navbar expand="lg" className={`bg-body-tertiary ${theme}`}>
-            <Container>
-                <Link className='navbar-brand' to={'/'}>Home</Link>
-                <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                <Navbar.Collapse id="basic-navbar-nav">
-                    <Nav className="me-auto">
-                        <NavLink className='nav-link' to={'/news'}>News</NavLink>
-                        {auth.user && auth.user.role === 'user' && <NavLink className='nav-link' to={'/user'}>User</NavLink>}
-                        {auth.user && auth.user.role === 'admin' && <NavLink className='nav-link' to={'/admin'}>Admin</NavLink>}
-                    </Nav>
-                    <Nav>
-                        {auth.user ? (
-                            <NavDropdown title={auth.user.email} id="basic-nav-dropdown">
-                                <button className='dropdown-item' onClick={logOut}>Logout</button>
-                            </NavDropdown>
-                        ) : (
-                            <NavDropdown title="Account" id="basic-nav-dropdown">
-                                <NavLink className='dropdown-item' to={'/login'}>Login</NavLink>
-                                <NavLink className='dropdown-item' to={'/register'}>Register</NavLink>
-                            </NavDropdown>
-                        )}
-                        <ThemeButton />
-                    </Nav>
-                </Navbar.Collapse>
-            </Container>
-        </Navbar>
+        <>
+            {/* Toggle Button for Mobile */}
+            <button
+                onClick={() => {
+                    setModal(true);
+                    setExpanded(true);
+                }}
+                className="sm:hidden p-2 fixed top-2 left-2 z-50 bg-gray-100 rounded-md shadow-lg"
+            >
+                <FiMenu size={20} />
+            </button>
+
+            <Sidebar
+                expanded={expanded}
+                setExpanded={setExpanded}
+                modal={modal}
+                setModal={setModal}
+            >
+
+                <SidebarItem icon={<LuNewspaper size={20} />} text="News" active={true} />
+                <hr className="my-3" />
+                <SidebarItem icon={<LuSettings size={20} />} text="Settings" />
+                <SidebarDropdown icon={<VscColorMode size={20} />} text="Theme">
+                    <SidebarItem
+                        icon={<MdNightlightRound size={20} />}
+                        text="Dark Mode"
+                        onClick={() => dispatch(setTheme('dark'))}
+                        active={theme === 'dark'}
+                    />
+                    <SidebarItem
+                        icon={<CiLight size={20} />}
+                        text="Light Mode"
+                        onClick={() => dispatch(setTheme('light'))}
+                        active={theme === 'light'}
+                    />
+                    <SidebarItem
+                        icon={<MdAutorenew size={20} />}
+                        text="Auto Mode"
+                        onClick={() => dispatch(setTheme('auto'))}
+                        active={theme === 'auto'}
+                    />
+                </SidebarDropdown>
+                <hr className="my-3" />
+                <div className="mt-auto">
+                    {auth.user ? (
+                        <SidebarItem
+                            icon={<LuLogOut size={20} />}
+                            text="Logout"
+                            onClick={logOut}
+                        />
+                    ) : (
+                        <SidebarItem
+                            icon={<LuLogIn size={20} />}
+                            text="Login"
+                            onClick={() => navigate("/login")}
+                        />
+                    )}
+                </div>
+            </Sidebar>
+        </>
     );
 }
 

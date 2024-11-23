@@ -12,6 +12,6 @@ def make_celery(app: Flask) -> Celery:
     celery = Celery(app.import_name)
     celery.conf.update(app.config['CELERY_CONFIG'])
     celery.Task = ContextTask
-    from tasks.tasks import init
-    init(celery)
+    from tasks import tasks
+    tasks.init(celery)
     return celery

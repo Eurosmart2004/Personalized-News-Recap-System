@@ -1,4 +1,4 @@
-from database.db import db
+from server.database.database import db
 from models import User, Preference, Schedule
 from sqlalchemy.orm.exc import NoResultFound
 from datetime import time, timedelta, datetime

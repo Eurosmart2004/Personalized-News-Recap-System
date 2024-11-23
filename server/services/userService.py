@@ -1,7 +1,7 @@
 import requests
 from models import User, Preference, UserPreference, UserSchedule, Schedule, Token
 from jwt.exceptions import ExpiredSignatureError
-from database.db import db
+from server.database.database import db
 import re
 from dotenv import load_dotenv
 from .tokenService import create_access_token, create_refresh_token, create_forgot_password_token, decode_token, create_confirm_token, find_token
@@ -79,7 +79,7 @@ def register(name: str, email:str, password:str, role='user', isConfirmed = Fals
 def forgot_password(email: str):
     user: Union[User, any] = User.query.filter_by(email=email).first()
     if not user:
-        raise ValueError('User does not exist')
+        raise ValueError('Please check your email address and try again')
     
     
     lastToken = find_token(user.id, 'forgot_password')

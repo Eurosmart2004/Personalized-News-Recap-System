@@ -1,0 +1,84 @@
+.right-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 100%;
+}
+
+/* Orange color theme */
+.text-orange {
+    color: #ff8a65;
+}
+
+/* Sun Styling */
+.sun {
+    width: 220px;
+    /* Adjust size as needed */
+    height: 220px;
+    background-color: #ff8a65;
+    border-radius: 50%;
+    position: relative;
+    overflow: hidden;
+}
+
+.blurSection{
+    position: absolute;
+    width: 100%;
+    height: 50%;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+.googleButton {
+    background-color: #FFFFFF;
+    color: black;
+    border: 1px solid #E0E0E0;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s ease-in-out;
+}
+
+.googleButton:hover {
+    background-color: #F2F2F2;
+}
+
+/* Style the checkbox when it's checked */
+.form-check-input:checked {
+    background-color: #ff8a65 !important;
+    /* Orange background when checked */
+    border-color: #ff8a65 !important;
+    /* Orange border when checked */
+}
+
+/* Change the checkmark color to white */
+.form-check-input:checked:focus {
+    box-shadow: 0 0 0 0.25rem rgba(255, 138, 101, 0.5) !important;
+    /* Optional: add a shadow to focus on the checkbox */
+}
+
+/* Style for when the checkbox is checked (custom appearance) */
+.form-check-input:checked::after {
+    background-color: #ffffff !important;
+    /* White checkmark */
+}
+    /* Prevent sun from disappearing on smaller screens */
+@media (max-width: 768px) {
+    /* Add a white box-shadow to the form when in small screen */
+    .left-section .container form {
+        /* White box-shadow */
+        border-radius: 10px;
+    }
+
+    .left-section{
+        background-color: rgba(255, 138, 101, 0.2);
+    }
+
+    .left-section .container{
+        background-color: #FFFFFF;
+        border-radius: 15px;
+        box-shadow: 0 2px 2px rgba(255, 255, 255, 0.6);
+    }
+}

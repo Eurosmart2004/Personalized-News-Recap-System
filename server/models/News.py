@@ -1,4 +1,4 @@
-from database.db import db
+from server.database.database import db
 from datetime import datetime, timezone
 import pytz
 
@@ -27,7 +27,7 @@ class News(db.Model):
             'topic': self.topic,
             'title': self.title,
             'link': self.link,
-            'content': self.content,
+            # 'content': self.content,
             'summary': self.summary,
             'image': self.image,
             'date': formatted_date,

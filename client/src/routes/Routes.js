@@ -1,5 +1,5 @@
-import { Routes, Route } from 'react-router-dom';
-import HomePage from '../pages/HomePage';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import NewsPage from '../pages/NewsPage';
 import AdminPage from '../pages/AdminPage';
 import UserPage from '../pages/UserPage';
 import LoginPage from '../pages/LoginPage';
@@ -20,9 +20,13 @@ const Router = () => {
         <Routes>
             <Route path="/" element={<App />} >
                 <Route index element={
-                    auth.user ?
-                        <RoleRoute roles={['user', 'admin']}> <HomePage /> </RoleRoute> :
-                        <HomePage />} />
+                    // auth.user ?
+                    //     <RoleRoute roles={['user', 'admin']}> <NewsPage /></RoleRoute> :
+                    //     <></>
+                    <RoleRoute roles={['user', 'admin']}>
+                        <NewsPage />
+                    </RoleRoute>
+                } />
                 <Route path="/preference" element={
                     <RoleRoute roles={['user']}>
                         <PreferencePage />

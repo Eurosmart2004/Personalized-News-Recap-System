@@ -1,5 +1,5 @@
 from sqlalchemy.orm import relationship
-from database.db import db
+from server.database.database import db
 
 class Preference(db.Model):
     __tablename__ = 'preferences'

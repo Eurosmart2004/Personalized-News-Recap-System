@@ -8,6 +8,11 @@ def init(app: Flask):
     @app.route(route, methods=['GET'])
     def get_test_summarize():
         return 'test news'
+
+    @app.route(route + '/get', methods=['POST'])
+    @authentication
+    def get_user_news():
+        return newsController.get_user_news(request)
     
     @app.route(route + '/summarize', methods=['POST'])
     def summarize():

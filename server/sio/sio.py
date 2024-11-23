@@ -1,6 +1,6 @@
 from flask_socketio import SocketIO, join_room, emit, leave_room
 import logging
-def init_socket(socketio: SocketIO):
+def init(socketio: SocketIO):
 
     @socketio.on('join')
     def handle_join_room(data):
@@ -13,10 +13,5 @@ def init_socket(socketio: SocketIO):
         email = data['email']
         leave_room(email)
         emit('message', {'message': f'Left room for {email}'}, to=email)
-
-    @socketio.on('confirmation')
-    def handle_confirmation(data):
-        email = data['email']
-        emit('confirmation', {'message': f'Confirmation email sent to {email}'}, to=email)
 
 

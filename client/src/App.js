@@ -8,17 +8,24 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { socket } from "./socket";
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { setTheme } from "./redux/reducer/themeReducer";
+import './styles/App.css';
+import HomePage from "./pages/HomePage";
 const App = () => {
 	const { privateAxios } = useAxios();
 	const [loading, setLoading] = useState(true);
 	const auth = useSelector((state) => state.auth);
 	const themeStore = useSelector((state) => state.theme.theme);
+	const [expanded, setExpanded] = useState(true); // Sidebar expanded state
 	const location = useLocation();
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
+
 	const getUser = async () => {
 		try {
+			setLoading(true);
 			const response = await privateAxios.get('/user');
+			console.log(response);
 			dispatch(setAuth({ "user": response.data }));
 			localStorage.setItem('isAuth', true);
 		} catch (error) {
@@ -33,7 +40,7 @@ const App = () => {
 		if (event.key === 'isAuth') {
 			const isAuth = JSON.parse(event.newValue);
 			console.log("LocalStorage is Auth: ", isAuth);
-			if (!isAuth) {
+			if (isAuth !== 'true') {
 				dispatch(removeAuth());
 			} else {
 				getUser();
@@ -48,6 +55,9 @@ const App = () => {
 		});
 		window.addEventListener('storage', handleStorageChange);
 		getUser();
+		const savedTheme = localStorage.getItem('theme') || 'auto';
+		dispatch(setTheme(savedTheme));
+
 		return () => {
 			window.removeEventListener('storage', handleStorageChange);
 			socket.disconnect();
@@ -56,13 +66,13 @@ const App = () => {
 
 	const theme = createTheme({
 		palette: {
-			mode: themeStore,
+			mode: themeStore === 'auto' ? 'light' : themeStore,
 		},
 	});
 
 
 	if (loading) return <></>;
-	const pathHide = ['/login', '/register', '/confirm', '/forgot-password', '/reset-password', '/confirm/:token'];
+	const pathHide = ['/login', '/register', '/preference', '/require-confirm', '/forgot-password', '/reset-password/:token', '/confirm/:token'];
 	const hideHeaderFooter = pathHide.some(path => matchPath(path, location.pathname));
 	if (hideHeaderFooter) {
 		return (
@@ -72,14 +82,25 @@ const App = () => {
 		);
 	}
 
+	// if (!auth.user) {
+	// 	return <>
+	// 		<HomePage />
+	// 	</>;
+	// }
+
 	return (
 		<>
 			<ThemeProvider theme={theme}>
-				<Header />
-				<div className='vh-100'>
-					<Outlet />
+				<div className="flex">
+					<Header expanded={expanded} setExpanded={setExpanded} />
+					<main className={`transition-all dark:bg-black ml-0 ${expanded ? "sm:ml-[250px]" : "sm:ml-[100px]"} lg:p-20`}>
+						<Outlet />
+					</main>
 				</div>
-				<Footer />
+				<div className={`transition-all dark:bg-black ml-0 ${expanded ? "sm:ml-[250px]" : "sm:ml-[100px]"}`}>
+					<Footer />
+				</div>
+
 			</ThemeProvider>
 		</>
 	);

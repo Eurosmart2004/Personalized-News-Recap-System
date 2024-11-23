@@ -13,8 +13,8 @@ env = Environment(loader=FileSystemLoader(dir_path))
 template = env.get_template('templates/forgot_password.html')
 
 def send_email_forgot_password(user: User, token: str):
-    client_url = os.getenv('FRONTEND_URL') or 'http://localhost:3000'
+    client_url = os.getenv('CLIENT_URL') if os.getenv('CLIENT_URL') else 'http://localhost:3000'
     url = client_url + f'/reset-password/{token}'
     # Render the template with the news
     body = template.render(url=url)
-    send_email(user, 'Mã đặt lại mật khẩu của bạn', body)
+    send_email(user, 'Reset password', body)

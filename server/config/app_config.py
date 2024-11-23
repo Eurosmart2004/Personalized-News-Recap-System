@@ -1,8 +1,8 @@
 from flask import Flask
 from routes import userRoute, tokenRoute, newsRoute, preferenceRoute
-from database.db import db
+from server.database.database import db
 from flask_socketio import SocketIO
-from sio.services import init_socket
+from server.sio import sio
 from .celery_config import make_celery
 from .config import DevConfig, ProdConfig
 from dotenv import load_dotenv
@@ -15,7 +15,7 @@ if env == 'production':
 else:
     Config = DevConfig
 
-sio = SocketIO()
+socketIO = SocketIO()
 
 def create_app():
     app = Flask(__name__)
@@ -37,8 +37,8 @@ def create_app():
     celery = make_celery(app)
     db.init_app(app)
 
-    sio.init_app(app, cors_allowed_origins="*")
-    init_socket(sio)
+    socketIO.init_app(app, cors_allowed_origins="*")
+    sio.init(socketIO)
     userRoute.init(app)
     tokenRoute.init(app)
     newsRoute.init(app)

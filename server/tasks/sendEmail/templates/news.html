@@ -12,6 +12,14 @@
                 padding: 0;
             }
 
+            header {
+                background: linear-gradient(93.53deg, #FFFFFF 0%, #FE8660 100%);
+                width: 100%;
+                max-width: 600px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+
             .container {
                 width: 100%;
                 max-width: 600px;
@@ -23,7 +31,7 @@
             }
 
             h1 {
-                color: #333;
+                color: #ffffff;
                 text-align: center;
             }
 
@@ -50,40 +58,55 @@
             }
 
             .news-item a {
-                color: #007BFF;
+                color: #ffab91;
                 text-decoration: none;
                 font-weight: bold;
             }
 
             @media (prefers-color-scheme: dark) {
                 body {
-                    background-color: #333;
-                    color: #f0f0f0;
+                    background-color: #1e1e1e;
+                    color: #e0e0e0;
                 }
 
                 .container {
-                    background-color: #444;
+                    background-color: #2c2c2c;
+                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+                }
+
+                header {
+                    background: linear-gradient(93.53deg, #FE8660 0%, #FF5722 100%);
+                    color: #fff;
                 }
 
                 h1 {
-                    color: #f0f0f0;
+                    color: #fff;
                 }
 
                 .news-item h2 {
-                    color: #ddd;
+                    color: #fff;
                 }
 
                 .news-item p {
-                    color: #ccc;
+                    color: #bdbdbd;
                 }
 
                 .news-item a {
-                    color: #66b2ff;
+                    color: #ffab91;
+                }
+
+                .news-item img {
+                    border-radius: 8px;
+                    box-shadow: 0 2px 8px rgba(255, 255, 255, 0.2);
                 }
             }
 
             @media (max-width: 600px) {
                 .container {
+                    padding: 10px;
+                }
+
+                header {
                     padding: 10px;
                 }
 
@@ -95,15 +118,20 @@
     </head>
 
     <body>
+        <header class="center">
+            <p style="text-align: center;">
+                <img src="https://res.cloudinary.com/djgnzsw1j/image/upload/v1731827673/logo_otk438.png" alt="Logo"
+                    style="max-width: 100%; height: auto;">
+            </p>
+        </header>
         <div class="container">
-            <h1>Tin mới nhất</h1>
             {% for news in news_list %}
             <div class="news-item">
                 <h2>{{ news.title }}</h2>
                 <p><em>{{news.date}}</em></p>
                 <img src="{{ news.image }}" alt="{{ news.title }}">
                 <p>{{ news.summary }}</p>
-                <a href="{{ news.link }}">Xem toàn bộ</a>
+                <a href="{{ news.link }}">More detail</a>
             </div>
             {% endfor %}
         </div>

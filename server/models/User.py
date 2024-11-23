@@ -1,5 +1,5 @@
 from sqlalchemy.orm import relationship
-from database.db import db
+from server.database.database import db
 from datetime import datetime, timezone
 class User(db.Model):
     __tablename__ = 'users'
