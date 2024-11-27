@@ -8,7 +8,8 @@ import html
 
 class VnexpressCrawler(Crawler):
     def __init__(self, topics: dict[str: str]) -> None:
-        self.topics = topics
+        super().__init__(topics)
+
 
     def crawl(self) -> list[News]:
         for topic in self.topics:

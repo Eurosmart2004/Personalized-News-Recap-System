@@ -8,7 +8,7 @@ import html
 
 class ThanhNienCrawler(Crawler):
     def __init__(self, topics: dict[str: str]) -> None:
-        self.topics = topics
+        super().__init__(topics)
 
     def crawl(self) -> list[News]:
         for topic in self.topics:
@@ -21,7 +21,6 @@ class ThanhNienCrawler(Crawler):
                 pub_date_text = item.find('pubDate').text
                 date = datetime.strptime(pub_date_text, '%a, %d %b %y %H:%M:%S %z')                
                 title = item.find('title').text.strip()
-                title = title[9:-3]
                 title = html.unescape(title)
                 description = item.find('description').text
                 description = description[9:-3]
