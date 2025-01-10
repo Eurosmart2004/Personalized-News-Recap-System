@@ -1,10 +1,11 @@
 import { useNavigate } from 'react-router-dom';
-import { LuSettings, LuLogOut, LuNewspaper, LuLogIn } from "react-icons/lu";
+import { LuSettings, LuLogOut, LuNewspaper, LuLogIn, LuStar } from "react-icons/lu";
 import { VscColorMode } from "react-icons/vsc";
 import { FiMenu } from "react-icons/fi";
 import { CiLight } from "react-icons/ci";
 import { MdNightlightRound, MdAutorenew } from "react-icons/md";
 import { useSelector, useDispatch } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useAxios } from '../axios/axios';
 import { setTheme } from '../redux/reducer/themeReducer';
@@ -18,6 +19,7 @@ function Header({ expanded, setExpanded }) {
     const [modal, setModal] = useState(false);
     const theme = useSelector((state) => state.theme.theme);
     const dispatch = useDispatch();
+    const location = useLocation();
     const navigate = useNavigate();
     const logOut = async () => {
         try {
@@ -68,7 +70,8 @@ function Header({ expanded, setExpanded }) {
                 setModal={setModal}
             >
 
-                <SidebarItem icon={<LuNewspaper size={20} />} text="News" active={true} />
+                <SidebarItem icon={<LuNewspaper size={20} />} text="News" active={location.pathname === "/"} onClick={() => navigate("/")} />
+                <SidebarItem icon={<LuStar size={20} />} text="Favorites" active={location.pathname === "/favorites"} onClick={() => navigate("/favorites")} />
                 <hr className="my-3" />
                 <SidebarItem icon={<LuSettings size={20} />} text="Settings" />
                 <SidebarDropdown icon={<VscColorMode size={20} />} text="Theme">

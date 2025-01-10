@@ -3,7 +3,7 @@ from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from models import News
-from server.database.database import db
+from database.database import db
 from .getNews import get_article_from_ids
 from typing import Union
 from .language import languages

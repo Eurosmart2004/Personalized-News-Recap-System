@@ -4,7 +4,7 @@ import pytz
 from models import User, News, UserSchedule, Schedule, UserPreference, Preference, UserNews
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import join
-from server.database.database import db
+from database.database import db
 from jinja2 import Environment, FileSystemLoader
 from .sendEmail import send_email
 from services import userService

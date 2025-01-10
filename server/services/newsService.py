@@ -1,4 +1,4 @@
-from server.database.database import db
+from database.database import db
 from models import News, User, UserPreference, Preference
 from sqlalchemy import and_ 
 from datetime import datetime, timezone
@@ -75,6 +75,7 @@ def get_user_news(user_id: str, before_time: str, after_time: str, limit: int) -
         combined_news = news_after + news_before
         combined_news = combined_news[:limit]
 
+        logging.info(f'news_before: {news_before}')
 
         # Convert results to JSON format
         return [news.to_json() for news in combined_news]

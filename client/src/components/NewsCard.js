@@ -1,8 +1,33 @@
 import NewsModal from './NewsModal';
 import { useState, useEffect } from 'react';
+import FavoriteButton from './FavoriteButton';
+import { useSelector} from 'react-redux';
+import { setAuth } from '../redux/reducer/authReducer';
+import { useAxios } from '../axios/axios';
 
 const NewsCard = ({ news }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isFavorited, setIsFavorited] = useState(false);
+    const auth = useSelector((state) => state.auth);
+    const { privateAxios } = useAxios();
+
+    // Fetch initial favorite status
+    useEffect(() => {
+        const checkFavoriteStatus = async () => {
+            try {
+                const response = await privateAxios.get(`/favorite/${auth.user.id}`);
+                const favorites = response.data;
+                const isNewsFavorited = favorites.some(favorite => favorite.news_id === news.id);
+                setIsFavorited(isNewsFavorited);
+            } catch (error) {
+                console.error('Error fetching favorite status:', error);
+            }
+        };
+
+        if (auth.user?.id) {
+            checkFavoriteStatus();
+        }
+    }, [auth.user?.id, news.id, privateAxios]);
 
     // Toggle modal visibility
     const openModal = () => {
@@ -13,7 +38,10 @@ const NewsCard = ({ news }) => {
         setIsModalOpen(false);
     };
 
-
+    // Prevent favorite button click from triggering modal
+    const handleFavoriteClick = (e) => {
+        e.stopPropagation();
+    };
 
     return (
         <>
@@ -29,8 +57,15 @@ const NewsCard = ({ news }) => {
                     <h5 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
                         {news.title}
                     </h5>
-                    <div className="mt-auto">
+                    <div className="mt-auto flex items-center justify-between">
                         <small className="text-gray-500 dark:text-gray-400">{news.date}</small>
+                        <div onClick={handleFavoriteClick}>
+                            <FavoriteButton 
+                                userId={auth.user.id} 
+                                newsId={news.id} 
+                                isFavorited={isFavorited} 
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
