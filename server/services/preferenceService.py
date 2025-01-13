@@ -1,5 +1,5 @@
 from models import Preference, UserPreference
-from server.database.database import db
+from database.database import db
 from flask import jsonify
 from typing import Union
 def get_preference():

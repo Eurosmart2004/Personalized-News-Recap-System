@@ -1,8 +1,8 @@
 from flask import Flask
-from routes import userRoute, tokenRoute, newsRoute, preferenceRoute
-from server.database.database import db
+from routes import userRoute, tokenRoute, newsRoute, preferenceRoute, favoriteRoute
+from database.database import db
 from flask_socketio import SocketIO
-from server.sio import sio
+from sio import sio
 from .celery_config import make_celery
 from .config import DevConfig, ProdConfig
 from dotenv import load_dotenv
@@ -43,4 +43,5 @@ def create_app():
     tokenRoute.init(app)
     newsRoute.init(app)
     preferenceRoute.init(app)
+    favoriteRoute.init(app)
     return app, celery

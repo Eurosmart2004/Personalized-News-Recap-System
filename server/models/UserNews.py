@@ -1,4 +1,4 @@
-from server.database.database import db
+from database.database import db
 from datetime import datetime
 
 class UserNews(db.Model):

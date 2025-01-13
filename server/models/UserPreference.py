@@ -1,4 +1,4 @@
-from server.database.database import db
+from database.database import db
 class UserPreference(db.Model):
     __tablename__ = 'user_preferences'
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)

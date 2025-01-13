@@ -1,7 +1,7 @@
 import requests
 from models import User, Preference, UserPreference, UserSchedule, Schedule, Token
 from jwt.exceptions import ExpiredSignatureError
-from server.database.database import db
+from database.database import db
 import re
 from dotenv import load_dotenv
 from .tokenService import create_access_token, create_refresh_token, create_forgot_password_token, decode_token, create_confirm_token, find_token
