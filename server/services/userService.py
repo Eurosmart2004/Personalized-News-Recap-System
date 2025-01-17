@@ -5,8 +5,8 @@ from database.database import db
 import re
 from dotenv import load_dotenv
 from .tokenService import create_access_token, create_refresh_token, create_forgot_password_token, decode_token, create_confirm_token, find_token
-from tasks.sendEmail.sendConfirmation import send_email_confirmation
-from tasks.sendEmail.sendForgotPassword import send_email_forgot_password
+from tasks.sendEmail.tools.sendConfirmation import send_email_confirmation
+from tasks.sendEmail.tools.sendForgotPassword import send_email_forgot_password
 from typing import Union
 from datetime import time
 import secrets

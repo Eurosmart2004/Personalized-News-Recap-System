@@ -15,6 +15,7 @@ class ScrapeArticle(Scraper):
             paragraphs = article.text.split('\n')
             news.content = '\n'.join([para for para in paragraphs[0:-1]]).strip()
             news.html = article.html
-            newsList.append(news)
+            if news.content != '' and len(news.content) > 10: # check if the content is not empty
+                newsList.append(news)
             
         return newsList

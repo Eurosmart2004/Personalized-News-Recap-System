@@ -36,6 +36,21 @@ class Config:
             'task': 'send_news',
             'schedule': crontab(minute='*/1'),
         },
+        # 'synthesize-news-test':{
+        #     'task': 'synthesize_news',
+        #     'schedule': crontab(minute='*/15'),
+        #     'args': ('week',)
+        # },
+        'synthesize-news-day':{
+            'task': 'synthesize_news',
+            'schedule': crontab(hour=23, minute=0),
+            'args': ('day',)
+        },
+        'synthesize-news-week':{
+            'task': 'synthesize_news',
+            'schedule': crontab(day_of_week=0, hour=23, minute=0),
+            'args': ('week',)
+        },
     }
     task_routes = {
         'send_news': {'queue': 'send_news_queue'},

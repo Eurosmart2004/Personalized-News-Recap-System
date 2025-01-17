@@ -13,8 +13,11 @@ import pytz
 with DAG(
     dag_id = 'CrawDag',
     description = 'Crawling news from multiple sources',
-    start_date = datetime(2024,11,27, 0, 0 ,0, 0, tzinfo=pytz.timezone('Asia/Ho_Chi_Minh')),
-    schedule_interval='@hourly',
+    # start_date = datetime(2025,1,1, 0, 0 ,0, 0, tzinfo=pytz.timezone('Asia/Ho_Chi_Minh')),
+    schedule_interval='@monthly',
+    start_date = datetime.now(tz=pytz.timezone('Asia/Ho_Chi_Minh')),
+    # schedule_interval = '*/30 * * * *'
+
 ) as dag:
     crawl_task = PythonOperator(
         task_id = 'crawl_task',

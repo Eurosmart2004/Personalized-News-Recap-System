@@ -1,4 +1,4 @@
-languages = {
+LANGUAGES = {
     "af": "Afrikaans",
     "ar": "Arabic",
     "bg": "Bulgarian",

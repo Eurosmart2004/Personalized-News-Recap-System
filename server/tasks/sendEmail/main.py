@@ -1,12 +1,12 @@
 from datetime import datetime, timedelta, time
 from sqlalchemy import func, text
 import pytz
-from models import User, News, UserSchedule, Schedule, UserPreference, Preference, UserNews
+from models import User, News, UserSchedule, Schedule, UserPreference, Preference
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import join
 from database.database import db
 from jinja2 import Environment, FileSystemLoader
-from .sendEmail import send_email
+from .tools.sendEmail import send_email
 from services import userService
 from dotenv import load_dotenv
 import os
@@ -46,9 +46,7 @@ def send_news_worker():
         .join(Preference, Preference.id == UserPreference.preference_id)
         .join(News, News.topic == Preference.name)
 
-        .outerjoin(UserNews, (User.id == UserNews.user_id) & (News.id == UserNews.news_id))
-        .filter(News.date >= func.date_sub(User.createdAt, text("INTERVAL 1 DAY")))
-        .filter(UserNews.news_id.is_(None))  # Only unsent news
+        .filter(News.date >= datetime.now() - timedelta(days=1))  # News from the last 24 hours
         .all()
     )
 
@@ -72,14 +70,14 @@ def send_news_worker():
             # Send the email
             send_email(user, title, body)
 
-            # Track sent news by adding records to UserNews
-            for news in news_list:
-                user_news_entry = UserNews(user_id=user.id, news_id=news.id)
-                db.session.add(user_news_entry)
+            # # Track sent news by adding records to UserNews
+            # for news in news_list:
+            #     user_news_entry = UserNews(user_id=user.id, news_id=news.id)
+            #     db.session.add(user_news_entry)
 
-            # Commit after each successful email
-            db.session.commit()
-            print(f"Email sent successfully to {user.email}")
+            # # Commit after each successful email
+            # db.session.commit()
+            # print(f"Email sent successfully to {user.email}")
 
         except SQLAlchemyError as e:
             # Roll back if any database error occurs

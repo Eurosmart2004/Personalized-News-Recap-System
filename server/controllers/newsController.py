@@ -31,6 +31,30 @@ def get_user_news(request: Request) -> Response:
         })
     except ValueError as e:
         return make_response(jsonify({'error': str(e)}), 400)
+    
 
+def embedding(request: Request) -> Response:
+    data = request.get_json()
+    text = data['text']
+
+    try:
+        embedding = newsService.get_embedding(text)
+        return jsonify({
+            'embedding': embedding
+        })
+    except Exception as e:
+        return make_response(jsonify({'error': str(e)}), 500)
+
+def cluster(request: Request) -> Response:
+    data = request.get_json()
+    embeddings = data['embeddings']
+
+    try:
+        labels = newsService.cluster(embeddings)
+        return jsonify({
+            'labels': labels
+        })
+    except Exception as e:
+        return make_response(jsonify({'error': str(e)}), 500)
 
 
