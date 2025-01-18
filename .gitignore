@@ -13,3 +13,5 @@ venv/
 
 # Ignore logs folder in airflow-pipeline
 airflow-pipeline/logs/
+
+.vscode/

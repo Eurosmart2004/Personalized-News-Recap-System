@@ -49,7 +49,7 @@ services:
   #   # container_name: server
   #   build: ./server
   #   volumes:
-  #     - ./server:/usr/src/server
+  #     - ./server:/server
   #   # ports:
   #   #   - 5000:5000
   #   environment:
@@ -68,7 +68,7 @@ services:
     build: ./server
     command: celery -A app.celery worker --loglevel=info -Q summarize_queue,send_news_queue,synthesize_news_queue
     volumes:
-      - ./server:/usr/src/server
+      - ./server:/server
     environment:
       - FLASK_ENV=production
       - PYTHONUNBUFFERED=1
@@ -97,7 +97,7 @@ services:
     build: ./server
     command: celery -A app.celery beat --loglevel=info
     volumes:
-      - ./server:/usr/src/server
+      - ./server:/server
     environment:
       - FLASK_ENV=production
     env_file:
