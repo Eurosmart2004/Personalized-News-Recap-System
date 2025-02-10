@@ -76,10 +76,12 @@ def ai_summarize_worker(article_ids: list[str]) -> list[News]:
         db.session.refresh(news)
 
     logging.info(f"Summarized successfully. Updated: {len(news_list_update)}, Added: {len(news_list_add)}")
+
     if not news_list_add + news_list_update:
         return []
-    news_list_embedded = embedding(news_list_add)
-    return news_list_embedded
+    
+    embedding(news_list_add, news_list_update)
+    return news_list_add + news_list_update
 
 def get_summary_with_retries(summarize_chain: SummarizeModel, input, max_retries):
     attempts = 0
