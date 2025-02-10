@@ -13,8 +13,19 @@
 
 - Copy the .env.example file to .env and replace the placeholder variables with your actual values.
 
-3. **Run Docker Compose:**
+3. **Use ollama**
+
+- Download ollama
+- Pull ollama by `ollama pull llama3.1`
+- Run ollama
+
+4. **Run Docker Compose:**
 
    ```
-   docker-compose up -d --build --scale server=3
+   docker-compose up -d --build
    ```
+
+5. **Update database**
+
+- For SQL data import file using MySQL Workbench.
+- For mongo data (datalake) create two collections manually (news and news_embeddings) at import file json respectively.

@@ -45,23 +45,23 @@ services:
       - 15672:15672
     restart: always
 
-  # server:
-  #   # container_name: server
-  #   build: ./server
-  #   volumes:
-  #     - ./server:/server
-  #   # ports:
-  #   #   - 5000:5000
-  #   environment:
-  #     - FLASK_ENV=production
-  #   env_file:
-  #     - .env
-  #   depends_on:
-  #     airflow-pipeline:
-  #       condition: service_started
-  #     mysql:
-  #       condition: service_healthy
-  #   restart: always
+  server:
+    container_name: server
+    build: ./server
+    volumes:
+      - ./server:/server
+    ports:
+      - 5000:5000
+    environment:
+      - FLASK_ENV=production
+    env_file:
+      - .env
+    depends_on:
+      airflow-pipeline:
+        condition: service_started
+      mysql:
+        condition: service_healthy
+    restart: always
 
   worker:
     container_name: worker
@@ -75,8 +75,8 @@ services:
     env_file:
       - .env
     depends_on:
-      # server:
-      #   condition: service_started
+      server:
+        condition: service_started
       rabbitmq:
         condition: service_started
       mysql:
@@ -103,13 +103,13 @@ services:
     env_file:
       - .env
     depends_on:
-      # server:
-      #   condition: service_started
+      server:
+        condition: service_started
       rabbitmq:
         condition: service_started
       mysql:
         condition: service_healthy
-    # restart: always
+    restart: always
 
   mongo:
     image: mongo:latest
