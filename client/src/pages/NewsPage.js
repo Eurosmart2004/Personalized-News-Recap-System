@@ -2,6 +2,8 @@ import NewsCard, { NewsCardSkeleton } from "../components/NewsCard";
 import { useEffect, useRef, useState } from "react";
 import { useAxios } from "../axios/axios";
 import { useSelector } from "react-redux";
+import { ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 const NewsPage = () => {
     const { privateAxios } = useAxios();
@@ -30,14 +32,12 @@ const NewsPage = () => {
         return utcDate;
     }
 
-
     // Function to fetch news (only for older news)
     const getNews = async () => {
         if (loading || isFecting.current) return;
         isFecting.current = true;
         setLoading(true);
         try {
-
             const payload = { limit: 9 };
             if (beforeTime) payload.before_time = beforeTime; // Add `beforeTime` if available
             if (afterTime) payload.after_time = afterTime; // Add `afterTime` if available
@@ -53,7 +53,6 @@ const NewsPage = () => {
                 const filteredNews = fetchedNews.filter((item) => !existingIds.has(item.id));
                 return [...prevNews, ...filteredNews];
             });
-
 
             // Update `beforeTime` for the next request
             if (beforeTime && convertToUTC(fetchedNews[fetchedNews.length - 1].date) < convertToUTC(beforeTime)) setBeforeTime(fetchedNews[fetchedNews.length - 1].date);
@@ -102,13 +101,12 @@ const NewsPage = () => {
                     ))}
 
                     {/* Loading Skeleton */}
-
                     <div className="w-full sm:w-full md:w-1/2 lg:w-1/3 px-4 mb-6">
                         <NewsCardSkeleton />
                     </div>
-
                 </div>
             </div>
+            <ToastContainer />
         </div>
     );
 };

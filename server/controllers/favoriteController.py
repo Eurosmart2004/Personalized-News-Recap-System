@@ -1,7 +1,5 @@
-
 from flask import Request, Response, jsonify, make_response
 from services import favoriteService
-import logging
 def add_favorite(request: Request) -> Response:
     data = request.get_json()
     try:
@@ -13,10 +11,7 @@ def add_favorite(request: Request) -> Response:
         return jsonify({'error': str(e)}), 400
 
 def remove_favorite(request: Request) -> Response:
-    logging.info(request)
     data = request.get_json()
-    logging.info("---------------")
-    logging.info(data)
     try:
         user_id = data['user_id']
         news_id = data['news_id']
