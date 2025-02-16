@@ -9,7 +9,7 @@ import ForgotpasswordPage from '../pages/ForgotpasswordPage';
 import RequireConfirmPage from '../pages/RequireConfirmPage';
 import RegisterPage from '../pages/RegisterPage';
 import PreferencePage from '../pages/PreferencePage';
-import FavoritePage from '../pages/FavoritePage';
+import CollectionPage from '../pages/CollectionPage';
 import App from '../App';
 import RoleRoute from './RoleRoute';
 import UnLoginRoute from './UnLoginRoute';
@@ -69,9 +69,9 @@ const Router = () => {
                         <ResetPasswordPage />
                     </UnLoginRoute>
                 } />
-                <Route path="/favorites" element={
+                <Route path="/collection" element={
                     <RoleRoute roles={['user']}>
-                        <FavoritePage />
+                        <CollectionPage />
                     </RoleRoute>
                 } />
                 <Route path="*" element={<h1>Not Found</h1>} />

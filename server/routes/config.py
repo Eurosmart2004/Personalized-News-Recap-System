@@ -3,5 +3,6 @@ ROUTE = {
     'user': '/api/user',
     'news': '/api/news',
     'preference': '/api/preference',
-    'favorite': '/api/favorite'
+    'favorite': '/api/favorite',
+    'collection': '/api/collection'
 }
