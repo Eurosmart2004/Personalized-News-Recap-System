@@ -15,3 +15,7 @@ venv/
 airflow-pipeline/logs/
 
 .vscode/
+
+**/celerybeat-schedule
+
+**/test.*
