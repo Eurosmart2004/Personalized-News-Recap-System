@@ -6,3 +6,5 @@ from .Schedule import Schedule
 from .UserSchedule import UserSchedule
 from .Token import Token
 from .NewsCluster import NewsCluster
+from .Collection import Collection
+from .FavoriteCollection import FavoriteCollection

@@ -1,5 +1,6 @@
 from database.database import db
 from datetime import datetime, timezone
+from sqlalchemy.orm import relationship
 import pytz
 
 class News(db.Model):
@@ -12,6 +13,7 @@ class News(db.Model):
     summary = db.Column(db.Text)
     image = db.Column(db.Text)
     date = db.Column(db.DateTime, default=datetime.now(timezone.utc))
+    favorite_collection = relationship('FavoriteCollection', backref='news')
 
     def __repr__(self):
         return f'<Topic: {self.topic} | Title: {self.title}>'

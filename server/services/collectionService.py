@@ -1,56 +1,109 @@
-from models.FavoriteCollection import FavoriteCollection
-from models.UserFavorite import UserFavorite
+from models import Collection, FavoriteCollection, News
 from database.database import db
-
-def create_collection(user_id, name):
-    if not user_id or not name:
-        raise ValueError('user_id and name are required')
-
-    collection = FavoriteCollection(user_id=user_id, name=name)
-    db.session.add(collection)
-    db.session.commit()
-    return collection.to_json()
+from typing import Union
 
 def get_collections(user_id):
-    if not user_id:
-        raise ValueError('user_id is required')
+    """
+    return [
+        {
+            collection: {
+                'id': 1,
+                'name': 'collection1'
+            },
+            news: [
+                {
+                    'id': 1,
+                    'title': 'news1',
+                    'description': 'news1 description',
+                    'url': 'news1 url',
+                    'urlToImage': 'news1 image',
+                    'publishedAt': 'news1 date',
+                    'content': 'news1 content'
+                },
+                {
+                    'id': 2,
+                    'title': 'news2',
+                    'description': 'news2 description',
+                    'url': 'news2 url',
+                    'urlToImage': 'news2 image',
+                    'publishedAt': 'news2 date',
+                    'content': 'news2 content'
+                }
+            ]
+        }
+    ]
+    """
+    list_collections = []
+    collections: list[Collection] = Collection.query.filter_by(user_id=user_id).all()
+    for collection in collections:
+        news = []
+        favorite_collections: FavoriteCollection = FavoriteCollection.query.filter_by(collection_id=collection.id).all()
+        for favorite_collection in favorite_collections:
+            news.append(favorite_collection.news.to_json())
+        list_collections.append({
+            'collection': collection.to_json(),
+            'news': news
+        })
+    
+    return list_collections
 
-    collections = FavoriteCollection.query.filter_by(user_id=user_id).all()
-    return [collection.to_json() for collection in collections]
+def create_collection(user_id, name):
+    if Collection.query.filter_by(user_id=user_id, name=name).first():
+        raise ValueError('Collection already exists')
 
-def add_to_collection(collection_id, news_id):
-    if not collection_id or not news_id:
-        raise ValueError('collection_id and news_id are required')
-
-    favorite = UserFavorite.query.filter_by(collection_id=collection_id, news_id=news_id).first()
-    if favorite:
-        raise ValueError('News is already in this collection')
-
-    new_favorite = UserFavorite(user_id=favorite.user_id, news_id=news_id, collection_id=collection_id)
-    db.session.add(new_favorite)
+    collection = Collection(user_id=user_id, name=name)
+    db.session.add(collection)
     db.session.commit()
-    return new_favorite.to_json()
 
-def remove_from_collection(collection_id, news_id):
-    if not collection_id or not news_id:
-        raise ValueError('collection_id and news_id are required')
+    return get_collections(user_id)
 
-    favorite = UserFavorite.query.filter_by(collection_id=collection_id, news_id=news_id).first()
-    if not favorite:
-        raise ValueError('News not found in this collection')
-
-    db.session.delete(favorite)
-    db.session.commit()
-    return {'message': 'News removed from collection'}
-
-def delete_collection(collection_id):
-    if not collection_id:
-        raise ValueError('collection_id is required')
-
-    collection = FavoriteCollection.query.filter_by(id=collection_id).first()
+def update_collection(user_id, collection_id, name):
+    collection: Union[Collection, None] = Collection.query.filter_by(user_id=user_id, id=collection_id).first()
     if not collection:
         raise ValueError('Collection not found')
 
+    collection.name = name
+    db.session.commit()
+    return get_collections(user_id)
+
+def delete_collection(user_id, collection_id):
+    collection: Union[Collection, None] = Collection.query.filter_by(user_id=user_id, id=collection_id).first()
+    if not collection:
+        raise ValueError('Collection not found')
+
+    favorite_collections: list[FavoriteCollection] = FavoriteCollection.query.filter_by(collection_id=collection_id).all()
+    for favorite_collection in favorite_collections:
+        db.session.delete(favorite_collection)
+
     db.session.delete(collection)
     db.session.commit()
-    return {'message': 'Collection deleted'}
+    return get_collections(user_id)
+
+def add_favorite(user_id, list_collection_id, news_id):
+    news: Union[News, None] = News.query.filter_by(id=news_id).first()
+    if not news:
+        raise ValueError('News not found')
+
+    for collection_id in list_collection_id:
+        collection: Union[Collection, None] = Collection.query.filter_by(user_id=user_id, id=collection_id).first()
+        if not collection:
+            raise ValueError('Collection not found')
+        
+
+        favorite_collection = FavoriteCollection(collection_id=collection_id, news_id=news_id)
+        db.session.add(favorite_collection)
+    
+    db.session.commit()
+
+    return get_collections(user_id)
+
+def remove_favorite(user_id, list_collection_id, news_id):
+    for collection_id in list_collection_id:
+        favorite_collection: Union[FavoriteCollection, None] = FavoriteCollection.query.filter_by(collection_id=collection_id, news_id=news_id).first()
+        if not favorite_collection:
+            raise ValueError('Favorite not found')
+
+        db.session.delete(favorite_collection)
+        
+    db.session.commit()
+    return get_collections(user_id)

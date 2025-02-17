@@ -10,6 +10,7 @@ import RequireConfirmPage from '../pages/RequireConfirmPage';
 import RegisterPage from '../pages/RegisterPage';
 import PreferencePage from '../pages/PreferencePage';
 import CollectionPage from '../pages/CollectionPage';
+import CollectionDetailPage from '../pages/CollectionDetailPage';
 import App from '../App';
 import RoleRoute from './RoleRoute';
 import UnLoginRoute from './UnLoginRoute';
@@ -72,6 +73,11 @@ const Router = () => {
                 <Route path="/collection" element={
                     <RoleRoute roles={['user']}>
                         <CollectionPage />
+                    </RoleRoute>
+                } />
+                <Route path="/collection/:id" element={
+                    <RoleRoute roles={['user']}>
+                        <CollectionDetailPage />
                     </RoleRoute>
                 } />
                 <Route path="*" element={<h1>Not Found</h1>} />

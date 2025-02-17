@@ -1,58 +1,101 @@
 from flask import Request, Response, jsonify, make_response
 from services import collectionService
-
-def create_collection(request: Request) -> Response:
-    data = request.get_json()
+import logging
+def get_collections(request: Request) -> Response:
+    user_id = request.userID
     try:
-        user_id = data['user_id']
-        name = data['name']
-        collection = collectionService.create_collection(user_id, name)
-        return make_response(jsonify({
-            'message': 'Collection created successfully',
-            'collection': collection
-        }), 200)
-    
-    except ValueError as e:
-        return make_response(jsonify({'error': str(e)}), 400)
-
-def get_collections(user_id):
-    try:
-        collections = collectionService.get_collections(user_id)
+        list_collections = collectionService.get_collections(user_id)
         return make_response(jsonify({
             'message': 'Collection retrieved successfully',
-            'collection': collections
+            'collections': list_collections
         }), 200)
     except ValueError as e:
         return make_response(jsonify({'error': str(e)}), 400)
-
-def add_to_collection(request: Request, collection_id) -> Response:
+    
+def create_collection(request: Request) -> Response:
+    user_id = request.userID
     data = request.get_json()
+
+    if 'name' not in data:
+        return make_response(jsonify({'error': 'Missing name fields'}), 400)
+    name = data['name']
+
     try:
-        news_id = data['news_id']
-        collection = collectionService.add_to_collection(collection_id, news_id)
+        list_collections = collectionService.create_collection(user_id, name)
         return make_response(jsonify({
-            'message': 'Added to collection successfully',
-            'collection': collection
+            'message': 'Collection created successfully',
+            'collections': list_collections
+        }), 201)
+    except ValueError as e:
+        return make_response(jsonify({'error': str(e)}), 400)
+    
+def update_collection(request: Request) -> Response:
+    user_id = request.userID
+    data = request.get_json()
+
+    if 'collection_id' not in data or 'name' not in data:
+        return make_response(jsonify({'error': 'Missing collection_id or name fields'}), 400)
+    collection_id = data['collection_id']
+    name = data['name']
+
+    try:
+        list_collections = collectionService.update_collection(user_id, collection_id, name)
+        return make_response(jsonify({
+            'message': 'Collection updated successfully',
+            'collections': list_collections
         }), 200)
     except ValueError as e:
         return make_response(jsonify({'error': str(e)}), 400)
 
-def remove_from_collection(collection_id, news_id):
+def delete_collection(request: Request) -> Response:
+    user_id = request.userID
+    data = request.get_json()
+
+    if 'collection_id' not in data:
+        return make_response(jsonify({'error': 'Missing collection_id fields'}), 400)
+    collection_id = data['collection_id']
+
     try:
-        message = collectionService.remove_from_collection(collection_id, news_id)
+        list_collections =  collectionService.delete_collection(user_id, collection_id)
         return make_response(jsonify({
-            'message': 'Removed from collection successfully',
-            'collection': message
+            'collections': list_collections,
+            'message': 'Collection deleted successfully'
         }), 200)
     except ValueError as e:
         return make_response(jsonify({'error': str(e)}), 400)
+    
+def add_favorite(request: Request) -> Response:
+    user_id = request.userID
+    data = request.get_json()
 
-def delete_collection(collection_id):
+    if 'list_collection_id' not in data or 'news_id' not in data:
+        return make_response(jsonify({'error': 'Missing list_collection_id or news_id fields'}), 400)
+    list_collection_id = data['list_collection_id']
+    news_id = data['news_id']
+
     try:
-        message = collectionService.delete_collection(collection_id)
+        list_collections = collectionService.add_favorite(user_id, list_collection_id, news_id)
         return make_response(jsonify({
-            'message': 'Collection deleted successfully',
-            'collection': message
+            'message': 'News added to collection successfully',
+            'collections': list_collections
+        }), 201)
+    except ValueError as e:
+        return make_response(jsonify({'error': str(e)}), 400)
+    
+def remove_favorite(request: Request) -> Response:
+    user_id = request.userID
+    data = request.get_json()
+
+    if 'list_collection_id' not in data or 'news_id' not in data:
+        return make_response(jsonify({'error': 'Missing list_collection_id or news_id fields'}), 400)
+    list_collection_id = data['list_collection_id']
+    news_id = data['news_id']
+
+    try:
+        list_collections = collectionService.remove_favorite(user_id, list_collection_id, news_id)
+        return make_response(jsonify({
+            'message': 'News removed from collection successfully',
+            'collections': list_collections
         }), 200)
     except ValueError as e:
         return make_response(jsonify({'error': str(e)}), 400)

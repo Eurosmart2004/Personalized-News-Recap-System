@@ -1,4 +1,5 @@
 from flask import Flask, request, make_response, jsonify
+from middleware.auth import authentication
 from .config import ROUTE
 import logging
 
@@ -8,23 +9,32 @@ def init(app: Flask):
     logging.info("Initializing collectionRoute...")
     from controllers import collectionController
 
+    @app.route(route, methods=['GET'])
+    @authentication
+    def get_collections():
+        return collectionController.get_collections(request)
+    
     @app.route(route, methods=['POST'])
+    @authentication
     def create_collection():
         return collectionController.create_collection(request)
+    
+    @app.route(route, methods=['PUT'])
+    @authentication
+    def update_collection():
+        return collectionController.update_collection(request)
 
-    @app.route(route + '/<int:user_id>', methods=['GET'])
-    def get_collections(user_id):
-        return collectionController.get_collections(user_id)
+    @app.route(route, methods=['DELETE'])
+    @authentication
+    def delete_collection():
+        return collectionController.delete_collection(request)
+    
+    @app.route(route + '/favorite', methods=['POST'])
+    @authentication
+    def add_favorite():
+        return collectionController.add_favorite(request)
 
-    @app.route(route + '/<int:collection_id>/add', methods=['POST'])
-    def add_to_collection(collection_id):
-        return collectionController.add_to_collection(request, collection_id)
-
-    @app.route(route + '/<int:collection_id>/remove/<int:news_id>', methods=['DELETE'])
-    def remove_from_collection(collection_id, news_id):
-        return collectionController.remove_from_collection(collection_id, news_id)
-
-    @app.route(route + '/<int:collection_id>', methods=['DELETE'])
-    def delete_collection(collection_id):
-        return collectionController.delete_collection(collection_id)
-    logging.info("collectionRoute successfully initialized.")
+    @app.route(route + '/favorite', methods=['DELETE'])
+    @authentication
+    def remove_favorite():
+        return collectionController.remove_favorite(request)

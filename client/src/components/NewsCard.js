@@ -1,34 +1,14 @@
 import NewsModal from './NewsModal';
 import { useState, useEffect } from 'react';
 import CollectionButton from './CollectionButton';
-import { useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 import { setAuth } from '../redux/reducer/authReducer';
 import { useAxios } from '../axios/axios';
 
-const NewsCard = ({ news }) => {
+const NewsCard = ({ news, isSaved }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [collections, setCollections] = useState([]);
     const auth = useSelector((state) => state.auth);
     const { privateAxios } = useAxios();
-
-    // Fetch initial favorite status
-    useEffect(() => {
-        const fetchCollections = async () => {
-            try {
-                const response = await privateAxios.get(`/collection/${auth.user.id}`);
-                if (response.status === 200) {
-                    const collections = response.data;
-                    setCollections(collections);
-                }
-            } catch (error) {
-                console.error('Error fetching collections:', error.message || error);
-            }
-        };
-    
-        if (auth.user?.id) {
-          fetchCollections();
-        }
-      }, [auth.user?.id, privateAxios]);
 
     // Toggle modal visibility
     const openModal = () => {
@@ -61,10 +41,10 @@ const NewsCard = ({ news }) => {
                     <div className="mt-auto flex items-center justify-between">
                         <small className="text-gray-500 dark:text-gray-400">{news.date}</small>
                         <div onClick={handleFavoriteClick}>
-                            <CollectionButton 
-                                userId={auth.user.id} 
-                                newsId={news.id} 
-                                collections={collections}
+                            <CollectionButton
+                                userId={auth.user.id}
+                                newsId={news.id}
+                                isSaved={isSaved}
                             />
                         </div>
                     </div>

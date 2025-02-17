@@ -1,13 +1,17 @@
 import NewsCard, { NewsCardSkeleton } from "../components/NewsCard";
 import { useEffect, useRef, useState } from "react";
 import { useAxios } from "../axios/axios";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { ToastContainer } from "react-toastify";
+import { setCollection } from '../redux/reducer/collectionReducer';
 import 'react-toastify/dist/ReactToastify.css';
 
 const NewsPage = () => {
     const { privateAxios } = useAxios();
+    const dispatch = useDispatch();
     const auth = useSelector((state) => state.auth);
+    const collection = useSelector((state) => state.collection.collections);
+    const [listNewsFavorites, setListNewsFavorite] = useState([]);
 
     const [news, setNews] = useState([]); // News list
     const [loading, setLoading] = useState(false); // Main loading state
@@ -69,10 +73,40 @@ const NewsPage = () => {
         }
     };
 
+    // Function to fetch collections
+    const getCollections = async () => {
+        if (collection !== null) return;
+        try {
+            const response = await privateAxios.get("/collection");
+            dispatch(setCollection(response.data));
+            var tempListFavoriteNews = new Set();
+            response.data.collections.forEach(c => {
+                c.news.forEach(n => {
+                    tempListFavoriteNews.add(n.id);
+                });
+            });
+            setListNewsFavorite([...Array.from(tempListFavoriteNews)]);
+        } catch (err) {
+            console.error("Error fetching collections:", err);
+        }
+    };
     // Initial news fetch on component mount
     useEffect(() => {
         getNews();
+        getCollections();
     }, []);
+
+    useEffect(() => {
+        if (collection === null) return;
+        var tempListFavoriteNews = new Set();
+        collection.forEach(c => {
+            c.news.forEach(n => {
+                tempListFavoriteNews.add(n.id);
+            });
+        });
+        setListNewsFavorite([...Array.from(tempListFavoriteNews)]);
+
+    }, [collection]);
 
     // Infinite scroll for loading older news
     useEffect(() => {
@@ -96,7 +130,10 @@ const NewsPage = () => {
                     {/* Render News Items */}
                     {news.map((item) => (
                         <div className="w-full sm:w-full md:w-1/2 lg:w-1/3 px-4 mb-6" key={item.id}>
-                            <NewsCard news={item} />
+                            <NewsCard
+                                news={item}
+                                isSaved={listNewsFavorites.includes(item.id)}
+                            />
                         </div>
                     ))}
 
