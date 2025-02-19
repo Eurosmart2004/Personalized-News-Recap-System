@@ -86,9 +86,9 @@ class ProdConfig(Config):
         )
     )
     broker_url = (
-        "amqps://{}:{}@{}:5672".format(
+        "amqps://{}:{}@{}/{}".format(
             os.getenv("RABBITMQ_DEFAULT_USER"), os.getenv("RABBITMQ_DEFAULT_PASS"),
-            os.getenv("RABBITMQ_HOST")
+            os.getenv("RABBITMQ_HOST"), os.getenv("RABBITMQ_DEFAULT_USER")
         )
     )
     MONGO_URI = (
