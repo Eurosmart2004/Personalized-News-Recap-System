@@ -78,4 +78,24 @@ class DevConfig(Config):
     )
 
 class ProdConfig(Config):
-    pass
+    SQLALCHEMY_DATABASE_URI = (
+        "mysql://{}:{}@{}:{}/{}".format(
+            os.getenv("MYSQL_USER"), os.getenv("MYSQL_ROOT_PASSWORD"),
+            os.getenv("MYSQL_HOST"), os.getenv("MYSQL_PORT"),
+            os.getenv("MYSQL_DATABASE")
+        )
+    )
+    broker_url = (
+        "amqps://{}:{}@{}:5672".format(
+            os.getenv("RABBITMQ_DEFAULT_USER"), os.getenv("RABBITMQ_DEFAULT_PASS"),
+            os.getenv("RABBITMQ_HOST")
+        )
+    )
+    MONGO_URI = (
+        "mongodb+srv://{}:{}@{}/{}?retryWrites=true&w=majority&appName=Cluster0".format(
+            os.getenv("MONGO_INITDB_ROOT_USERNAME"), os.getenv("MONGO_INITDB_ROOT_PASSWORD"),
+            os.getenv("MONGO_HOST"),
+            os.getenv("MONGO_DATABASE")
+        )
+    )
+    

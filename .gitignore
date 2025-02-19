@@ -19,3 +19,6 @@ airflow-pipeline/logs/
 **/celerybeat-schedule
 
 **/test.*
+
+.env.prod
+.env.test
