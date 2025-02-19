@@ -126,7 +126,7 @@ export default function CollectionButtonForm({ isOpen, onClose, newsId }) {
             });
             console.log(response);
             setLists(response.data.collections);
-            setCollection(response.data);
+            dispatch(setCollection(response.data));
 
             setIsCreateModalOpen(false);
             setNewCollectionName("");

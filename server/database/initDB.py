@@ -11,13 +11,19 @@ def init_db(app: Flask):
     with app.app_context():
         db.create_all()
 
-        # Initialize default preference
-        try:
-            economic_preference = Preference.query.filter_by(name='economic').one()
-        except NoResultFound:
-            economic_preference = Preference(name='economic')
-            db.session.add(economic_preference)
-            db.session.commit()
+
+        # Initialize default preferences
+        preferences = ['economic', 'health', 'sport', 'politic']
+
+        for pref_name in preferences:
+            try:
+                preference = Preference.query.filter_by(name=pref_name).one()
+            except NoResultFound:
+                preference = Preference(name=pref_name)
+                db.session.add(preference)
+
+        # Commit all changes at once
+        db.session.commit()
 
         # Initialize default schedule
         try:
