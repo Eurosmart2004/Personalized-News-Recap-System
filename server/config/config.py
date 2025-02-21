@@ -39,7 +39,7 @@ class Config:
         # 'synthesize-news-test':{
         #     'task': 'synthesize_news',
         #     'schedule': crontab(minute='*/1'),
-        #     'args': ('month',)
+        #     'args': ('day',)
         # },
         # 'synthesize-news-day':{
         #     'task': 'synthesize_news',

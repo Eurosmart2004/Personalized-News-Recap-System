@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { LuSettings, LuLogOut, LuNewspaper, LuLogIn } from "react-icons/lu";
+import { GrAggregate } from "react-icons/gr";
 import { FaRegBookmark } from 'react-icons/fa';
 import { VscColorMode } from "react-icons/vsc";
 import { FiMenu } from "react-icons/fi";
@@ -73,6 +74,7 @@ function Header({ expanded, setExpanded }) {
 
                 <SidebarItem icon={<LuNewspaper size={20} />} text="News" active={location.pathname === "/"} onClick={() => navigate("/")} />
                 <SidebarItem icon={<FaRegBookmark size={20} />} text="Saved" active={location.pathname === "/collection"} onClick={() => navigate("/collection")} />
+                <SidebarItem icon={<GrAggregate size={20} />} text="Aggregate" active={location.pathname === "/aggregate"} onClick={() => navigate("/aggregate")} />
                 <hr className="my-3" />
                 <SidebarItem icon={<LuSettings size={20} />} text="Settings" />
                 <SidebarDropdown icon={<VscColorMode size={20} />} text="Theme">

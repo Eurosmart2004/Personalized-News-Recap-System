@@ -15,7 +15,7 @@ else:
 DURATION = {
     "day": timedelta(days=1),
     "week": timedelta(days=7),
-    "month": timedelta(days=30),
+    "month": timedelta(days=60),
 }
 
 def cluster(now: datetime, duration: str):
@@ -45,14 +45,17 @@ def cluster(now: datetime, duration: str):
     # Extract embeddings and news IDs
     embeddings = [news['embedding'] for news in news_list]
     news_ids = [news['_id'] for news in news_list]
+    news_ori_ids = [news['news_id'] for news in news_list]
 
     logging.info("Start clustering")
+    logging.info(f"Number of news: {len(news_list)}")
     # Perform DBSCAN clustering
     response = requests.post(f'{server_slave}/api/cluster', json={'embeddings': embeddings})
     
     labels = response.json()['labels']
 
     logging.info("Cluster done")
+
   
     # Create new clusters, excluding cluster -1
     new_clusters = {}

@@ -14,6 +14,7 @@ class News(db.Model):
     image = db.Column(db.Text)
     date = db.Column(db.DateTime, default=datetime.now(timezone.utc))
     favorite_collection = relationship('FavoriteCollection', backref='news')
+    news_cluster = relationship('NewsCluster', backref='news')
 
     def __repr__(self):
         return f'<Topic: {self.topic} | Title: {self.title}>'

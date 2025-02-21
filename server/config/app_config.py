@@ -1,5 +1,5 @@
 from flask import Flask
-from routes import userRoute, tokenRoute, newsRoute, preferenceRoute, collectionRoute
+from routes import userRoute, tokenRoute, newsRoute, preferenceRoute, collectionRoute, clusterRoute
 from database.database import db
 from flask_socketio import SocketIO
 from sio import sio
@@ -44,4 +44,5 @@ def create_app():
     newsRoute.init(app)
     preferenceRoute.init(app)
     collectionRoute.init(app)
+    clusterRoute.init(app)
     return app, celery

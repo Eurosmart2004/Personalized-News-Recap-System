@@ -8,6 +8,7 @@ import { GrAdd } from "react-icons/gr";
 import { CiBookmark } from "react-icons/ci";
 import { IoMdClose } from "react-icons/io";
 import { motion } from "framer-motion";
+import Loading from "../components/Loading";
 import { toast, ToastContainer } from 'react-toastify';
 
 const CollectionPage = () => {
@@ -19,6 +20,8 @@ const CollectionPage = () => {
   const [selectedList, setSelectedList] = useState(null);
   const [selectedListToDelete, setSelectedListToDelete] = useState(null);
   const [newCollectionName, setNewCollectionName] = useState('');
+  const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
   const menuRef = useRef(null);
   const modalRef = useRef(null);
@@ -53,13 +56,18 @@ const CollectionPage = () => {
 
   const getCollections = async () => {
     if (collection !== null) return;
+    setLoading(true);
     try {
       const response = await privateAxios.get("/collection");
       dispatch(setCollection(response.data));
     } catch (err) {
       console.error("Error fetching collections:", err);
     }
+    finally {
+      setLoading(false);
+    }
   };
+
 
   useEffect(() => {
     getCollections();
@@ -166,6 +174,8 @@ const CollectionPage = () => {
           <span className="">Create new</span>
         </button>
       </div>
+
+      {loading && <Loading />}
 
       <div className="space-y-3">
         {collection &&
