@@ -8,3 +8,4 @@ from .Token import Token
 from .NewsCluster import NewsCluster
 from .Collection import Collection
 from .FavoriteCollection import FavoriteCollection
+from .Cluster import Cluster

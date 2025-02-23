@@ -11,6 +11,8 @@ import RegisterPage from '../pages/RegisterPage';
 import PreferencePage from '../pages/PreferencePage';
 import CollectionPage from '../pages/CollectionPage';
 import CollectionDetailPage from '../pages/CollectionDetailPage';
+import AggregatePage from '../pages/AggregatePage';
+import AggregatePageDetail from '../pages/AggregatePageDetail';
 import App from '../App';
 import RoleRoute from './RoleRoute';
 import UnLoginRoute from './UnLoginRoute';
@@ -78,6 +80,16 @@ const Router = () => {
                 <Route path="/collection/:id" element={
                     <RoleRoute roles={['user']}>
                         <CollectionDetailPage />
+                    </RoleRoute>
+                } />
+                <Route path="/aggregate" element={
+                    <RoleRoute roles={['user']}>
+                        <AggregatePage />
+                    </RoleRoute>
+                } />
+                <Route path="/aggregate/:duration/:id" element={
+                    <RoleRoute roles={['user']}>
+                        <AggregatePageDetail />
                     </RoleRoute>
                 } />
                 <Route path="*" element={<h1>Not Found</h1>} />

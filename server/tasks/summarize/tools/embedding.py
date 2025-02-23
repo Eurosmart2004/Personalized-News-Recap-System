@@ -33,7 +33,8 @@ def embedding(news_list_add: list[News], news_list_update: list[News]):
             'title': titles_add[i],
             'date': dates_add[i],
             'summary': summaries_add[i],
-            'embedding': embedding
+            'embedding': embedding,
+            'content': contents_add[i]
         }
         news_list_embedded_add.append(n)
 
@@ -51,7 +52,11 @@ def embedding(news_list_add: list[News], news_list_update: list[News]):
             embedding = response.json()['embedding']
             collection_embeddings.update_one(
                 {'news_id': news_ids_update[i]},
-                {'$set': {'embedding': embedding}}
+                {'$set': {
+                    'embedding': embedding,
+                    'content': content
+                    }
+                }
             )
             logging.info(f"Updated embedding for news {news_ids_update[i]}")
         except Exception as e:

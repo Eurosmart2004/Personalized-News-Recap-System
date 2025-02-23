@@ -6,9 +6,7 @@ import { setAuth } from '../redux/reducer/authReducer';
 export const useAxios = () => {
     const auth = useSelector((state) => state.auth);
     const dispatch = useDispatch();
-    // const baseURL = `${process.env.REACT_APP_SERVER_URL}/api` || 'http://localhost:5000/api';
-    const baseURL = 'http://localhost:5000/api';
-    // const baseURL = "https://gfsxjgt2-5000.euw.devtunnels.ms/api"
+    const baseURL = `${process.env.REACT_APP_SERVER_URL}/api` || 'http://localhost:5000/api';
 
     const publicAxios = axios.create({
         baseURL: baseURL,

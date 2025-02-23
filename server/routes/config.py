@@ -4,5 +4,6 @@ ROUTE = {
     'news': '/api/news',
     'preference': '/api/preference',
     'favorite': '/api/favorite',
-    'collection': '/api/collection'
+    'collection': '/api/collection',
+    'cluster': '/api/cluster'
 }

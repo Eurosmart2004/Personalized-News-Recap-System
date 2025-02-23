@@ -7,7 +7,7 @@ def cluster():
     from sklearn.cluster import DBSCAN
     import numpy as np
     try:
-        dbscan = DBSCAN(eps=0.3, min_samples=2, metric='cosine', n_jobs=-1)
+        dbscan = DBSCAN(eps=0.4, min_samples=2, metric='cosine', n_jobs=-1)
         embeddings_array = np.array(embeddings)
         labels = dbscan.fit_predict(embeddings_array)
         labels = labels.tolist()

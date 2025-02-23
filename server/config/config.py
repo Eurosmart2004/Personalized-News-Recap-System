@@ -39,7 +39,7 @@ class Config:
         # 'synthesize-news-test':{
         #     'task': 'synthesize_news',
         #     'schedule': crontab(minute='*/1'),
-        #     'args': ('month',)
+        #     'args': ('day',)
         # },
         # 'synthesize-news-day':{
         #     'task': 'synthesize_news',
@@ -78,4 +78,24 @@ class DevConfig(Config):
     )
 
 class ProdConfig(Config):
-    pass
+    SQLALCHEMY_DATABASE_URI = (
+        "mysql://{}:{}@{}:{}/{}".format(
+            os.getenv("MYSQL_USER"), os.getenv("MYSQL_ROOT_PASSWORD"),
+            os.getenv("MYSQL_HOST"), os.getenv("MYSQL_PORT"),
+            os.getenv("MYSQL_DATABASE")
+        )
+    )
+    broker_url = (
+        "amqps://{}:{}@{}/{}".format(
+            os.getenv("RABBITMQ_DEFAULT_USER"), os.getenv("RABBITMQ_DEFAULT_PASS"),
+            os.getenv("RABBITMQ_HOST"), os.getenv("RABBITMQ_DEFAULT_USER")
+        )
+    )
+    MONGO_URI = (
+        "mongodb+srv://{}:{}@{}/{}?retryWrites=true&w=majority&appName=Cluster0".format(
+            os.getenv("MONGO_INITDB_ROOT_USERNAME"), os.getenv("MONGO_INITDB_ROOT_PASSWORD"),
+            os.getenv("MONGO_HOST"),
+            os.getenv("MONGO_DATABASE")
+        )
+    )
+    
