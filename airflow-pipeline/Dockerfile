@@ -8,9 +8,7 @@ WORKDIR /opt/airflow
 COPY requirements.txt .
 COPY entrypoint.sh /entrypoint.sh
 COPY dags/ dags/
-COPY plugins/ plugins/
 COPY config/ config/
-COPY logs/ logs/
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
@@ -19,7 +17,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 ENV AIRFLOW_HOME=/opt/airflow
 ENV AIRFLOW__CORE__LOAD_EXAMPLES=False
 ENV AIRFLOW__CORE__DAGS_FOLDER=/opt/airflow/dags
-ENV AIRFLOW__CORE__PLUGINS_FOLDER=/opt/airflow/plugins
 
 # Make sure the entrypoint script is executable
 RUN chmod +x /entrypoint.sh
