@@ -18,8 +18,6 @@ ENV AIRFLOW_HOME=/opt/airflow
 ENV AIRFLOW__CORE__LOAD_EXAMPLES=False
 ENV AIRFLOW__CORE__DAGS_FOLDER=/opt/airflow/dags
 
-# Make sure the entrypoint script is executable
-RUN chmod +x /entrypoint.sh
 
 # Expose Airflow's webserver port
 EXPOSE 8080
