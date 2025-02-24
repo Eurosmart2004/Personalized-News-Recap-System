@@ -24,14 +24,14 @@ def get_user_news(user_id: str, before_time: str, after_time: str, limit: int) -
         if before_time:
             before_time = before_time.replace("GMT ", "GMT+")
             before_datetime = datetime.strptime(before_time, date_format)
-            # before_datetime = before_datetime.astimezone(timezone.utc)
+            before_datetime = before_datetime.astimezone(timezone.utc)
         else:
             before_datetime = datetime.now(timezone.utc)
 
         if after_time:
             after_time = after_time.replace("GMT ", "GMT+")
             after_datetime = datetime.strptime(after_time, date_format)
-            # after_datetime = after_datetime.astimezone(timezone.utc)
+            after_datetime = after_datetime.astimezone(timezone.utc)
         else:
             after_datetime = datetime.now(timezone.utc)
 
