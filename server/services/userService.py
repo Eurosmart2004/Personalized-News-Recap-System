@@ -34,7 +34,7 @@ def get_user(userID: str) -> User:
 
 def update_user(userID: str, name: Union[str, None], picture: Union[FileStorage, None], password: Union[str, None]) -> User:
     from config.cloudinary_config import upload_image, generate_unique_filename
-    from config.config import Config
+    from config.app_config import Config
     user: Union[User, any] = User.query.get(userID)
     if not user:
         raise ValueError('User does not exist')

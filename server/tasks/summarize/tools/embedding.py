@@ -4,6 +4,7 @@ import logging
 
 def embedding(news_list_add: list[News], news_list_update: list[News]):
     from app import mongo
+    from config.app_config import Config
     collection_embeddings = mongo.db.news_embeddings
 
     # Process news_list_add
@@ -17,7 +18,10 @@ def embedding(news_list_add: list[News], news_list_update: list[News]):
     embeddings_add = []
     for i, content in enumerate(contents_add):
         try:
-            response = requests.post('http://server-slave:7000/api/embedding', json={'text': content})
+            response = requests.post(
+                headers={'Authorization': f'Bearer {Config.SERVER_SALVE_BEARER}'},
+                url=f'{Config.SERVER_SLAVE}/api/embedding', 
+                json={'text': content})
             embedding = response.json()['embedding']
             embeddings_add.append(embedding)
             logging.info(f"Embedded news {titles_add[i]}")

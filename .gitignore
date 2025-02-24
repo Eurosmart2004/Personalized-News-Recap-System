@@ -20,5 +20,8 @@ airflow-pipeline/logs/
 
 **/test.*
 
+.env.dev
 .env.prod
 .env.test
+
+server-slave/*

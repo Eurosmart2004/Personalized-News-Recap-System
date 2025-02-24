@@ -15,7 +15,7 @@ class ThanhNienCrawler(Crawler):
         for topic in self.topics:
             response = requests.get(self.topics[topic], verify=False)
             soup = BeautifulSoup(response.content, 'xml')
-            time = datetime.now(pytz.timezone('Asia/Ho_Chi_Minh')) - timedelta(hours=12)
+            time = datetime.now(pytz.timezone('Asia/Ho_Chi_Minh')) - timedelta(hours=24)
             for item in soup.find_all('item'):
                 link = item.find('link').text
                 pub_date_text = item.find('pubDate').text

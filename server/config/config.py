@@ -61,6 +61,8 @@ class Config:
     CLOUDINARY_API_KEY = os.getenv("CLOUDINARY_API_KEY")
     CLOUDINARY_API_SECRET = os.getenv("CLOUDINARY_API_SECRET")
     CLOUDINARY_NAME = os.getenv("CLOUDINARY_NAME")
+    SERVER_SLAVE = os.getenv("SERVER_SLAVE")
+    SERVER_SALVE_BEARER = os.getenv("SERVER_SALVE_BEARER")
 
 
 class DevConfig(Config):

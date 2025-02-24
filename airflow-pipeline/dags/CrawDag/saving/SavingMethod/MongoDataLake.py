@@ -3,23 +3,25 @@ from CrawDag.models import News
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 import os
+from pymongo.server_api import ServerApi
 from dotenv import load_dotenv
-load_dotenv()
-
+import logging
 class MongoDataLake(DataLake):
     def __init__(self) -> None:
         self.database = self.__connect()
         pass
 
-    def __connect(self):
+    def __connect(self):      
+        uri = f"mongodb+srv://admin:admin@cluster0.5vezm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
         uri = (
-        "mongodb://{}:{}@{}:{}?authSource=admin".format(
+        "mongodb+srv://{}:{}@{}/?retryWrites=true&w=majority&appName=Cluster0".format(
             os.getenv("MONGO_INITDB_ROOT_USERNAME"), os.getenv("MONGO_INITDB_ROOT_PASSWORD"),
-            os.getenv("MONGO_HOST"), os.getenv("MONGO_PORT"),
+            os.getenv("MONGO_HOST"),
+            )
         )
-    )
-        client = MongoClient(uri)
-        database = client.get_database(os.getenv('MONGO_DATABASE'))
+    
+        client = MongoClient(uri, server_api=ServerApi('1'))
+        database = client.get_database(os.getenv("MONGO_DATABASE"))
         return database
 
     def save(self, listNews: list[News]) -> list[str]:
