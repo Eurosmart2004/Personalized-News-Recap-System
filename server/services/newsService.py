@@ -18,32 +18,24 @@ def get_user_news(user_id: str, before_time: str, after_time: str, limit: int) -
         if user is None:
             raise ValueError('User not found')
         
-        date_format = '%H:%M %d/%m/%Y (GMT%z)'
+        date_format = '%H:%M:%S %d/%m/%Y (GMT%z)'
 
-
-        # Define the format for parsing the date strings
-        date_format = '%H:%M %d/%m/%Y (GMT%z)'
-
-        logging.info(f'before_time: {before_time}')
-        logging.info(f'after_time: {after_time}')
 
         if before_time:
             before_time = before_time.replace("GMT ", "GMT+")
             before_datetime = datetime.strptime(before_time, date_format)
-            before_datetime = before_datetime.astimezone(timezone.utc)
+            # before_datetime = before_datetime.astimezone(timezone.utc)
         else:
             before_datetime = datetime.now(timezone.utc)
 
         if after_time:
             after_time = after_time.replace("GMT ", "GMT+")
             after_datetime = datetime.strptime(after_time, date_format)
-            after_datetime = after_datetime.astimezone(timezone.utc)
+            # after_datetime = after_datetime.astimezone(timezone.utc)
         else:
             after_datetime = datetime.now(timezone.utc)
 
 
-        logging.info(f'before_datetime: {before_datetime}')
-        logging.info(f'after_datetime: {after_datetime}')
 
         # Main query: Join relevant News records to UserPreference based on user_id and limit results
         news_before_query = (
@@ -75,7 +67,6 @@ def get_user_news(user_id: str, before_time: str, after_time: str, limit: int) -
         combined_news = news_after + news_before
         combined_news = combined_news[:limit]
 
-        logging.info(f'news_before: {news_before}')
 
         # Convert results to JSON format
         return [news.to_json() for news in combined_news]

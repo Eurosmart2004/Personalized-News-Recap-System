@@ -42,13 +42,21 @@ const NewsPage = () => {
         isFecting.current = true;
         setLoading(true);
         try {
-            const payload = { limit: 9 };
-            if (beforeTime) payload.before_time = beforeTime; // Add `beforeTime` if available
-            if (afterTime) payload.after_time = afterTime; // Add `afterTime` if available
 
-            const response = await privateAxios.post("/news/get", payload);
+            const params = new URLSearchParams();
+
+            if (beforeTime) {
+                params.append('before_time', beforeTime);
+            }
+
+            if (afterTime) {
+                params.append('after_time', afterTime);
+            }
+
+            params.append('limit', 9);
+
+            const response = await privateAxios.get(`/news/get?${params.toString()}`);
             const fetchedNews = response.data.news;
-            console.log("Payload: ", payload);
             console.log("Fetched News: ", fetchedNews);
 
             // Append older news to the list
@@ -72,6 +80,9 @@ const NewsPage = () => {
             setLoading(false);
         }
     };
+
+    console.log("Before time", beforeTime);
+    console.log("After time", afterTime);
 
     // Function to fetch collections
     const getCollections = async () => {

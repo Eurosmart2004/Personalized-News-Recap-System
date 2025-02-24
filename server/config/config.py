@@ -56,6 +56,11 @@ class Config:
         'send_news': {'queue': 'send_news_queue'},
         'summarize': {'queue': 'summarize_queue'}
     },
+    UPLOAD_FOLDER = "uploads"
+    CLOUDINARY_URL = os.getenv("CLOUDINARY_URL")
+    CLOUDINARY_API_KEY = os.getenv("CLOUDINARY_API_KEY")
+    CLOUDINARY_API_SECRET = os.getenv("CLOUDINARY_API_SECRET")
+    CLOUDINARY_NAME = os.getenv("CLOUDINARY_NAME")
 
 
 class DevConfig(Config):

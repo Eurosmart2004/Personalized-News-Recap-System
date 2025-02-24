@@ -13,15 +13,11 @@ def get_user(request: Request) -> Response:
         return make_response(jsonify({'error': str(e)}), 400)
     
 def update_user(request: Request) -> Response:
-    data = request.get_json()
-    keys = ['name', 'picture']
-    for key in keys:
-        if key not in data:
-            return make_response(jsonify({'error': f'Missing required field {key}'}), 400)
-    
+    data = request.form.to_dict()
+
     userID = request.userID
-    name = data['name']
-    picture = data['picture']
+    name = data['name'] if 'name' in data else None
+    picture = request.files['picture'] if 'picture' in request.files else None
     password = data['password'] if 'password' in data else None
 
     try:

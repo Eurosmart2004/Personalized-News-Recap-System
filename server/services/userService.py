@@ -8,6 +8,7 @@ from .tokenService import create_access_token, create_refresh_token, create_forg
 from tasks.sendEmail.tools.sendConfirmation import send_email_confirmation
 from tasks.sendEmail.tools.sendForgotPassword import send_email_forgot_password
 from typing import Union
+from werkzeug.datastructures import FileStorage
 from datetime import time
 import secrets
 import bcrypt
@@ -31,12 +32,27 @@ def get_user(userID: str) -> User:
         raise ValueError('User does not exist')
     return user
 
-def update_user(userID: str, name: str, picture: str, password: Union[str, None]) -> User:
+def update_user(userID: str, name: Union[str, None], picture: Union[FileStorage, None], password: Union[str, None]) -> User:
+    from config.cloudinary_config import upload_image, generate_unique_filename
+    from config.config import Config
     user: Union[User, any] = User.query.get(userID)
     if not user:
         raise ValueError('User does not exist')
-    user.name = name
-    user.picture = picture
+    if name:
+        user.name = name
+
+    if picture:
+        unique_filename = generate_unique_filename(picture.filename)
+        temp_path = os.path.join(Config.UPLOAD_FOLDER, unique_filename)
+        picture.save(temp_path)
+        try:
+            result = upload_image(temp_path, userID)
+            user.picture = result['secure_url']
+        except ValueError as e:
+            raise ValueError(str(e))
+        finally:
+            os.remove(temp_path)
+    
     if password:
         validate_password(password)
         salt = os.environ.get('SALT')

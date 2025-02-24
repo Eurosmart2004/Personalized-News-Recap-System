@@ -22,7 +22,7 @@ class News(db.Model):
     def to_json(self):
         formatted_date = (
             self.date.astimezone(pytz.timezone('Asia/Ho_Chi_Minh'))
-            .strftime('%H:%M %d/%m/%Y (GMT%z)') if self.date else None
+            .strftime('%H:%M:%S %d/%m/%Y (GMT%z)') if self.date else None
         )
 
         return {
