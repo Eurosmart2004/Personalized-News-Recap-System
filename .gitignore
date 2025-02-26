@@ -30,3 +30,5 @@ node_modules/
 
 .env.prod
 .env.test
+
+server-slave/*
