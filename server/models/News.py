@@ -7,7 +7,7 @@ class News(db.Model):
     __tablename__ = 'news'
     id = db.Column(db.Integer, primary_key=True)
     topic = db.Column(db.String(120), nullable=False)
-    title = db.Column(db.String(120), nullable=False, unique=True)
+    title = db.Column(db.String(120), nullable=False)
     link = db.Column(db.String(255), nullable=False)
     content = db.Column(db.Text, nullable=False)
     summary = db.Column(db.Text)
