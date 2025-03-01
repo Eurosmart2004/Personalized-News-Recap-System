@@ -49,7 +49,7 @@ const NewsModal = ({ onClose, news }) => {
                         href={news.link}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600"
+                        className="bg-orange-500 text-white py-2 px-4 rounded-md hover:bg-orange-600"
                     >
                         Read Post
                     </a>
