@@ -8,20 +8,27 @@ from models import NewsCluster, Cluster
 from database.database import db
 from dotenv import load_dotenv
 import logging
+import time
 import os
 
 load_dotenv()
-env = os.getenv('FLASK_ENV', 'development')
-ollama_server = None
-if env == 'production':
-    ollama_server = os.getenv('OLLAMA_URL')
-else:
-    ollama_server = "http://localhost:11434"
+# env = os.getenv('FLASK_ENV', 'development')
+# ollama_server = None
+# if env == 'production':
+#     ollama_server = os.getenv('OLLAMA_URL')
+# else:
+#     ollama_server = "http://localhost:11434"
 
 def synthesize_news_worker(duration: str):
     now = datetime.now()
     news_list = cluster(now, duration)
-    logging.info(f"There are {len(news_list)} clusters")
+    valid_clusters_count = 0
+
+    for label in news_list:
+        if len(news_list[label]) >= 3:
+            valid_clusters_count += 1
+
+    logging.info(f"There are {valid_clusters_count} clusters")
 
     synthesize_chain = SynthesizeModel()
     name_title_chain = NameTitleModel()
@@ -30,10 +37,13 @@ def synthesize_news_worker(duration: str):
     for label in news_list:
         news_cluster_list: list[NewsCluster] = []
         
+        if len(news_list[label]) < 3:
+            continue
+
         content, titles = "", ""
         for new in news_list[label]:
-            if 'summary' in new and 'title' in new:
-                content += new['summary'] + "\n\n"
+            if 'content' in new and 'title' in new:
+                content += new['content'] + "\n\n"
                 titles += new['title'] + "\n\n"
             else:
                 logging.warning(f"Missing 'summary' or 'title' in news item: {new}")
@@ -60,5 +70,6 @@ def synthesize_news_worker(duration: str):
         except Exception as e:
             logging.error(f"Failed to synthesize paper for list title {titles}")
             logging.error(str(e))
+            time.sleep(60)
 
     return "Synthesized news successfully"

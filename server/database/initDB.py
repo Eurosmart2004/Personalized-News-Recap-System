@@ -13,7 +13,7 @@ def init_db(app: Flask):
 
 
         # Initialize default preferences
-        preferences = ['economic', 'health', 'sport', 'politic']
+        preferences = ['economic', 'health', 'sport', 'politic', 'technology', 'car', 'news']
 
         for pref_name in preferences:
             try:
