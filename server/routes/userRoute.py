@@ -55,10 +55,12 @@ def init(app: Flask):
             return userController.update_preferences(request)
         
 
-    @app.route(route + '/schedule', methods=['GET','PUT'])
+    @app.route(route + '/schedule', methods=['GET','PUT','DELETE'])
     @authentication
-    def update_schedule():
+    def schedule():
         if request.method == 'GET':
             return userController.get_schedule(request)
         if request.method == 'PUT':
             return userController.update_schedule(request)
+        if request.method == 'DELETE':
+            return userController.delete_schedule(request)

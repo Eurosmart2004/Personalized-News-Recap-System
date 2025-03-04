@@ -210,3 +210,13 @@ def update_schedule(request: Request) -> Response:
         return make_response(jsonify({'schedule': schedules}), 200)
     except ValueError as e:
         return make_response(jsonify({'error': str(e)}), 400)
+    
+def delete_schedule(request: Request) -> Response:
+    
+    userID = request.userID
+
+    try:
+        schedules = userService.delete_schedule(userID)
+        return make_response(jsonify({'schedule': schedules}), 200)
+    except ValueError as e:
+        return make_response(jsonify({'error': str(e)}), 400)
