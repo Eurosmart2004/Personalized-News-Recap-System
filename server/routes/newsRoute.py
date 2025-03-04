@@ -9,7 +9,7 @@ def init(app: Flask):
     def get_test_summarize():
         return 'test news'
 
-    @app.route(route + '/get', methods=['POST'])
+    @app.route(route + '/get', methods=['GET'])
     @authentication
     def get_user_news():
         return newsController.get_user_news(request)

@@ -15,6 +15,7 @@ class User(db.Model):
     user_token = relationship('Token', backref='user')
     user_schedule = relationship('UserSchedule', backref='user')
     user_preference = relationship('UserPreference', backref='user')
+    collection = relationship('Collection', backref='user')
 
     def __repr__(self):
         return f'<User {self.name}>'

@@ -25,6 +25,12 @@
    docker-compose up -d --build
    ```
 
+   or if deploy with prod
+
+   ```
+   docker-compose --env-file .env.prod -f docker-compose.prod.yaml up -d
+   ```
+
 5. **Update database**
 
 - For SQL data import file using MySQL Workbench.

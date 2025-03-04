@@ -15,11 +15,10 @@ def summarize(request: Request) -> Response:
 
 def get_user_news(request: Request) -> Response:
     user_id = request.userID
-    data = request.get_json()
-    before_time = data['before_time'] if 'before_time' in data else None
-    after_time = data['after_time'] if 'after_time' in data else None
-    limit = data['limit'] if 'limit' in data else None
-
+    before_time = request.args.get("before_time")
+    after_time = request.args.get("after_time")
+    limit = request.args.get("limit")
+    
     if limit is None:
         return jsonify({'error': 'Missing required field limit'}), 400
     

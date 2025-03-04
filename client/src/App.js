@@ -91,7 +91,7 @@ const App = () => {
 	return (
 		<>
 			<ThemeProvider theme={theme}>
-				<div className="flex">
+				<div className="flex flex-col min-h-screen">
 					<Header expanded={expanded} setExpanded={setExpanded} />
 					<main className={`transition-all dark:bg-black ml-0 ${expanded ? "sm:ml-[250px]" : "sm:ml-[100px]"} lg:p-20`}>
 						<Outlet />

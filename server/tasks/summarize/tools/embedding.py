@@ -4,6 +4,7 @@ import logging
 
 def embedding(news_list_add: list[News], news_list_update: list[News]):
     from app import mongo
+    from config.app_config import Config
     collection_embeddings = mongo.db.news_embeddings
 
     # Process news_list_add
@@ -17,7 +18,10 @@ def embedding(news_list_add: list[News], news_list_update: list[News]):
     embeddings_add = []
     for i, content in enumerate(contents_add):
         try:
-            response = requests.post('http://server-slave:7000/api/embedding', json={'text': content})
+            response = requests.post(
+                headers={'Authorization': f'Bearer {Config.SERVER_SALVE_BEARER}'},
+                url=f'{Config.SERVER_SLAVE}/api/embedding', 
+                json={'text': content})
             embedding = response.json()['embedding']
             embeddings_add.append(embedding)
             logging.info(f"Embedded news {titles_add[i]}")
@@ -33,7 +37,8 @@ def embedding(news_list_add: list[News], news_list_update: list[News]):
             'title': titles_add[i],
             'date': dates_add[i],
             'summary': summaries_add[i],
-            'embedding': embedding
+            'embedding': embedding,
+            'content': contents_add[i]
         }
         news_list_embedded_add.append(n)
 
@@ -47,11 +52,18 @@ def embedding(news_list_add: list[News], news_list_update: list[News]):
     logging.info("Embedding news for update")
     for i, content in enumerate(contents_update):
         try:
-            response = requests.post('http://server-slave:7000/api/embedding', json={'text': content})
+            response = requests.post(
+                headers={'Authorization': f'Bearer {Config.SERVER_SALVE_BEARER}'},
+                url=f'{Config.SERVER_SLAVE}/api/embedding', 
+                json={'text': content})
             embedding = response.json()['embedding']
             collection_embeddings.update_one(
                 {'news_id': news_ids_update[i]},
-                {'$set': {'embedding': embedding}}
+                {'$set': {
+                    'embedding': embedding,
+                    'content': content
+                    }
+                }
             )
             logging.info(f"Updated embedding for news {news_ids_update[i]}")
         except Exception as e:

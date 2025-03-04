@@ -39,7 +39,7 @@ class CrawlingTask(TaskHandle):
             elif source['source'] == 'thanhnien':
                 crawler:Crawler = ThanhNienCrawler(source['topic'])
             news.extend(crawler.crawl())
-        news = news[:70]
+        news = news[:40]
         dataExchange = DataExchange(context['ti'])
         dataExchange.push(CrawlingTask.key, [new.to_json() for new in news])
     

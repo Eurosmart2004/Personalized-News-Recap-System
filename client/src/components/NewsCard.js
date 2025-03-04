@@ -1,33 +1,14 @@
 import NewsModal from './NewsModal';
 import { useState, useEffect } from 'react';
-import FavoriteButton from './FavoriteButton';
-import { useSelector} from 'react-redux';
+import CollectionButton from './CollectionButton';
+import { useSelector } from 'react-redux';
 import { setAuth } from '../redux/reducer/authReducer';
 import { useAxios } from '../axios/axios';
 
-const NewsCard = ({ news }) => {
+const NewsCard = ({ news, isSaved }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isFavorited, setIsFavorited] = useState(false);
     const auth = useSelector((state) => state.auth);
     const { privateAxios } = useAxios();
-
-    // Fetch initial favorite status
-    useEffect(() => {
-        const checkFavoriteStatus = async () => {
-            try {
-                const response = await privateAxios.get(`/favorite/${auth.user.id}`);
-                const favorites = response.data;
-                const isNewsFavorited = favorites.some(favorite => favorite.news_id === news.id);
-                setIsFavorited(isNewsFavorited);
-            } catch (error) {
-                console.error('Error fetching favorite status:', error);
-            }
-        };
-
-        if (auth.user?.id) {
-            checkFavoriteStatus();
-        }
-    }, [auth.user?.id, news.id, privateAxios]);
 
     // Toggle modal visibility
     const openModal = () => {
@@ -60,10 +41,10 @@ const NewsCard = ({ news }) => {
                     <div className="mt-auto flex items-center justify-between">
                         <small className="text-gray-500 dark:text-gray-400">{news.date}</small>
                         <div onClick={handleFavoriteClick}>
-                            <FavoriteButton 
-                                userId={auth.user.id} 
-                                newsId={news.id} 
-                                isFavorited={isFavorited} 
+                            <CollectionButton
+                                userId={auth.user.id}
+                                newsId={news.id}
+                                isSaved={isSaved}
                             />
                         </div>
                     </div>

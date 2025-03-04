@@ -3,6 +3,10 @@ from CrawDag.saving import SavingTask
 from CrawDag.saving.SavingMethod import MongoDataLake
 import time
 import requests
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 class SendingTask(TaskHandle):
     task_ids = None
@@ -20,9 +24,10 @@ class SendingTask(TaskHandle):
 
         for attempt in range(self.__maxRetry):
             try:
-                # response = requests.post('http://nginx:5000/api/news/summarize', json=listNewsId)
-                # response = requests.post('https://rdf29197-5000.asse.devtunnels.ms/api/news/summarize', json=listNewsId)
-                response = requests.post('http://server:5000/api/news/summarize', json=listNewsId)
+                response = requests.post(
+                    url=os.getenv("SERVER_URL") + '/api/news/summarize',
+                    json=listNewsId
+                )
                 if response.status_code == 202:
                     return
                 else:

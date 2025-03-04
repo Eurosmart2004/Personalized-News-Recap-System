@@ -3,4 +3,4 @@ WORKDIR /server-slave
 COPY . /server-slave
 RUN pip install -r /server-slave/requirements.txt
 EXPOSE 7000
-CMD ["python", "app.py"]
+CMD ["python", "api/app.py"]
