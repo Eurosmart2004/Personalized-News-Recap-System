@@ -28,7 +28,7 @@ class MongoDataLake(DataLake):
         newsCollection = self.database.get_collection('news')
         newsListIds = []
         for new in listNews:
-            existing = newsCollection.find_one({'topic': new.topic, 'title': new.title})
+            existing = newsCollection.find_one({'link': new.link})
             if existing:
                 if new.content != existing['content']:
                     newsCollection.update_one({'_id': existing['_id']}, {'$set': new.to_json()})
@@ -38,6 +38,10 @@ class MongoDataLake(DataLake):
                 newsListIds.append(str(result.inserted_id))
 
         return newsListIds
+    
+    def isExist(self, news: News) -> bool:
+        newsCollection = self.database.get_collection('news')
+        return newsCollection.find_one({'link': news.link}) is not None
     
     def delete(self, listNewsId: list[str]) -> None:
         newsCollection = self.database.get_collection('news')

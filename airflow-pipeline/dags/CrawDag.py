@@ -2,7 +2,6 @@ import requests
 from datetime import datetime
 from airflow import DAG
 from airflow.operators.python import PythonOperator
-from CrawDag.models import News
 from CrawDag.crawling import CrawlingTask
 from CrawDag.scraping import ScrapingTask
 from CrawDag.saving import SavingTask
@@ -14,9 +13,9 @@ with DAG(
     dag_id = 'CrawDag',
     description = 'Crawling news from multiple sources',
     # start_date = datetime(2025,1,1, 0, 0 ,0, 0, tzinfo=pytz.timezone('Asia/Ho_Chi_Minh')),
-    schedule_interval='@monthly',
+    # schedule_interval='@monthly',
     start_date = datetime.now(tz=pytz.timezone('Asia/Ho_Chi_Minh')),
-    # schedule_interval = '*/30 * * * *'
+    schedule_interval = '*/30 * * * *'
 
 ) as dag:
     crawl_task = PythonOperator(

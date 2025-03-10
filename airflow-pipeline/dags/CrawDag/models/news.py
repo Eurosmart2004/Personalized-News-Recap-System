@@ -5,7 +5,7 @@ class News:
                  title: str = '', 
                  content: str = '', 
                  link: str = '', 
-                 date: datetime = None, 
+                 date: datetime = datetime.now(), 
                  image: str = '',
                  html: str = ''):
         self.topic = topic
@@ -17,7 +17,7 @@ class News:
         self.html = html
 
     def __str__(self):
-        return f"Title: {self.title}, Content: {self.content}, URL: {self.url}, Date: {self.date}, Source: {self.source}"
+        return f"Title: {self.title}, Content: {self.content}, link: {self.link}, Date: {self.date}"
 
     def to_json(self):
         return {
