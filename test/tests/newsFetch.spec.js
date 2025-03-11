@@ -23,11 +23,11 @@ test.describe('News Fetching Functionality', () => {
 
     // 1. Navigate to the login page
     await page.goto('http://localhost:3000/login');
-    await page.screenshot({ path: 'tests/images/login-page.png' });
+    await page.screenshot({ path: 'test-results/images/login-page.png' });
     
     // 2. Fill in login credentials
     await page.fill('input[type="email"]', 'sjnk8604@gmail.com');
-    await page.fill('input[type="password"]', '*Sinh08062004'); // Replace with actual test password
+    await page.fill('input[type="password"]', '*Sinh08062004'); 
     
     // 3. Submit the login form
     await page.click('button[type="submit"]');
@@ -38,7 +38,7 @@ test.describe('News Fetching Functionality', () => {
       console.log('No navigation occurred after login, continuing...');
     });
     
-    await page.screenshot({ path: 'tests/images/after-login.png' });
+    await page.screenshot({ path: 'test-results/images/after-login.png' });
     
     // 5. Navigate to the news page
     await page.goto('http://localhost:3000');
@@ -47,7 +47,7 @@ test.describe('News Fetching Functionality', () => {
     await page.waitForLoadState('networkidle');
     
     // Take screenshot at this point
-    await page.screenshot({ path: 'tests/images/news-page.png' });
+    await page.screenshot({ path: 'test-results/images/news-page.png' });
     
     // 7. Check for news content
     const newsElements = await page.locator('.news-card, article, .cursor-pointer:has(img)').count();
@@ -88,6 +88,6 @@ test.describe('News Fetching Functionality', () => {
     expect(foundNewsItems).toBeTruthy();
     
     // Final screenshot
-    await page.screenshot({ path: 'tests/images/final-state.png' });
+    await page.screenshot({ path: 'test-results/images/final-state.png' });
   });
 });
