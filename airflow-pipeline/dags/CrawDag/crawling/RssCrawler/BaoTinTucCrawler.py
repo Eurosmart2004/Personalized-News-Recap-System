@@ -1,15 +1,14 @@
 from CrawDag.crawling.Crawler import Crawler
 from CrawDag.models import News
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from bs4 import BeautifulSoup
 import requests
 import pytz
 import html
 
-class VnexpressCrawler(Crawler):
+class BaoTinTucCrawler(Crawler):
     def __init__(self, topics: dict[str, str]) -> None:
         super().__init__(topics)
-
 
     def crawl(self) -> list[News]:
         news = []
@@ -22,14 +21,17 @@ class VnexpressCrawler(Crawler):
                     link = item.find('link').text
                     link = html.unescape(link).strip()
                     pub_date_text = item.find('pubDate').text
-
                     try:
                         date = datetime.strptime(pub_date_text, '%a, %d %b %Y %H:%M:%S %z')
                     except ValueError:
                         try:
                             date = datetime.strptime(pub_date_text, '%a, %d %b %y %H:%M:%S %z')
                         except ValueError:
-                            date = datetime.strptime(pub_date_text, '%a, %d %b %y %H:%M:%S %Z')
+                            try:
+                                date = datetime.strptime(pub_date_text, '%a, %d %b %y %H:%M:%S %Z')
+                            except ValueError:
+                                date = datetime.strptime(pub_date_text, '%m/%d/%Y %I:%M:%S %p')
+                                date = date.replace(tzinfo=timezone(timedelta(hours=7)))
 
                     title = item.find('title').text.strip()
                     previous_title = ""
@@ -38,7 +40,7 @@ class VnexpressCrawler(Crawler):
                         title = html.unescape(title)
 
                     title = self.clean_quotes(title)
-
+                        
                     description = item.find('description').text
                     description_soup = BeautifulSoup(description, 'html.parser')
                     img_tag = description_soup.find('img')
@@ -49,6 +51,3 @@ class VnexpressCrawler(Crawler):
                     print(e)
                     continue
         return news
-
-
-    

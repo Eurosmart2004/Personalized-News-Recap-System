@@ -6,7 +6,7 @@ import requests
 import pytz
 import html
 
-class VnexpressCrawler(Crawler):
+class DanTriCrawler(Crawler):
     def __init__(self, topics: dict[str, str]) -> None:
         super().__init__(topics)
 
@@ -22,7 +22,6 @@ class VnexpressCrawler(Crawler):
                     link = item.find('link').text
                     link = html.unescape(link).strip()
                     pub_date_text = item.find('pubDate').text
-
                     try:
                         date = datetime.strptime(pub_date_text, '%a, %d %b %Y %H:%M:%S %z')
                     except ValueError:

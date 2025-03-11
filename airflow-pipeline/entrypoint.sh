@@ -19,6 +19,4 @@ fi
 
 # Start Airflow services
 echo "Starting Airflow webserver, scheduler, and workers..."
-exec airflow webserver --port 8080 &  # Start webserver in the background
-exec airflow scheduler &               # Start scheduler in the background
-exec airflow celery worker              # Start Celery worker as the main process
+exec airflow webserver & airflow scheduler & airflow celery worker
