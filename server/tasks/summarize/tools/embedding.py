@@ -52,7 +52,10 @@ def embedding(news_list_add: list[News], news_list_update: list[News]):
     logging.info("Embedding news for update")
     for i, content in enumerate(contents_update):
         try:
-            response = requests.post('http://server-slave:7000/api/embedding', json={'text': content})
+            response = requests.post(
+                headers={'Authorization': f'Bearer {Config.SERVER_SALVE_BEARER}'},
+                url=f'{Config.SERVER_SLAVE}/api/embedding', 
+                json={'text': content})
             embedding = response.json()['embedding']
             collection_embeddings.update_one(
                 {'news_id': news_ids_update[i]},

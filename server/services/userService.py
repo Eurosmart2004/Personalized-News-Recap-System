@@ -335,3 +335,18 @@ def update_schedule(userID: str, schedules: list) -> list[Schedule.to_json]:
         raise e
 
     return schedulesList
+
+def delete_schedule(userID: str) -> list[Schedule.to_json]:
+    user: Union[User, any] = User.query.get(userID)
+    if not user:
+        raise ValueError('User does not exist')
+
+    schedulesList: list[Schedule.to_json] = []
+    try:
+        UserSchedule.query.filter_by(user_id=user.id).delete()
+        db.session.commit()
+    except ValueError as e:
+        db.session.rollback()
+        raise e
+
+    return schedulesList

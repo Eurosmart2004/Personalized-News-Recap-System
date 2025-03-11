@@ -6,7 +6,8 @@ from database.database import db
 from .tools.getNews import get_article_from_ids
 from .tools.language import LANGUAGES
 from .tools.embedding import embedding
-from utils.chain import SummarizeModel
+# from utils.chain import SummarizeModel
+from utils.gemini import SummarizeModel
 from typing import Union
 from dotenv import load_dotenv
 import os
@@ -17,14 +18,15 @@ load_dotenv()
 def ai_summarize_worker(article_ids: list[str]) -> list[News]:
     logging.info("Starting ai_summarize_worker")
     
-    summarize_chain = SummarizeModel(baseURL=f"{os.getenv('OLLAMA_URL')}/api/chat", num_ctx=4096)
+    # summarize_chain = SummarizeModel(baseURL=f"{os.getenv('OLLAMA_URL')}/api/chat", num_ctx=4096)
+    summarize_chain = SummarizeModel()
 
     news_list_update: list[News] = [] 
     news_list_add: list[News] = []
     articles = get_article_from_ids(article_ids)
 
     for article in articles:
-        news: Union[News, any] = News.query.filter_by(topic=article['topic'], title=article['title']).first()
+        news: Union[News, any] = News.query.filter_by(link=article['link']).first()
         if news:
             if news.content.strip() != article['content'].strip():
                 news.content = article['content'].strip()
@@ -61,12 +63,16 @@ def ai_summarize_worker(article_ids: list[str]) -> list[News]:
                 summaries.append(summary)
             else:
                 logging.warning(f"Summary language: {LANGUAGES[detect(summary)]} does not match input language: {input['language']}")
-                summaries.append(input['content'])  # Fallback to original content
+                summary = summarize_chain.invoke(input)
+                summaries.append(summary)
         except Exception as e:
             logging.error(f"Failed to summarize content: {e}")
-            summaries.append(input['content'])  # Fallback to original content
+            time.sleep(60)
+            logging.info("Retrying summarization after 60 seconds")
+            summary = summarize_chain.invoke(input)
+            summaries.append(summary)
 
-        time.sleep(15)
+        # time.sleep(4)
         logging.info(f"Summarized successfully {i+1}/{len(input_list)}")
 
     for i, news in enumerate(news_list_update + news_list_add):
@@ -78,7 +84,7 @@ def ai_summarize_worker(article_ids: list[str]) -> list[News]:
     except Exception as e:
         logging.exception("Failed to commit changes")
         db.session.rollback()
-        return []
+        raise e
 
     for news in news_list_add + news_list_update:
         db.session.refresh(news)

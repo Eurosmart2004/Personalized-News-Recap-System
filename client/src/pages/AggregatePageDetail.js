@@ -95,19 +95,20 @@ const AggregatePageDetail = () => {
             {/* News List with Better Spacing and Styling */}
             <div className="mt-4 space-y-4">
                 {selectedCluster.news.map((news) => (
-                    <div
+                    <a
                         key={news.id}
-                        className="cursor-pointer p-4 border rounded-lg shadow-md bg-white dark:bg-gray-900 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-150"
+                        href={news.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="cursor-pointer block p-4 border rounded-lg shadow-md bg-white dark:bg-gray-900 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-150"
                     >
-                        <a
-                            href={news.link}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                        <p
+
                             className="text-lg font-semibold text-gray-700 dark:text-gray-300"
                         >
                             {news.title}
-                        </a>
-                    </div>
+                        </p>
+                    </a>
                 ))}
             </div>
         </>
