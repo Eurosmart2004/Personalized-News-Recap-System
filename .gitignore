@@ -22,12 +22,12 @@ airflow-pipeline/logs/
 
 # Playwright
 node_modules/
-/test-results/
-/playwright-report/
-/blob-report/
-/playwright/.cache/
+test-results/*
+playwright-report/*
+blob-report/*
+playwright/.cache/
 
-
+.env.dev
 .env.prod
 .env.test
 
