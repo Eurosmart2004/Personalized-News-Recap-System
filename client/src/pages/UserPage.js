@@ -193,7 +193,7 @@ const UserProfilePage = () => {
       // Create a FormData object to handle file upload
       const formData = new FormData();
       formData.append("name", name);
-      formData.append("email", email);
+      // formData.append("email", email);
 
       if (newPassword) {
         formData.append("password", newPassword);
@@ -279,21 +279,19 @@ const UserProfilePage = () => {
         {/* Tabs */}
         <div className="flex border-b">
           <button
-            className={`flex items-center px-6 py-3 focus:outline-none dark:text-white ${
-              activeTab === "profile"
-                ? "border-b-4 border-blue-500 text-blue-500 dark:border-blue-500 dark:text-blue-500"
-                : "text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-slate-400"
-            }`}
+            className={`flex items-center px-6 py-3 focus:outline-none dark:text-white ${activeTab === "profile"
+              ? "border-b-4 border-blue-500 text-blue-500 dark:border-blue-500 dark:text-blue-500"
+              : "text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-slate-400"
+              }`}
             onClick={() => setActiveTab("profile")}
           >
             <FaUser className="mr-2" /> Profile
           </button>
           <button
-            className={`flex items-center px-6 py-3 focus:outline-none dark:text-white ${
-              activeTab === "preferences"
-                ? "border-b-4 border-blue-500 text-blue-500 dark:border-blue-500 dark:text-blue-500"
-                : "text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-slate-400"
-            }`}
+            className={`flex items-center px-6 py-3 focus:outline-none dark:text-white ${activeTab === "preferences"
+              ? "border-b-4 border-blue-500 text-blue-500 dark:border-blue-500 dark:text-blue-500"
+              : "text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-slate-400"
+              }`}
             onClick={() => setActiveTab("preferences")}
           >
             <FaTags className="mr-2" /> Preferences
@@ -316,7 +314,7 @@ const UserProfilePage = () => {
                       alt="User avatar"
                       className="w-full h-full object-cover"
                     />
-                  ) : user.picture ? ( 
+                  ) : user.picture ? (
                     <img
                       src={user.picture}
                       alt="User avatar"
@@ -362,11 +360,10 @@ const UserProfilePage = () => {
                     id="name"
                     value={name}
                     onChange={handleNameChange}
-                    className={`block w-full px-4 py-2 border rounded-md focus:outline-none ${
-                      errors.name
-                        ? "border-red-500"
-                        : "focus:ring focus:ring-blue-500"
-                    }`}
+                    className={`block w-full px-4 py-2 border rounded-md focus:outline-none ${errors.name
+                      ? "border-red-500"
+                      : "focus:ring focus:ring-blue-500"
+                      }`}
                   />
                   {errors.name && (
                     <small className="text-red-500">{errors.name}</small>
@@ -386,11 +383,11 @@ const UserProfilePage = () => {
                     id="email"
                     value={email}
                     onChange={handleEmailChange}
-                    className={`block w-full px-4 py-2 border rounded-md focus:outline-none ${
-                      errors.email
-                        ? "border-red-500"
-                        : "focus:ring focus:ring-blue-500"
-                    }`}
+                    disabled={true}
+                    className={`block w-full px-4 py-2 border rounded-md focus:outline-none ${errors.email
+                      ? "border-red-500"
+                      : "focus:ring focus:ring-blue-500"
+                      }`}
                   />
                   {errors.email && (
                     <small className="text-red-500">{errors.email}</small>
@@ -434,11 +431,10 @@ const UserProfilePage = () => {
                       id="newPassword"
                       value={newPassword}
                       onChange={handleNewPasswordChange}
-                      className={`block w-full px-4 py-2 border rounded-md focus:outline-none ${
-                        errors.newPassword
-                          ? "border-red-500"
-                          : "focus:ring focus:ring-blue-500"
-                      }`}
+                      className={`block w-full px-4 py-2 border rounded-md focus:outline-none ${errors.newPassword
+                        ? "border-red-500"
+                        : "focus:ring focus:ring-blue-500"
+                        }`}
                     />
                     {errors.newPassword && (
                       <small className="text-red-500">
@@ -459,11 +455,10 @@ const UserProfilePage = () => {
                       id="confirmPassword"
                       value={confirmPassword}
                       onChange={handleConfirmPasswordChange}
-                      className={`block w-full px-4 py-2 border rounded-md focus:outline-none ${
-                        errors.confirmPassword
-                          ? "border-red-500"
-                          : "focus:ring focus:ring-blue-500"
-                      }`}
+                      className={`block w-full px-4 py-2 border rounded-md focus:outline-none ${errors.confirmPassword
+                        ? "border-red-500"
+                        : "focus:ring focus:ring-blue-500"
+                        }`}
                     />
                     {errors.confirmPassword && (
                       <small className="text-red-500">
@@ -500,11 +495,10 @@ const UserProfilePage = () => {
               {preferences.map((preference, index) => (
                 <span
                   key={index}
-                  className={`px-4 py-2 rounded-full cursor-pointer text-white ${
-                    selectedPreferences.includes(preference)
-                      ? "bg-blue-500"
-                      : "bg-gray-400"
-                  } hover:scale-105 transition-transform`}
+                  className={`px-4 py-2 rounded-full cursor-pointer text-white ${selectedPreferences.includes(preference)
+                    ? "bg-blue-500"
+                    : "bg-gray-400"
+                    } hover:scale-105 transition-transform`}
                   onClick={() => togglePreference(preference)}
                 >
                   {preference}
