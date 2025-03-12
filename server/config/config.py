@@ -48,7 +48,7 @@ class Config:
         },
         'synthesize-news-week':{
             'task': 'synthesize_news',
-            'schedule': crontab(day_of_week=7, hour=23, minute=0),
+            'schedule': crontab(day_of_week=6, hour=23, minute=0),
             'args': ('week',)
         },
         'synthesize-news-month': {
