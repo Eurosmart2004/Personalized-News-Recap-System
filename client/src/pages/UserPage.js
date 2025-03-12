@@ -267,7 +267,7 @@ const UserProfilePage = () => {
       <ToastContainer />
 
       {/* Page Header */}
-      <div className="bg-blue-100 rounded-lg p-6 shadow-xl mb-6">
+      <div className="bg-orange-100 rounded-lg p-6 shadow-xl mb-6">
         <h1 className="text-2xl font-semibold text-gray-800">Your Profile</h1>
         <p className="text-gray-600 mt-2">
           Manage your account settings and preferences
@@ -280,7 +280,7 @@ const UserProfilePage = () => {
         <div className="flex border-b">
           <button
             className={`flex items-center px-6 py-3 focus:outline-none dark:text-white ${activeTab === "profile"
-              ? "border-b-4 border-blue-500 text-blue-500 dark:border-blue-500 dark:text-blue-500"
+              ? "border-b-4 border-orange-500 text-orange-500 dark:border-orange-500 dark:text-orange-500"
               : "text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-slate-400"
               }`}
             onClick={() => setActiveTab("profile")}
@@ -289,7 +289,7 @@ const UserProfilePage = () => {
           </button>
           <button
             className={`flex items-center px-6 py-3 focus:outline-none dark:text-white ${activeTab === "preferences"
-              ? "border-b-4 border-blue-500 text-blue-500 dark:border-blue-500 dark:text-blue-500"
+              ? "border-b-4 border-orange-500 text-orange-500 dark:border-orange-500 dark:text-orange-500"
               : "text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-slate-400"
               }`}
             onClick={() => setActiveTab("preferences")}
@@ -362,7 +362,7 @@ const UserProfilePage = () => {
                     onChange={handleNameChange}
                     className={`block w-full px-4 py-2 border rounded-md focus:outline-none ${errors.name
                       ? "border-red-500"
-                      : "focus:ring focus:ring-blue-500"
+                      : "focus:ring focus:ring-orange-500"
                       }`}
                   />
                   {errors.name && (
@@ -386,7 +386,7 @@ const UserProfilePage = () => {
                     disabled={true}
                     className={`block w-full px-4 py-2 border rounded-md focus:outline-none ${errors.email
                       ? "border-red-500"
-                      : "focus:ring focus:ring-blue-500"
+                      : "focus:ring focus:ring-orange-500"
                       }`}
                   />
                   {errors.email && (
@@ -415,7 +415,7 @@ const UserProfilePage = () => {
                       id="currentPassword"
                       value={currentPassword}
                       onChange={handleCurrentPasswordChange}
-                      className="block w-full px-4 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-500"
+                      className="block w-full px-4 py-2 border rounded-md focus:outline-none focus:ring focus:ring-orange-500"
                     />
                   </div>
 
@@ -433,7 +433,7 @@ const UserProfilePage = () => {
                       onChange={handleNewPasswordChange}
                       className={`block w-full px-4 py-2 border rounded-md focus:outline-none ${errors.newPassword
                         ? "border-red-500"
-                        : "focus:ring focus:ring-blue-500"
+                        : "focus:ring focus:ring-orange-500"
                         }`}
                     />
                     {errors.newPassword && (
@@ -457,7 +457,7 @@ const UserProfilePage = () => {
                       onChange={handleConfirmPasswordChange}
                       className={`block w-full px-4 py-2 border rounded-md focus:outline-none ${errors.confirmPassword
                         ? "border-red-500"
-                        : "focus:ring focus:ring-blue-500"
+                        : "focus:ring focus:ring-orange-500"
                         }`}
                     />
                     {errors.confirmPassword && (
@@ -471,7 +471,7 @@ const UserProfilePage = () => {
                 <button
                   onClick={handleProfileUpdate}
                   disabled={isSubmitting}
-                  className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition focus:outline-none focus:ring focus:ring-blue-500 flex items-center"
+                  className="px-6 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition focus:outline-none focus:ring focus:ring-orange-500 flex items-center"
                 >
                   <FaSave className="mr-2" />
                   {isSubmitting ? "Saving..." : "Save Changes"}
@@ -496,7 +496,7 @@ const UserProfilePage = () => {
                 <span
                   key={index}
                   className={`px-4 py-2 rounded-full cursor-pointer text-white ${selectedPreferences.includes(preference)
-                    ? "bg-blue-500"
+                    ? "bg-orange-500"
                     : "bg-gray-400"
                     } hover:scale-105 transition-transform`}
                   onClick={() => togglePreference(preference)}
@@ -516,7 +516,7 @@ const UserProfilePage = () => {
                 <input
                   type="checkbox"
                   id="daily-emails"
-                  className="mr-2 w-5 h-5 accent-blue-500"
+                  className="mr-2 w-5 h-5 accent-orange-500"
                   checked={receiveDailyEmails}
                   onChange={() => setReceiveDailyEmails(!receiveDailyEmails)}
                 />
@@ -545,7 +545,7 @@ const UserProfilePage = () => {
             <button
               onClick={handlePreferencesUpdate}
               disabled={isSubmitting}
-              className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition focus:outline-none focus:ring focus:ring-blue-300 flex items-center"
+              className="px-6 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition focus:outline-none focus:ring focus:ring-orange-300 flex items-center"
             >
               <FaCheckCircle className="mr-2" />
               {isSubmitting ? "Saving..." : "Save Preferences"}
