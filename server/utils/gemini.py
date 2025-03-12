@@ -35,7 +35,7 @@ Bài viết tổng hợp (không bắt đầu bằng những từ như đây là
 
     def invoke(self, data) -> str:
         response = client.models.generate_content(
-            model="gemini-2.0-flash",
+            model="gemini-2.0-flash-lite",
             config=types.GenerateContentConfig(
                 system_instruction=self.system_instruction),
             contents=[data['content']]
@@ -45,28 +45,135 @@ Bài viết tổng hợp (không bắt đầu bằng những từ như đây là
 
 class NameTitleModel:
     def __init__(self):
-        self.system_instruction = """Hãy tạo 1 tiêu đề ngắn gọn và hấp dẫn cho bài báo dựa trên đoạn văn bản đã cung cấp. Tiêu đề nên phản ánh đúng nội dung chính và thu hút sự chú ý của độc giả.
+        self.system_instruction = """Hãy tạo 1 tiêu đề ngắn gọn và hấp dẫn cho bài báo dựa trên đoạn văn bản đã cung cấp. Tiêu đề phải phản ánh đúng nội dung chính và thu hút sự chú ý của độc giả.
 
 # Steps
-
 1. Đọc kỹ đoạn văn bản được cung cấp để nắm bắt nội dung chính và các điểm then chốt.
 2. Xác định các từ khóa quan trọng thể hiện nội dung chính.
 3. Sắp xếp lại các từ khóa để tạo thành tiêu đề ngắn gọn, dễ hiểu.
 4. Đảm bảo tiêu đề phản ánh đúng nội dung và thu hút sự chú ý.
 
 # Output Format
+1 tiêu đề ngắn gọn
 
-1 tiêu đề ngắn gọn"""
+# Example
+Nội dung: Một nghiên cứu mới cho thấy rằng việc tập thể dục đều đặn có thể giúp cải thiện trí nhớ và khả năng học tập.
+##Output
+Tập Thể Dục Đều Đặn Cải Thiện Trí Nhớ va Khả Nang Hoc Tap
+"""
+
+        self.user_prompt = """Hãy tạo 1 tiêu đề dựa trên nội dung bai bao sau:
+        
+{content}"""
+
+        self.few_shot = [
+            {
+                "role": "user",
+                "content": """Một nghiên cứu mới cho thấy rằng việc tập thể dục đều đặn có thể giúp cải thiện trí nhớ và khả năng học tập."""
+            },
+            {
+                "role": "model",
+                "content": """Tập Thể Dục Đều Đặn: Cải Thiện Trí Nhớ và Khả Năng Học Tập"""
+            },
+            {
+                "role": "user",
+                "content": """Nhà sản xuất ô tô Y vừa giới thiệu mẫu xe điện mới với khả năng chạy 500 km chỉ với một lần sạc."""
+            },
+            {
+                "role": "model",
+                "content": """Xe Điện Mới: Chạy 500 km Chỉ Với Một Lần Sạc"""
+            },
+            {
+                "role": "user",
+                "content": """Các nhà khoa học đã phát triển một loại vaccine mới có thể chống lại nhiều biến thể của virus cúm."""
+            },
+            {
+                "role": "model",
+                "content": """Vaccine Mới: Chống Lại Nhiều Biến Thể Virus Cúm"""
+            },
+            {
+                "role": "user",
+                "content": """Một công ty khởi nghiệp đã phát triển một ứng dụng giúp người dùng quản lý tài chính cá nhân một cách hiệu quả."""
+            },
+            {
+                "role": "model",
+                "content": """Ứng Dụng Quản Lý Tài Chính Cá Nhân: Hiệu Quả và Tiện Lợi"""
+            }
+        ]
+    
+    def format_string(self, template: str, values: dict[str, str]):
+        """
+        Định dạng chuỗi với các giá trị được cung cấp trong dictionary.
+        """
+        return template.format(**values)
+    
+    def create_content(self, data):
+        """
+        Tạo danh sách nội dung đầu vào bao gồm few-shot prompt và user prompt dựa trên dữ liệu.
+        """
+        contents = []
+        for message in self.few_shot:
+            contents.append(
+                types.Content(
+                    role=message["role"],
+                    parts=[types.Part.from_text(text=message["content"])]
+                )
+            )
+        contents.append(
+            types.Content(
+                role="user",
+                parts=[types.Part.from_text(text=self.format_string(self.user_prompt, data))]
+            )
+        )
+        return contents
+
+    def validate_with_model(self, text: str) -> bool:
+        """
+        Sử dụng model để kiểm tra xem văn bản có chỉ chứa chữ, số, dấu cách và dấu nháy đơn
+        và chỉ bao gồm 1 câu trả lời (không chứa nhiều đáp án được đánh số riêng lẻ) hay không.
+        Nếu hợp lệ, model chỉ trả lời 'Valid', nếu không hợp lệ trả lời 'Invalid'.
+        """
+        validation_prompt = f"""Hãy kiểm tra xem đây có phải là 1 tiêu đề hoàn chỉnh không.
+Nếu tiêu đề hợp lệ, chỉ trả lời 'Valid'. Nếu không, chỉ trả lời 'Invalid'.
+
+Văn bản: {text}"""
+
+        response = client.models.generate_content(
+            model="gemini-2.0-flash-lite",
+            contents=[validation_prompt]
+        )
+        result = response.text.strip().lower()
+        return "valid" in result
+
+    def is_valid_output(self, text: str) -> bool:
+        """
+        Kiểm tra đầu ra có hợp lệ không bằng cách sử dụng model.
+        """
+        return self.validate_with_model(text)
 
     def invoke(self, data) -> str:
-        response = client.models.generate_content(
-            model="gemini-2.0-flash",
-            config=types.GenerateContentConfig(
-                system_instruction=self.system_instruction),
-            contents=[data['content']]
-        )
+        """
+        Gọi model để tạo tiêu đề, tự prompt lại nếu đầu ra không đạt yêu cầu tối đa 3 lần.
+        """
+        attempts = 0
+        final_output = ""
+        while attempts < 3:
+            response = client.models.generate_content(
+                model="gemini-2.0-flash-lite",
+                config=types.GenerateContentConfig(
+                    system_instruction=self.format_string(self.system_instruction, data)
+                ),
+                contents=self.create_content(data)
+            )
+            output = response.text.strip().replace('*', '').replace('#', '')
+            if self.is_valid_output(output):
+                final_output = output
+                break
+            attempts += 1
+        return final_output
 
-        return response.text.strip().replace("*", "").replace("#", "").replace("1.", "").strip()
+
+
 
 class SummarizeModel:
     def __init__(self):
