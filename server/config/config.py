@@ -32,25 +32,30 @@ class Config:
     timezone = 'Asia/Ho_Chi_Minh'
     enable_utc = True
     beat_schedule = {
-        # 'send-email': {
-        #     'task': 'send_news',
-        #     'schedule': crontab(minute='*/1'),
-        # },
+        'send-email': {
+            'task': 'send_news',
+            'schedule': crontab(minute='*/1'),
+        },
         # 'synthesize-news-test':{
         #     'task': 'synthesize_news',
-        #     'schedule': crontab(minute='*/1'),
-        #     'args': ('day',)
-        # },
-        # 'synthesize-news-day':{
-        #     'task': 'synthesize_news',
-        #     'schedule': crontab(hour=23, minute=0),
-        #     'args': ('day',)
-        # },
-        # 'synthesize-news-week':{
-        #     'task': 'synthesize_news',
-        #     'schedule': crontab(day_of_week=0, hour=23, minute=0),
+        #     'schedule': crontab(minute='*/3'),
         #     'args': ('week',)
         # },
+        'synthesize-news-day':{
+            'task': 'synthesize_news',
+            'schedule': crontab(hour=23, minute=0),
+            'args': ('day',)
+        },
+        'synthesize-news-week':{
+            'task': 'synthesize_news',
+            'schedule': crontab(day_of_week=0, hour=23, minute=0),
+            'args': ('week',)
+        },
+        'synthesize-news-month': {
+            'task': 'synthesize_news',
+            'schedule': crontab(day_of_month=1, hour=0, minute=0),
+            'args': ('month',)
+        }
     }
     task_routes = {
         'send_news': {'queue': 'send_news_queue'},
