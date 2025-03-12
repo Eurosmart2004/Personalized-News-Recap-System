@@ -74,10 +74,10 @@ function Header({ expanded, setExpanded }) {
 
                 <SidebarItem icon={<LuNewspaper size={20} />} text="News" active={location.pathname === "/"} onClick={() => navigate("/")} />
                 <SidebarItem icon={<FaRegBookmark size={20} />} text="Saved" active={location.pathname === "/collection"} onClick={() => navigate("/collection")} />
-                <SidebarItem icon={<GrAggregate size={20} />} text="Aggregate" active={location.pathname === "/aggregate"} onClick={() => navigate("/aggregate")} />
+                <SidebarItem icon={<GrAggregate size={20} />} text="Aggregate" active={location.pathname.startsWith("/aggregate")} onClick={() => navigate("/aggregate")} />
                 <hr className="my-3" />
-                <SidebarItem icon={<LuSettings size={20} />} text="Settings" />
-                <SidebarDropdown icon={<VscColorMode size={20} />} text="Theme">
+                <SidebarItem icon={<LuSettings size={20} />} text="Settings" active={location.pathname.startsWith("/user")} onClick={() => navigate("/user")} />
+                {/* <SidebarDropdown icon={<VscColorMode size={20} />} text="Theme">
                     <SidebarItem
                         icon={<MdNightlightRound size={20} />}
                         text="Dark Mode"
@@ -96,7 +96,7 @@ function Header({ expanded, setExpanded }) {
                         onClick={() => dispatch(setTheme('auto'))}
                         active={theme === 'auto'}
                     />
-                </SidebarDropdown>
+                </SidebarDropdown> */}
                 <hr className="my-3" />
                 <div className="mt-auto">
                     {auth.user ? (

@@ -21,6 +21,7 @@ const CollectionPage = () => {
   const [selectedListToDelete, setSelectedListToDelete] = useState(null);
   const [newCollectionName, setNewCollectionName] = useState('');
   const [loading, setLoading] = useState(false);
+  const [loadingAxios, setLoadingAxios] = useState(false);
 
   const navigate = useNavigate();
   const menuRef = useRef(null);
@@ -79,6 +80,7 @@ const CollectionPage = () => {
         toast.error("Collection name must be between 1 and 100 characters");
         return;
       }
+      setLoadingAxios(true);
       const response = await privateAxios.post('/collection', {
         name: newCollectionName,
       });
@@ -87,6 +89,9 @@ const CollectionPage = () => {
       setIsCreateModalOpen(false);
     } catch (err) {
       console.error("Error creating collection:", err);
+    }
+    finally {
+      setLoadingAxios(false);
     }
   };
 
@@ -127,6 +132,7 @@ const CollectionPage = () => {
         toast.error("Collection name must be between 1 and 100 characters");
         return;
       }
+      setLoadingAxios(true);
       const response = await privateAxios.put('/collection', {
         collection_id: selectedList.collection.id,
         name: selectedList.collection.name,
@@ -140,10 +146,14 @@ const CollectionPage = () => {
     catch (err) {
       console.error("Error saving collection:", err);
     }
+    finally {
+      setLoadingAxios(false);
+    }
   };
 
   const handleDelete = async () => {
     try {
+      setLoadingAxios(true);
       const response = await privateAxios.delete('/collection', {
         data: {
           collection_id: selectedListToDelete.collection.id,
@@ -153,6 +163,9 @@ const CollectionPage = () => {
       closeDeleteModal();
     } catch (err) {
       console.error("Error deleting collection:", err);
+    }
+    finally {
+      setLoadingAxios(false);
     }
   };
 
@@ -280,6 +293,7 @@ const CollectionPage = () => {
                   Cancel
                 </button>
                 <button className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600"
+                  disabled={loadingAxios}
                   onClick={handleCreate}
                 >
                   Create
@@ -332,6 +346,7 @@ const CollectionPage = () => {
                   Cancel
                 </button>
                 <button className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600"
+                  disabled={loadingAxios}
                   onClick={handleSave}
                 >
                   Save
@@ -372,6 +387,7 @@ const CollectionPage = () => {
                   Cancel
                 </button>
                 <button className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+                  disabled={loadingAxios}
                   onClick={handleDelete}
                 >
                   Delete

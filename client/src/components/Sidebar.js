@@ -1,5 +1,6 @@
 import { LuChevronFirst, LuChevronLast } from "react-icons/lu";
 import { FaChevronUp, FaChevronDown } from "react-icons/fa";
+import { PiDotsThreeVertical } from "react-icons/pi";
 import logo from "../images/logo.png";
 import Avatar from "react-avatar";
 import { useSelector } from "react-redux";
@@ -33,23 +34,20 @@ export default function Sidebar({
 
       {/* Sidebar */}
       <aside
-        className={`fixed h-screen top-0 left-0 z-50 bg-white dark:bg-gray-900 shadow-md border-r dark:border-gray-800 transition-transform ${
-          modal ? "sm:hidden" : ""
-        } ${expanded ? "translate-x-0" : "-translate-x-full"} sm:translate-x-0`}
+        className={`fixed h-screen top-0 left-0 z-50 bg-white dark:bg-gray-900 shadow-md border-r dark:border-gray-800 transition-transform ${modal ? "sm:hidden" : ""
+          } ${expanded ? "translate-x-0" : "-translate-x-full"} sm:translate-x-0`}
         style={{ maxWidth: "250px" }}
       >
         <nav className="h-full flex flex-col">
           {/* Logo & Collapse Button */}
           <div
-            className={`p-4 pb-2 flex ${
-              !modal ? "justify-between" : "justify-evenly"
-            } items-center`}
+            className={`p-4 pb-2 flex ${!modal ? "justify-between" : "justify-evenly"
+              } items-center`}
           >
             <img
               src={logo}
-              className={`overflow-hidden transition-all ${
-                expanded ? "w-20" : "w-0"
-              }`}
+              className={`overflow-hidden transition-all ${expanded ? "w-20" : "w-0"
+                }`}
               alt="Logo"
             />
             {expanded && (
@@ -85,15 +83,11 @@ export default function Sidebar({
                 <Avatar name={auth.user.name} size="35" round={true} />
               )}
               <div
-                className={`flex justify-between items-center overflow-hidden transition-all ${
-                  expanded ? "w-52 ml-3" : "w-0"
-                }`}
+                className={`flex justify-between items-center overflow-hidden transition-all ${expanded ? "w-52 ml-3" : "w-0"
+                  }`}
               >
-                <button
-                  className="leading-4 text-left"
-                  onClick={() =>
-                    (window.location.href = `/user/`)
-                  }
+                <div
+                  className="leading-4 text-left relative"
                 >
                   <h4 className="font-semibold text-gray-900 dark:text-gray-100">
                     {auth.user.name}
@@ -101,7 +95,7 @@ export default function Sidebar({
                   <span className="text-xs text-gray-600 dark:text-gray-400">
                     {auth.user.email}
                   </span>
-                </button>
+                </div>
               </div>
             </div>
           )}
@@ -116,19 +110,17 @@ export function SidebarItem({ icon, text, active, alert, onClick }) {
 
   return (
     <li
-      className={`relative flex items-center py-2 px-3 my-1 font-medium rounded-md cursor-pointer transition-colors group ${
-        active
-          ? "bg-gradient-to-tr from-orange-200 to-orange-100 text-orange-600 dark:from-orange-500 dark:to-orange-400 dark:text-orange-100"
-          : "hover:bg-orange-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300"
-      }`}
+      className={`relative flex items-center py-2 px-3 my-1 font-medium rounded-md cursor-pointer transition-colors group ${active
+        ? "bg-gradient-to-tr from-orange-200 to-orange-100 text-orange-600 dark:from-orange-500 dark:to-orange-400 dark:text-orange-100"
+        : "hover:bg-orange-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300"
+        }`}
       onClick={onClick}
     >
       {icon}
       {expanded && (
         <span
-          className={`overflow-hidden transition-all ${
-            expanded ? "w-52 ml-3" : "w-0"
-          }`}
+          className={`overflow-hidden transition-all ${expanded ? "w-52 ml-3" : "w-0"
+            }`}
         >
           {text}
         </span>
@@ -136,9 +128,8 @@ export function SidebarItem({ icon, text, active, alert, onClick }) {
 
       {alert && (
         <div
-          className={`absolute right-2 w-2 h-2 rounded bg-orange-400 dark:bg-orange-600 ${
-            expanded ? "" : "top-2"
-          }`}
+          className={`absolute right-2 w-2 h-2 rounded bg-orange-400 dark:bg-orange-600 ${expanded ? "" : "top-2"
+            }`}
         />
       )}
 
@@ -164,20 +155,18 @@ export function SidebarDropdown({ icon, text, children }) {
   return (
     <li className="relative">
       <div
-        className={`flex items-center py-2 px-3 my-1 font-medium rounded-md cursor-pointer transition-colors group ${
-          isOpen
-            ? "bg-gradient-to-tr from-orange-200 to-orange-100 text-orange-600 dark:from-orange-500 dark:to-orange-400 dark:text-orange-100"
-            : "hover:bg-orange-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300"
-        }`}
+        className={`flex items-center py-2 px-3 my-1 font-medium rounded-md cursor-pointer transition-colors group ${isOpen
+          ? "bg-gradient-to-tr from-orange-200 to-orange-100 text-orange-600 dark:from-orange-500 dark:to-orange-400 dark:text-orange-100"
+          : "hover:bg-orange-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300"
+          }`}
         onClick={toggleDropdown}
       >
         {icon}
         {expanded && (
           <>
             <span
-              className={`overflow-hidden transition-all ${
-                expanded ? "w-52 ml-3" : "w-0"
-              }`}
+              className={`overflow-hidden transition-all ${expanded ? "w-52 ml-3" : "w-0"
+                }`}
             >
               {text}
             </span>
@@ -195,9 +184,8 @@ export function SidebarDropdown({ icon, text, children }) {
         )}
       </div>
       <ul
-        className={`pl-8 transition-height duration-700 ease-out ${
-          isOpen ? "max-h-96" : "max-h-0 overflow-hidden"
-        }`}
+        className={`pl-8 transition-height duration-700 ease-out ${isOpen ? "max-h-96" : "max-h-0 overflow-hidden"
+          }`}
       >
         {children}
       </ul>

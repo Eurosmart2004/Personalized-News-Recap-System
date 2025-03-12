@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import { FaCamera, FaSave, FaUser, FaEnvelope, FaLock, FaTags, FaClock, FaCheckCircle } from "react-icons/fa";
 import Time from "../components/Time";
+import { motion } from "framer-motion";
 
 const UserProfilePage = () => {
   const { privateAxios } = useAxios();
@@ -24,13 +25,13 @@ const UserProfilePage = () => {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [avatar, setAvatar] = useState(user?.avatar || null);
-  const [avatarPreview, setAvatarPreview] = useState(user?.avatar || null);
+  const [avatar, setAvatar] = useState(null);
+  const [avatarPreview, setAvatarPreview] = useState(null);
 
   // Preferences states
   const [preferences, setPreferences] = useState([]);
   const [selectedPreferences, setSelectedPreferences] = useState(
-    user?.preferences || []
+    []
   );
   const [receiveDailyEmails, setReceiveDailyEmails] = useState(
     user?.schedule ? true : false
@@ -136,6 +137,7 @@ const UserProfilePage = () => {
       };
 
       reader.readAsDataURL(file);
+      console.log(file);
       setAvatar(file);
     }
   };
@@ -163,6 +165,20 @@ const UserProfilePage = () => {
     };
 
     fetchPreferences();
+  }, []);
+
+  // Fetch preferences of user
+  useEffect(() => {
+    const fetchUserPreferences = async () => {
+      try {
+        const res = await privateAxios.get("/user/preferences");
+        setSelectedPreferences(res.data.preferences);
+      } catch (err) {
+        console.error(err);
+        toast.error("Failed to load user preferences.");
+      }
+    };
+    fetchUserPreferences();
   }, []);
 
   // Submit handlers
@@ -199,9 +215,11 @@ const UserProfilePage = () => {
         formData.append("password", newPassword);
       }
 
-      if (avatar && avatar !== user?.avatar) {
+      if (avatar) {
         formData.append("picture", avatar);
       }
+
+      console.log("formData", formData);
 
       const res = await privateAxios.put("/user", formData, {
         headers: {
@@ -241,10 +259,6 @@ const UserProfilePage = () => {
           schedule: time,
         });
       }
-
-      // Fetch updated user data
-      const res = await privateAxios.get("/user");
-      dispatch(setAuth({ user: res.data }));
 
       toast.success("Preferences updated successfully!");
       setIsSubmitting(false);
@@ -529,7 +543,14 @@ const UserProfilePage = () => {
               </div>
 
               {receiveDailyEmails && (
-                <div className="mb-6 pl-7">
+                <motion.div
+                  className="mb-6 pl-7"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0, transition: { duration: 0.5 } }}
+                  transition={{ duration: 0.3 }}
+                  layout
+                >
                   <h3 className="text-lg font-semibold text-gray-700 dark:text-white mb-2">
                     Set your preferred time:
                   </h3>
@@ -538,7 +559,7 @@ const UserProfilePage = () => {
                     setTime={setTime}
                     time={time}
                   />
-                </div>
+                </motion.div>
               )}
             </div>
 
@@ -553,7 +574,7 @@ const UserProfilePage = () => {
           </div>
         )}
       </div>
-    </div>
+    </div >
   );
 };
 
