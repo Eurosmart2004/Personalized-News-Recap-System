@@ -30,7 +30,7 @@ class Config:
     )
     result_backend = None
     timezone = 'Asia/Ho_Chi_Minh'
-    enable_utc = True
+    enable_utc = False
     beat_schedule = {
         'send-email': {
             'task': 'send_news',
