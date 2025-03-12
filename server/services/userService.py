@@ -43,6 +43,8 @@ def update_user(userID: str, name: Union[str, None], picture: Union[FileStorage,
 
     if picture:
         unique_filename = generate_unique_filename(picture.filename)
+        if not os.path.exists(Config.UPLOAD_FOLDER):
+            os.makedirs(Config.UPLOAD_FOLDER)
         temp_path = os.path.join(Config.UPLOAD_FOLDER, unique_filename)
         picture.save(temp_path)
         try:
