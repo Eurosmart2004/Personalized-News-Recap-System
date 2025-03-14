@@ -4,12 +4,12 @@ import CollectionButton from './CollectionButton';
 import { useSelector } from 'react-redux';
 import { setAuth } from '../redux/reducer/authReducer';
 import { useAxios } from '../axios/axios';
+import { BASEURL } from '../utils/Network';
 
 const NewsCard = ({ news, isSaved }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const auth = useSelector((state) => state.auth);
     const { privateAxios } = useAxios();
-
     // Toggle modal visibility
     const openModal = () => {
         setIsModalOpen(true);
@@ -30,7 +30,13 @@ const NewsCard = ({ news, isSaved }) => {
             <div className=" cursor-pointer transition-all duration-200 bg-white hover:bg-gray-100 dark:bg-black dark:border-gray-700 dark:border dark:hover:bg-gray-800 shadow-lg rounded-lg overflow-hidden flex flex-col h-full"
                 onClick={openModal}>
                 <img
-                    src={news.image}
+                    src={news.image} // try loading the original image
+                    onError={(e) => {
+                        // Remove onError to avoid an infinite loop in case the fallback also fails
+                        e.target.onerror = null;
+                        // Set the fallback image URL using the BASEURL
+                        e.target.src = BASEURL + '/news/image?image_url=' + news.image;
+                    }}
                     alt="Post Cover"
                     className="w-full h-48 object-cover"
                 />
@@ -69,4 +75,4 @@ export const NewsCardSkeleton = () => {
             </div>
         </div>
     );
-};
+};;

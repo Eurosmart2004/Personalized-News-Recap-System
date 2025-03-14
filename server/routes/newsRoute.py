@@ -18,5 +18,9 @@ def init(app: Flask):
     def summarize():
         return newsController.summarize(request)
     
+    @app.route(route + '/image', methods=['GET'])
+    def get_image():
+        return newsController.get_image(request)
+    
 
 

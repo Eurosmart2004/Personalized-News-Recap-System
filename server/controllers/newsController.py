@@ -1,4 +1,4 @@
-from flask import Request, Response, jsonify, make_response
+from flask import Request, Response, jsonify, make_response, send_file
 from services import newsService
 from datetime import datetime
 import asyncio
@@ -32,28 +32,15 @@ def get_user_news(request: Request) -> Response:
         return make_response(jsonify({'error': str(e)}), 400)
     
 
-def embedding(request: Request) -> Response:
-    data = request.get_json()
-    text = data['text']
-
+def get_image(request: Request) -> Response:
+    image_url = request.args.get("image_url")
+    
+    if image_url is None:
+        return jsonify({'error': 'Missing required field image_id'}), 400
+    
     try:
-        embedding = newsService.get_embedding(text)
-        return jsonify({
-            'embedding': embedding
-        })
-    except Exception as e:
-        return make_response(jsonify({'error': str(e)}), 500)
-
-def cluster(request: Request) -> Response:
-    data = request.get_json()
-    embeddings = data['embeddings']
-
-    try:
-        labels = newsService.cluster(embeddings)
-        return jsonify({
-            'labels': labels
-        })
-    except Exception as e:
-        return make_response(jsonify({'error': str(e)}), 500)
-
+        image_bytes = newsService.get_image(image_url)
+        return send_file(image_bytes, mimetype='image/jpeg')
+    except ValueError as e:
+        return make_response(jsonify({'error': str(e)}), 400)
 

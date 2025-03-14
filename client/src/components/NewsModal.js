@@ -1,9 +1,10 @@
 import React from "react";
-
+import { BASEURL } from "../utils/Network";
 const NewsModal = ({ onClose, news }) => {
     const handleOutsideClick = (e) => {
         onClose();
     };
+
 
     return (
         <div
@@ -29,7 +30,13 @@ const NewsModal = ({ onClose, news }) => {
 
                 {/* News Image */}
                 <img
-                    src={news.image}
+                    src={news.image} // try loading the original image
+                    onError={(e) => {
+                        // Remove onError to avoid an infinite loop in case the fallback also fails
+                        e.target.onerror = null;
+                        // Set the fallback image URL using the BASEURL
+                        e.target.src = BASEURL + '/news/image?image_url=' + news.image;
+                    }}
                     alt="News"
                     className="w-full h-48 object-cover mb-4 rounded-md"
                 />

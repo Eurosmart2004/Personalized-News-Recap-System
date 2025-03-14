@@ -1,0 +1,1 @@
+export const BASEURL = `${process.env.REACT_APP_SERVER_URL}/api` || 'http://localhost:5000/api';

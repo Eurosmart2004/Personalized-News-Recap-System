@@ -2,20 +2,19 @@ import { useEffect } from 'react';
 import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
 import { setAuth } from '../redux/reducer/authReducer';
+import { BASEURL } from '../utils/Network';
 
 export const useAxios = () => {
     const auth = useSelector((state) => state.auth);
     const dispatch = useDispatch();
-    const baseURL = `${process.env.REACT_APP_SERVER_URL}/api` || 'http://localhost:5000/api';
-    // const baseURL = 'http://localhost:5000/api';
 
     const publicAxios = axios.create({
-        baseURL: baseURL,
+        baseURL: BASEURL,
         withCredentials: true,
     });
 
     const privateAxios = axios.create({
-        baseURL: baseURL,
+        baseURL: BASEURL,
         withCredentials: true,
     });
 

@@ -74,3 +74,12 @@ def get_user_news(user_id: str, before_time: str, after_time: str, limit: int) -
     except ValueError as e:
         raise e    
 
+def get_image(image_url: str) -> dict:
+    import requests, io
+    from app import app
+    try:
+        response = requests.get(image_url, verify=False)
+        image_bytes = io.BytesIO(response.content)
+        return image_bytes
+    except Exception as e:
+        raise e

@@ -4,6 +4,7 @@ import { useAxios } from "../axios/axios";
 import { useSelector, useDispatch } from "react-redux";
 import { ToastContainer } from "react-toastify";
 import { setCollection } from '../redux/reducer/collectionReducer';
+import { setNews, setAfterTime, setBeforeTime } from '../redux/reducer/newsReducer';
 import 'react-toastify/dist/ReactToastify.css';
 
 const NewsPage = () => {
@@ -13,10 +14,14 @@ const NewsPage = () => {
     const collection = useSelector((state) => state.collection.collections);
     const [listNewsFavorites, setListNewsFavorite] = useState([]);
 
-    const [news, setNews] = useState([]); // News list
+    // const [news, setNews] = useState([]); // News list
+    // const [beforeTime, setBeforeTime] = useState(null); // For fetching older news
+    // const [afterTime, setAfterTime] = useState(null); // For fetching newer news
+    const news = useSelector((state) => state.news.news);
+    const beforeTime = useSelector((state) => state.news.beforeTime);
+    const afterTime = useSelector((state) => state.news.afterTime);
+
     const [loading, setLoading] = useState(false); // Main loading state
-    const [beforeTime, setBeforeTime] = useState(null); // For fetching older news
-    const [afterTime, setAfterTime] = useState(null); // For fetching newer news
     const isFecting = useRef(false); // Ref to prevent multiple requests
 
     function convertToUTC(dateString) {
@@ -60,18 +65,14 @@ const NewsPage = () => {
             console.log("Fetched News: ", fetchedNews);
 
             // Append older news to the list
-            setNews((prevNews) => {
-                const existingIds = new Set(prevNews.map((item) => item.id));
-                const filteredNews = fetchedNews.filter((item) => !existingIds.has(item.id));
-                return [...prevNews, ...filteredNews];
-            });
+            dispatch(setNews(fetchedNews));
 
             // Update `beforeTime` for the next request
-            if (beforeTime && convertToUTC(fetchedNews[fetchedNews.length - 1].date) < convertToUTC(beforeTime)) setBeforeTime(fetchedNews[fetchedNews.length - 1].date);
-            if (beforeTime === null) setBeforeTime(fetchedNews[fetchedNews.length - 1].date);
+            if (beforeTime && convertToUTC(fetchedNews[fetchedNews.length - 1].date) < convertToUTC(beforeTime)) dispatch(setBeforeTime(fetchedNews[fetchedNews.length - 1].date));
+            if (beforeTime === null) dispatch(setBeforeTime(fetchedNews[fetchedNews.length - 1].date));
 
-            if (afterTime === null) setAfterTime(fetchedNews[0].date);
-            if (afterTime && convertToUTC(fetchedNews[0].date) > convertToUTC(afterTime)) setAfterTime(fetchedNews[0].date);
+            if (afterTime === null) dispatch(setAfterTime(fetchedNews[0].date));
+            if (afterTime && convertToUTC(fetchedNews[0].date) > convertToUTC(afterTime)) dispatch(setAfterTime(fetchedNews[0].date));
 
         } catch (err) {
             console.error("Error fetching news:", err);
