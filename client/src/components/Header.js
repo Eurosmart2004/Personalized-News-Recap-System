@@ -31,9 +31,10 @@ export default function Header({ expanded, setExpanded }) {
 
     useEffect(() => {
         const handleScroll = () => {
-            if (window.innerWidth <= 768) {
+            if (window.innerWidth <= 640) {
                 if (window.scrollY > lastScrollY) {
                     setShowHeader(false);
+                    setExpanded(false);
                 } else {
                     setShowHeader(true);
                 }

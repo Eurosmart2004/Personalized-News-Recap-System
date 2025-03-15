@@ -26,7 +26,7 @@ const NewsCard = ({ news, isSaved }) => {
 
     return (
         <>
-            <div className="sm:w-full xl:w-[17rem] sm:h-80 md:h-[25rem] lg:h-96 cursor-pointer transition-all duration-200 bg-white hover:bg-gray-100 dark:bg-black dark:border-gray-700 dark:border dark:hover:bg-gray-800 shadow-lg rounded-lg overflow-hidden flex flex-col"
+            <div className="sm:w-full xl:w-[17rem] h-auto md:h-[25rem] lg:h-96 cursor-pointer transition-all duration-200 bg-white hover:bg-gray-100 dark:bg-black dark:border-gray-700 dark:border dark:hover:bg-gray-800 shadow-lg rounded-lg overflow-hidden flex flex-col"
                 onClick={openModal}>
                 <img
                     src={news.image}
@@ -75,11 +75,21 @@ export default NewsCard;
 
 export const NewsCardSkeleton = () => {
     return (
-        <div className="w-80 h-96 transition-all duration-200 bg-white dark:bg-black dark:border-gray-700 dark:border shadow-lg rounded-lg overflow-hidden flex flex-col">
+        <div className="sm:w-full xl:w-[17rem] h-auto md:h-[25rem] lg:h-96 transition-all duration-200 bg-white dark:bg-black dark:border-gray-700 dark:border shadow-lg rounded-lg overflow-hidden flex flex-col">
             <div className="w-full h-40 bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
             <div className="p-4 flex flex-col flex-grow">
-                <div className="w-3/4 h-4 bg-gray-300 dark:bg-gray-700 mb-2 animate-pulse"></div>
-                <div className="w-1/2 h-4 bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
+                <div className="flex items-center mb-2">
+                    <div className="w-5 h-5 bg-gray-300 dark:bg-gray-700 rounded-full animate-pulse mr-2"></div>
+                    <div className="w-24 h-4 bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
+                </div>
+                <div className="w-full h-6 bg-gray-300 dark:bg-gray-700 mb-2 animate-pulse"></div>
+                <div className="flex flex-wrap gap-1 mb-2">
+                    <div className="w-16 h-6 bg-gray-200 animate-pulse rounded-full"></div>
+                </div>
+                <div className="mt-auto flex items-center justify-between">
+                    <div className="w-20 h-4 bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
+                    <div className="w-6 h-6 bg-gray-300 dark:bg-gray-700 rounded-full animate-pulse"></div>
+                </div>
             </div>
         </div>
     );
