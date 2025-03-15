@@ -17,13 +17,13 @@ const CollectionButton = ({ userId, newsId, isSaved, theme }) => {
     <div className="relative">
       <button
         onClick={() => setShowModal(true)}
-        className={`p-2 rounded-full transition-colors hover:bg-gray-400 dark:hover:bg-gray-100 duration-300
-          }`}
+        className="p-2 rounded-full transition-colors duration-300 hover:bg-yellow-400 dark:hover:bg-yellow-100 group"
       >
-        {saved ?
-          <FaBookmark className="text-yellow-400 text-xl" /> :
-          <FaRegBookmark className="text-yellow-400 text-xl" />
-        }
+        {saved ? (
+          <FaBookmark className="text-yellow-400 text-xl transition-colors duration-300 group-hover:text-white" />
+        ) : (
+          <FaRegBookmark className="text-yellow-400 text-xl transition-colors duration-300 group-hover:text-white" />
+        )}
       </button>
 
 

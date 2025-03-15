@@ -61,7 +61,7 @@ export default function Time(props) {
             <div className="container p-md-3">
                 <div className='d-flex flex gap-4 flex-wrap'>
                     <TimePicker
-                        label="Time sent news letter"
+                        label="Thời gian nhận email"
                         value={time1}
                         onChange={(newTime1) => setTime1(newTime1)}
                         shouldDisableTime={shouldDisableTime1}
@@ -72,7 +72,7 @@ export default function Time(props) {
                         timezone="default"
                     />
                     <TimePicker
-                        label="Time sent news letter"
+                        label="Thời gian nhận email"
                         value={time2}
                         onChange={(newTime2) => setTime2(newTime2)}
                         shouldDisableTime={shouldDisableTime2}

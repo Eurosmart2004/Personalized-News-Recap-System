@@ -77,7 +77,7 @@ const CollectionPage = () => {
   const handleCreate = async () => {
     try {
       if (newCollectionName.length === 0 || newCollectionName.length > 100) {
-        toast.error("Collection name must be between 1 and 100 characters");
+        toast.error("Bộ sưu tập phải có tên từ 1 đến 100 ký tự");
         return;
       }
       setLoadingAxios(true);
@@ -129,7 +129,7 @@ const CollectionPage = () => {
   const handleSave = async () => {
     try {
       if (selectedList.collection.name.length === 0 || selectedList.collection.name.length > 100) {
-        toast.error("Collection name must be between 1 and 100 characters");
+        toast.error("Bộ sưu tập phải có tên từ 1 đến 100 ký tự");
         return;
       }
       setLoadingAxios(true);
@@ -184,7 +184,7 @@ const CollectionPage = () => {
           className="dark:text-white inline-flex justify-center items-center relative whitespace-nowrap align-middle leading-[1.2] rounded-3xl py-2 px-5 text-[16px] h-12 base-md gap-2 bg-bgr-faint text-fg-base hover:bg-gray-100 dark:bg-bgr-dark dark:text-fg-dark dark:hover:bg-gray-700 border border-border-emphasis dark:border-gray-700"
         >
           <GrAdd size={20} />
-          <span className="">Create new</span>
+          <span className="">Tạo mới</span>
         </button>
       </div>
 
@@ -207,7 +207,7 @@ const CollectionPage = () => {
                 <div>
                   <p className="font-medium dark:text-white">{list.collection.name}</p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    {list.news.length} {list.news.length > 1 ? "papers" : "paper"}
+                    {list.news.length} {list.news.length > 1 ? "bài báo" : "bài báo"}
                   </p>
                 </div>
               </div>
@@ -238,7 +238,7 @@ const CollectionPage = () => {
                     }}
                   >
                     <FiEdit2 />
-                    <span>Edit</span>
+                    <span>Chỉnh sửa</span>
                   </button>
                   <button
                     className="flex items-center space-x-2 w-full px-3 py-2 text-red-600 hover:bg-gray-100 dark:text-red-400 dark:hover:bg-gray-700"
@@ -248,7 +248,7 @@ const CollectionPage = () => {
                     }}
                   >
                     <FiTrash2 />
-                    <span>Delete</span>
+                    <span>Xóa</span>
                   </button>
                 </motion.div>
               )}
@@ -267,7 +267,7 @@ const CollectionPage = () => {
               transition={{ duration: 0.2 }}
             >
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold">Create new collection</h2>
+                <h2 className="text-xl font-semibold">Tạo mới bộ sưu tập</h2>
                 <button
                   onClick={closeCreateModal}
                   className="text-gray-500 hover:text-gray-700"
@@ -276,27 +276,27 @@ const CollectionPage = () => {
                 </button>
               </div>
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">Collection name</label>
+                <label className="block text-sm font-medium text-gray-700">Tên bộ sưu tập</label>
                 <input
                   type="text"
                   className="w-full border rounded-md px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-orange-500"
                   value={newCollectionName}
                   onChange={(e) => setNewCollectionName(e.target.value)}
                 />
-                <p className="text-xs text-gray-500 mt-1">100 characters maximum</p>
+                <p className="text-xs text-gray-500 mt-1">Tối đa 100 kí tự</p>
               </div>
               <div className="flex justify-end space-x-2">
                 <button
                   className="px-4 py-2 text-gray-700 border rounded-md hover:bg-gray-100"
                   onClick={closeCreateModal}
                 >
-                  Cancel
+                  Hủy
                 </button>
                 <button className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600"
                   disabled={loadingAxios}
                   onClick={handleCreate}
                 >
-                  Create
+                  Tạo mới
                 </button>
               </div>
             </motion.div>
@@ -315,7 +315,7 @@ const CollectionPage = () => {
               transition={{ duration: 0.2 }}
             >
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold">Edit collection</h2>
+                <h2 className="text-xl font-semibold">Chỉnh sửa bộ sưu tập</h2>
                 <button
                   onClick={closeEditModal}
                   className="text-gray-500 hover:text-gray-700"
@@ -324,7 +324,7 @@ const CollectionPage = () => {
                 </button>
               </div>
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">Collection name</label>
+                <label className="block text-sm font-medium text-gray-700">Tên bộ sưu tập</label>
                 <input
                   type="text"
                   className="w-full border rounded-md px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-orange-500"
@@ -336,20 +336,20 @@ const CollectionPage = () => {
                     }))
                   }
                 />
-                <p className="text-xs text-gray-500 mt-1">100 characters maximum</p>
+                <p className="text-xs text-gray-500 mt-1">Tối đa 100 kí tự</p>
               </div>
               <div className="flex justify-end space-x-2">
                 <button
                   className="px-4 py-2 text-gray-700 border rounded-md hover:bg-gray-100"
                   onClick={closeEditModal}
                 >
-                  Cancel
+                  Hủy
                 </button>
                 <button className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600"
                   disabled={loadingAxios}
                   onClick={handleSave}
                 >
-                  Save
+                  Lưu
                 </button>
               </div>
             </motion.div>
@@ -368,7 +368,7 @@ const CollectionPage = () => {
               transition={{ duration: 0.2 }}
             >
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold">Delete collection</h2>
+                <h2 className="text-xl font-semibold">Xóa bộ sưu tập</h2>
                 <button
                   onClick={closeDeleteModal}
                   className="text-gray-500 hover:text-gray-700"
@@ -377,7 +377,7 @@ const CollectionPage = () => {
                 </button>
               </div>
               <div className="mb-4">
-                <p>Are you sure you want to delete the collection "{selectedListToDelete?.collection?.name}"?</p>
+                <p>Bạn có chắc chắn muốn xóa bộ sưu tập "{selectedListToDelete?.collection?.name}"?</p>
               </div>
               <div className="flex justify-end space-x-2">
                 <button

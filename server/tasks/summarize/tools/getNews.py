@@ -8,8 +8,8 @@ def get_article_from_ids(article_ids: list[str]):
         article = mongo.db.news.find_one({'_id': ObjectId(article_id)})
 
         if article:
-            # Check if an article with the same title already exists in the list
-            existing_article = next((a for a in articles if a['title'] == article['title']), None)
+            # Check if an article with the same link already exists in the list
+            existing_article = next((a for a in articles if a['link'] == article['link']), None)
 
             if existing_article:
                 # If the existing article is older, replace it with the new one

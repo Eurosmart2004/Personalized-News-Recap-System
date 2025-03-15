@@ -118,7 +118,7 @@ export default function CollectionButtonForm({ isOpen, onClose, newsId }) {
     const handleCreateNewList = async () => {
         try {
             if (newCollectionName.length === 0 || newCollectionName.length > 100) {
-                toast.error("Collection name must be between 1 and 100 characters");
+                toast.error("Bộ sưu tập mới phải có từ 1 đến 100 ký tự");
                 return;
             }
             const response = await privateAxios.post('/collection', {
@@ -153,7 +153,7 @@ export default function CollectionButtonForm({ isOpen, onClose, newsId }) {
                     className="modal-container bg-white rounded-xl sm:w-[500px] max-h-[500px] overflow-hidden flex flex-col border"
                 >
                     <div className="py-3 pl-4 pr-1.5 border-b flex items-center justify-between">
-                        <h1 className="lg-bold text-fg-base">Save to collection</h1>
+                        <h1 className="lg-bold text-fg-base">Lưu vào bộ sưu tập</h1>
                         <button
                             data-testid="close-button"
                             type="button"
@@ -171,7 +171,7 @@ export default function CollectionButtonForm({ isOpen, onClose, newsId }) {
                             <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-bgr-subtle">
                                 <GrAdd className="text-xl text-fg-muted" />
                             </div>
-                            <span className="sm-md">Create new collection</span>
+                            <span className="sm-md">Tạo mới bộ sưu tập</span>
                         </button>
                         {lists.map((list, index) => (
                             <button
@@ -185,7 +185,7 @@ export default function CollectionButtonForm({ isOpen, onClose, newsId }) {
                                 <div className="flex flex-col flex-1">
                                     <h2 className="sm-md">{list.collection.name}</h2>
                                     {
-                                        list.news.length > 1 ? <p className="tiny-normal text-fg-muted">{list.news.length} papers</p> : <p className="tiny-normal text-fg-muted">{list.news.length} paper</p>
+                                        list.news.length > 1 ? <p className="tiny-normal text-fg-muted">{list.news.length} bài báo</p> : <p className="tiny-normal text-fg-muted">{list.news.length} bài báo</p>
                                     }
                                 </div>
                                 <input type="checkbox" className="hidden" checked={selectedLists.includes(list.name)} readOnly />
@@ -199,13 +199,13 @@ export default function CollectionButtonForm({ isOpen, onClose, newsId }) {
                             className="py-2 px-4 text-gray-600 hover:text-gray-900 hover:bg-gray-100 border border-border-emphasis rounded-3xl transition-colors duration-300"
                             onClick={onClose}
                         >
-                            Cancel
+                            Hủy
                         </button>
                         <button
                             onClick={handleDone}
                             className="py-2 px-4 bg-orange-600 text-white rounded-3xl hover:bg-orange-700 transition-colors duration-300"
                         >
-                            Done
+                            Hoàn thành
                         </button>
                     </div>
                 </motion.div>
@@ -225,7 +225,7 @@ export default function CollectionButtonForm({ isOpen, onClose, newsId }) {
                         className="modal-container bg-white rounded-xl sm:w-[400px] p-4 border"
                     >
                         <div className="flex items-center justify-between mb-4">
-                            <h2 className="lg-bold text-fg-base">Create New Collection</h2>
+                            <h2 className="lg-bold text-fg-base">Tạo mới bộ sưu tập</h2>
                             <button
                                 type="button"
                                 className="inline-flex justify-center items-center h-10 w-10 rounded-full text-fg-base hover:bg-bgr-faint"
@@ -237,25 +237,25 @@ export default function CollectionButtonForm({ isOpen, onClose, newsId }) {
                         <input
                             type="text"
                             className="w-full p-2 border rounded-lg mb-4"
-                            placeholder="New collection name"
+                            placeholder="Tên bộ sưu tập"
                             value={newCollectionName}
                             onChange={(e) => setNewCollectionName(e.target.value)}
                         />
-                        <p className="px-2 text-xs text-gray-500 mt-1 dark:text-gray-400">100 characters maximum</p>
+                        <p className="px-2 text-xs text-gray-500 mt-1 dark:text-gray-400">Tối đa 100 kí tự</p>
                         <div className="flex justify-end gap-2">
                             <button
                                 type="button"
                                 className="py-2 px-4 text-gray-600 hover:text-gray-900 hover:bg-gray-100 border border-border-emphasis rounded-3xl transition-colors duration-300"
                                 onClick={() => setIsCreateModalOpen(false)}
                             >
-                                Cancel
+                                Hủy
                             </button>
                             <button
                                 type="button"
                                 className="py-2 px-4 bg-orange-600 text-white rounded-3xl hover:bg-orange-700 transition-colors duration-300"
                                 onClick={handleCreateNewList}
                             >
-                                Create
+                                Tạo mới
                             </button>
                         </div>
                     </motion.div>

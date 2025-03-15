@@ -1,12 +1,15 @@
-import { LuChevronFirst, LuChevronLast } from "react-icons/lu";
 import { FaChevronUp, FaChevronDown } from "react-icons/fa";
-import { PiDotsThreeVertical } from "react-icons/pi";
-import logo from "../images/logo.png";
-import Avatar from "react-avatar";
-import { useSelector } from "react-redux";
 import { createContext, useContext, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const SidebarContext = createContext();
+
+// Variants for the sidebar width (open vs. closed)
+const sidebarVariants = {
+  open: { width: "200px", transition: { duration: 0.1 } },
+  closed: { width: "65px", transition: { duration: 0.1 } },
+  modal: { width: "0px", transition: { duration: 0.1 } }
+};
 
 export default function Sidebar({
   expanded,
@@ -15,17 +18,17 @@ export default function Sidebar({
   setModal,
   children,
 }) {
-  const auth = useSelector((state) => state.auth);
 
+  // Function to close the sidebar on mobile overlay click
   const closeModal = () => {
-    setModal(false);
+    setModal(true);
     setExpanded(false);
   };
 
   return (
     <>
-      {/* Modal Overlay for Mobile */}
-      {modal && (
+      {/* Mobile Modal Overlay */}
+      {modal && expanded && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-40 sm:hidden"
           onClick={closeModal}
@@ -33,110 +36,63 @@ export default function Sidebar({
       )}
 
       {/* Sidebar */}
-      <aside
-        className={`fixed h-screen top-0 left-0 z-50 bg-white dark:bg-gray-900 shadow-md border-r dark:border-gray-800 transition-transform ${modal ? "sm:hidden" : ""
-          } ${expanded ? "translate-x-0" : "-translate-x-full"} sm:translate-x-0`}
-        style={{ maxWidth: "250px" }}
-      >
-        <nav className="h-full flex flex-col">
-          {/* Logo & Collapse Button */}
-          <div
-            className={`p-4 pb-2 flex ${!modal ? "justify-between" : "justify-evenly"
-              } items-center`}
-          >
-            <img
-              src={logo}
-              className={`overflow-hidden transition-all ${expanded ? "w-20" : "w-0"
-                }`}
-              alt="Logo"
-            />
-            {expanded && (
-              <p className=" text-gray-700 dark:text-slate-50">News Recap</p>
-            )}
-
-            {!modal && (
-              <button
-                onClick={() => {
-                  setExpanded((curr) => !curr);
-                }}
-                className="p-1.5 rounded-lg bg-gray-50 dark:bg-slate-300 hover:bg-gray-100 dark:hover:bg-slate-100"
-              >
-                {expanded ? <LuChevronFirst /> : <LuChevronLast />}
-              </button>
-            )}
-          </div>
-
-          <SidebarContext.Provider value={{ expanded }}>
-            <ul className="flex-1 px-3">{children}</ul>
-          </SidebarContext.Provider>
-
-          {/* User Info */}
-          {auth.user && (
-            <div className="border-t dark:border-gray-800 flex p-3">
-              {auth.user.picture ? (
-                <img
-                  src={auth.user.picture}
-                  className="w-10 h-10 rounded-full"
-                  alt="User"
-                />
-              ) : (
-                <Avatar name={auth.user.name} size="35" round={true} />
-              )}
-              <div
-                className={`flex justify-between items-center overflow-hidden transition-all ${expanded ? "w-52 ml-3" : "w-0"
-                  }`}
-              >
-                <div
-                  className="leading-4 text-left relative"
-                >
-                  <h4 className="font-semibold text-gray-900 dark:text-gray-100">
-                    {auth.user.name}
-                  </h4>
-                  <span className="text-xs text-gray-600 dark:text-gray-400">
-                    {auth.user.email}
-                  </span>
-                </div>
-              </div>
-            </div>
-          )}
-        </nav>
-      </aside>
+      <AnimatePresence>
+        {
+          ((modal && expanded) || !modal) && (
+            <motion.aside
+              className={`overflow-visible fixed h-screen top-16 left-0 z-50 bg-white dark:bg-gray-900 border-r dark:border-gray-800 ${modal ? "sm:hidden" : ""}`}
+              style={{ maxWidth: "250px" }}
+              variants={sidebarVariants}
+              initial={modal ? "modal" : (!expanded ? "closed" : "open")}
+              animate={modal ? (expanded ? "open" : "modal") : (expanded ? "open" : "closed")}
+              exit={{ opacity: 0, width: 0 }}
+            >
+              <nav className="h-full flex flex-col">
+                <SidebarContext.Provider value={{ expanded }}>
+                  <ul className="flex-1 px-3">{children}</ul>
+                </SidebarContext.Provider>
+              </nav>
+            </motion.aside>
+          )
+        }
+      </AnimatePresence>
     </>
   );
 }
+
 
 export function SidebarItem({ icon, text, active, alert, onClick }) {
   const { expanded } = useContext(SidebarContext);
 
   return (
     <li
-      className={`relative flex items-center py-2 px-3 my-1 font-medium rounded-md cursor-pointer transition-colors group ${active
+      className={`relative flex items-center py-2 px-3 my-3 h-[40px] font-medium rounded-md cursor-pointer transition-colors group ${active
         ? "bg-gradient-to-tr from-orange-200 to-orange-100 text-orange-600 dark:from-orange-500 dark:to-orange-400 dark:text-orange-100"
         : "hover:bg-orange-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300"
         }`}
       onClick={onClick}
     >
-      {icon}
-      {expanded && (
-        <span
-          className={`overflow-hidden transition-all ${expanded ? "w-52 ml-3" : "w-0"
-            }`}
-        >
-          {text}
-        </span>
-      )}
-
+      <div className="flex-shrink-0">{icon}</div>
+      <AnimatePresence>
+        {expanded && (
+          <motion.span
+            initial={{ opacity: 0, width: 0 }}
+            animate={{ opacity: 1, width: "auto" }}
+            exit={{ opacity: 0, width: 0 }}
+            transition={{ duration: 0.1 }}
+            className="ml-3 text-base overflow-hidden whitespace-nowrap"
+          >
+            {text}
+          </motion.span>
+        )}
+      </AnimatePresence>
       {alert && (
         <div
-          className={`absolute right-2 w-2 h-2 rounded bg-orange-400 dark:bg-orange-600 ${expanded ? "" : "top-2"
-            }`}
+          className={`absolute right-2 w-2 h-2 rounded bg-orange-400 dark:bg-orange-600 ${expanded ? "" : "top-2"}`}
         />
       )}
-
       {!expanded && (
-        <div
-          className={`absolute left-full w-max rounded-md px-2 py-1 ml-6 bg-orange-100 dark:bg-gray-800 text-orange-800 dark:text-gray-300 text-sm invisible opacity-20 -translate-x-3 transition-all group-hover:visible group-hover:opacity-100 group-hover:translate-x-0`}
-        >
+        <div className="text-sm absolute left-full w-max rounded-md px-2 py-1 ml-6 bg-orange-100 dark:bg-gray-800 text-orange-800 dark:text-gray-300 transition-all duration-100 invisible opacity-0 -translate-x-3 group-hover:visible group-hover:opacity-100 group-hover:translate-x-0">
           {text}
         </div>
       )}
@@ -149,7 +105,13 @@ export function SidebarDropdown({ icon, text, children }) {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleDropdown = () => {
-    setIsOpen(!isOpen);
+    setIsOpen(prev => !prev);
+  };
+
+  // Variants for the dropdown list
+  const dropdownVariants = {
+    open: { height: "auto", opacity: 1, transition: { duration: 0.1 } },
+    closed: { height: 0, opacity: 0, transition: { duration: 0.1 } }
   };
 
   return (
@@ -163,32 +125,33 @@ export function SidebarDropdown({ icon, text, children }) {
       >
         {icon}
         {expanded && (
-          <>
-            <span
-              className={`overflow-hidden transition-all ${expanded ? "w-52 ml-3" : "w-0"
-                }`}
-            >
-              {text}
-            </span>
-          </>
+          <motion.span
+            initial={{ opacity: 0, width: 0 }}
+            animate={{ opacity: 1, width: "auto" }}
+            exit={{ opacity: 0, width: 0 }}
+            transition={{ duration: 0.1 }}
+            className="ml-3 overflow-hidden whitespace-nowrap"
+          >
+            {text}
+          </motion.span>
         )}
         <span className="ml-auto">
           {isOpen ? <FaChevronUp /> : <FaChevronDown />}
         </span>
         {!expanded && (
-          <div
-            className={`absolute left-full w-max rounded-md px-2 py-1 ml-6 bg-orange-100 dark:bg-gray-800 text-orange-800 dark:text-gray-300 text-sm invisible opacity-20 -translate-x-3 transition-all group-hover:visible group-hover:opacity-100 group-hover:translate-x-0`}
-          >
+          <div className="absolute left-full w-max rounded-md px-2 py-1 ml-6 bg-orange-100 dark:bg-gray-800 text-orange-800 dark:text-gray-300 text-sm transition-all duration-100 invisible opacity-0 -translate-x-3 group-hover:visible group-hover:opacity-100 group-hover:translate-x-0">
             {text}
           </div>
         )}
       </div>
-      <ul
-        className={`pl-8 transition-height duration-700 ease-out ${isOpen ? "max-h-96" : "max-h-0 overflow-hidden"
-          }`}
+      <motion.ul
+        variants={dropdownVariants}
+        initial="closed"
+        animate={isOpen ? "open" : "closed"}
+        className="pl-8 overflow-hidden"
       >
         {children}
-      </ul>
+      </motion.ul>
     </li>
   );
 }

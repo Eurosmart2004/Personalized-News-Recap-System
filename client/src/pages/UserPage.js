@@ -2,11 +2,13 @@ import React, { useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useAxios } from "../axios/axios";
 import { setAuth } from "../redux/reducer/authReducer";
+import { setNews, setAfterTime, setBeforeTime } from "../redux/reducer/newsReducer";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import { FaCamera, FaSave, FaUser, FaEnvelope, FaLock, FaTags, FaClock, FaCheckCircle } from "react-icons/fa";
 import Time from "../components/Time";
 import { motion } from "framer-motion";
+import { TOPIC } from "../utils/Main";
 
 const UserProfilePage = () => {
   const { privateAxios } = useAxios();
@@ -173,6 +175,9 @@ const UserProfilePage = () => {
       try {
         const res = await privateAxios.get("/user/preferences");
         setSelectedPreferences(res.data.preferences);
+        dispatch(setNews([]));
+        dispatch(setAfterTime(null));
+        dispatch(setBeforeTime(null));
       } catch (err) {
         console.error(err);
         toast.error("Failed to load user preferences.");
@@ -229,14 +234,14 @@ const UserProfilePage = () => {
       // Update user in Redux store
       dispatch(setAuth({ user: res.data }));
 
-      toast.success("Profile updated successfully!");
+      toast.success("Cập nhập thông tin thành công!");
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
       setIsSubmitting(false);
     } catch (err) {
       console.error(err);
-      toast.error(err.response?.data?.error || "Failed to update your profile. Please try again.");
+      toast.error(err.response?.data?.error || "Cập nhập thông tin thất bại!");
       setIsSubmitting(false);
     }
   };
@@ -282,9 +287,9 @@ const UserProfilePage = () => {
 
       {/* Page Header */}
       <div className="bg-orange-100 rounded-lg p-6 shadow-xl mb-6">
-        <h1 className="text-2xl font-semibold text-gray-800">Your Profile</h1>
+        <h1 className="text-2xl font-semibold text-gray-800">Thông tin của bạn</h1>
         <p className="text-gray-600 mt-2">
-          Manage your account settings and preferences
+          Cập nhập thông tin cá nhân và sở thích của bạn
         </p>
       </div>
 
@@ -299,7 +304,7 @@ const UserProfilePage = () => {
               }`}
             onClick={() => setActiveTab("profile")}
           >
-            <FaUser className="mr-2" /> Profile
+            <FaUser className="mr-2" /> Thông tin cá nhân
           </button>
           <button
             className={`flex items-center px-6 py-3 focus:outline-none dark:text-white ${activeTab === "preferences"
@@ -308,7 +313,7 @@ const UserProfilePage = () => {
               }`}
             onClick={() => setActiveTab("preferences")}
           >
-            <FaTags className="mr-2" /> Preferences
+            <FaTags className="mr-2" /> Sở thích
           </button>
         </div>
 
@@ -351,14 +356,14 @@ const UserProfilePage = () => {
                   accept="image/*"
                 />
                 <p className="text-sm text-gray-500 dark:text-white mt-2">
-                  Click to change avatar
+                  Thay đổi giao diện
                 </p>
               </div>
 
               {/* Profile Form */}
               <div className="flex-1">
                 <h2 className="text-xl font-bold text-gray-700 dark:text-white mb-4">
-                  Personal Information
+                  Thông tin cá nhân
                 </h2>
 
                 <div className="mb-4">
@@ -367,7 +372,7 @@ const UserProfilePage = () => {
                     className="block text-sm font-medium text-gray-700 dark:text-white mb-1"
                   >
                     <FaUser className="inline-block mr-2 dark:text-white" />{" "}
-                    Name
+                    Tên
                   </label>
                   <input
                     type="text"
@@ -411,10 +416,10 @@ const UserProfilePage = () => {
                 <div className="mt-6 mb-4">
                   <h3 className="text-lg font-semibold text-gray-700 dark:text-white mb-2">
                     <FaLock className="inline-block mr-2 dark:text-white" />{" "}
-                    Change Password
+                    Thay đổi mật khẩu
                   </h3>
                   <p className="text-sm italic text-gray-500 dark:text-white mb-4">
-                    Leave blank if you don't want to change your password
+                    Để thay đổi mật khẩu, vui lòng nhập mật khẩu hiện tại và mật khẩu mới
                   </p>
 
                   <div className="mb-4">
@@ -422,7 +427,7 @@ const UserProfilePage = () => {
                       htmlFor="currentPassword"
                       className="block text-sm font-medium text-gray-700 dark:text-white mb-1"
                     >
-                      Current Password
+                      Mật khâu hiện tại
                     </label>
                     <input
                       type="password"
@@ -438,7 +443,7 @@ const UserProfilePage = () => {
                       htmlFor="newPassword"
                       className="block text-sm font-medium text-gray-700 dark:text-white mb-1"
                     >
-                      New Password
+                      Mật khẩu mới
                     </label>
                     <input
                       type="password"
@@ -462,7 +467,7 @@ const UserProfilePage = () => {
                       htmlFor="confirmPassword"
                       className="block text-sm font-medium text-gray-700 dark:text-white mb-1"
                     >
-                      Confirm New Password
+                      Xác nhận mật khẩu
                     </label>
                     <input
                       type="password"
@@ -488,7 +493,7 @@ const UserProfilePage = () => {
                   className="px-6 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition focus:outline-none focus:ring focus:ring-orange-500 flex items-center"
                 >
                   <FaSave className="mr-2" />
-                  {isSubmitting ? "Saving..." : "Save Changes"}
+                  {isSubmitting ? "Đang lưu" : "Lưu"}
                 </button>
               </div>
             </div>
@@ -499,10 +504,10 @@ const UserProfilePage = () => {
         {activeTab === "preferences" && (
           <div className="p-6 pb-10">
             <h2 className="text-xl font-bold text-gray-700 dark:text-white mb-4">
-              Your Interests
+              Sở thích
             </h2>
             <p className="text-gray-600 dark:text-white mb-4">
-              Select topics you're interested in:
+              Hãy chọn những chủ đề bạn quan tâm
             </p>
 
             <div className="flex flex-wrap gap-3 mb-6">
@@ -515,7 +520,7 @@ const UserProfilePage = () => {
                     } hover:scale-105 transition-transform`}
                   onClick={() => togglePreference(preference)}
                 >
-                  {preference}
+                  {TOPIC[preference]}
                 </span>
               ))}
             </div>
@@ -523,7 +528,7 @@ const UserProfilePage = () => {
             <div className="mt-8 mb-6">
               <h2 className="text-xl font-bold text-gray-700 dark:text-white mb-4">
                 <FaClock className="inline-block mr-2 dark:text-white" /> Email
-                Notifications
+                Thông báo
               </h2>
 
               <div className="flex items-center mb-4">
@@ -538,7 +543,7 @@ const UserProfilePage = () => {
                   htmlFor="daily-emails"
                   className="text-lg text-gray-700 dark:text-white"
                 >
-                  Receive daily email updates
+                  Nhận email hàng ngày
                 </label>
               </div>
 
@@ -552,7 +557,7 @@ const UserProfilePage = () => {
                   layout
                 >
                   <h3 className="text-lg font-semibold text-gray-700 dark:text-white mb-2">
-                    Set your preferred time:
+                    Thời gian nhận email:
                   </h3>
                   <Time
                     className="text-gray-700 dark:text-slate-50"
@@ -569,7 +574,7 @@ const UserProfilePage = () => {
               className="px-6 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition focus:outline-none focus:ring focus:ring-orange-300 flex items-center"
             >
               <FaCheckCircle className="mr-2" />
-              {isSubmitting ? "Saving..." : "Save Preferences"}
+              {isSubmitting ? "Đang lưu" : "Lưu"}
             </button>
           </div>
         )}

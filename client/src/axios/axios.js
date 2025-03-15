@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
 import { setAuth } from '../redux/reducer/authReducer';
-import { BASEURL } from '../utils/Network';
+import { BASEURL } from '../utils/Main';
 
 export const useAxios = () => {
     const auth = useSelector((state) => state.auth);

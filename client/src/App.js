@@ -1,4 +1,4 @@
-import Header from "./components/Header";
+import SideBarComponent from "./components/SideBarComponent";
 import Footer from "./components/Footer";
 import { Outlet, useLocation, useNavigate, matchPath } from "react-router-dom";
 import { useAxios } from './axios/axios';
@@ -11,6 +11,7 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { setTheme } from "./redux/reducer/themeReducer";
 import './styles/App.css';
 import HomePage from "./pages/HomePage";
+import Header from "./components/Header";
 const App = () => {
 	const { privateAxios } = useAxios();
 	const [loading, setLoading] = useState(true);
@@ -93,11 +94,13 @@ const App = () => {
 			<ThemeProvider theme={theme}>
 				<div className="flex flex-col min-h-screen">
 					<Header expanded={expanded} setExpanded={setExpanded} />
-					<main className={`transition-all dark:bg-black ml-0 ${expanded ? "sm:ml-[250px]" : "sm:ml-[100px]"} lg:p-20`}>
+					<SideBarComponent expanded={expanded} setExpanded={setExpanded} />
+					<main className={`transition-all dark:bg-black ml-0 ${expanded ? "sm:ml-[200px]" : "sm:ml-[65px]"}`}>
+						<div className="my-3"></div>
 						<Outlet />
 					</main>
 				</div>
-				<div className={`transition-all dark:bg-black ml-0 ${expanded ? "sm:ml-[250px]" : "sm:ml-[100px]"}`}>
+				<div className={`transition-all dark:bg-black ml-0 ${expanded ? "sm:ml-[200px]" : "sm:ml-[65px]"}`}>
 					<Footer />
 				</div>
 

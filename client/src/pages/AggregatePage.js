@@ -65,7 +65,7 @@ const AggregatePage = () => {
                                 onClick={() => navigate(`/aggregate/${duration}/${clusterItem.id}`)}
                             >
                                 <h2 className="text-xl font-semibold">{clusterItem.title}</h2>
-                                <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">{new Date(clusterItem.date).toLocaleDateString()}</p>
+                                {/* <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">{new Date(clusterItem.date).toLocaleDateString()}</p> */}
                                 <div className="prose max-w-none">
                                     <ReactMarkdown>{clusterItem.content.split("\n")[2] + "..."}</ReactMarkdown>
                                 </div>

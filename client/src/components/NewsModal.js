@@ -1,10 +1,9 @@
 import React from "react";
-import { BASEURL } from "../utils/Network";
+import { BASEURL, formatDateTime } from "../utils/Main";
 const NewsModal = ({ onClose, news }) => {
     const handleOutsideClick = (e) => {
         onClose();
     };
-
 
     return (
         <div
@@ -43,7 +42,7 @@ const NewsModal = ({ onClose, news }) => {
 
                 {/* News Details */}
                 <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-                    {news.date}
+                    {formatDateTime(news.date)}
                 </p>
                 <p className="text-gray-700 dark:text-gray-300 mb-4">
                     {news.summary}
@@ -58,7 +57,7 @@ const NewsModal = ({ onClose, news }) => {
                         rel="noopener noreferrer"
                         className="bg-orange-500 text-white py-2 px-4 rounded-md hover:bg-orange-600"
                     >
-                        Read Post
+                        Đọc chi tiết
                     </a>
                 </div>
             </div>

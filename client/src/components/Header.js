@@ -1,28 +1,21 @@
+import { useState, useEffect } from "react";
+import { FaSearch, FaUser, FaSignOutAlt } from "react-icons/fa";
+import { AiOutlineMenu } from "react-icons/ai";
+import { hover, motion } from "framer-motion";
+import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from 'react-router-dom';
-import { LuSettings, LuLogOut, LuNewspaper, LuLogIn } from "react-icons/lu";
-import { GrAggregate } from "react-icons/gr";
-import { FaRegBookmark } from 'react-icons/fa';
-import { VscColorMode } from "react-icons/vsc";
-import { FiMenu } from "react-icons/fi";
-import { CiLight } from "react-icons/ci";
-import { MdNightlightRound, MdAutorenew } from "react-icons/md";
-import { useSelector, useDispatch } from 'react-redux';
-import { useLocation } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import { useAxios } from '../axios/axios';
-import { setTheme } from '../redux/reducer/themeReducer';
 import { removeAuth } from '../redux/reducer/authReducer';
-import Sidebar, { SidebarItem, SidebarDropdown } from './Sidebar';
+import { useAxios } from '../axios/axios';
+import Avatar from "react-avatar";
+import logo from "../images/logo.png";
 
-
-function Header({ expanded, setExpanded }) {
+export default function Header({ expanded, setExpanded }) {
+    const [isOpen, setIsOpen] = useState(false);
+    const [showHeader, setShowHeader] = useState(true);
     const { publicAxios } = useAxios();
-    const auth = useSelector((state) => state.auth);
-    const [modal, setModal] = useState(false);
-    const theme = useSelector((state) => state.theme.theme);
     const dispatch = useDispatch();
-    const location = useLocation();
     const navigate = useNavigate();
+    const user = useSelector((state) => state.auth.user);
     const logOut = async () => {
         try {
             const res = await publicAxios.post('/user/logout');
@@ -34,88 +27,100 @@ function Header({ expanded, setExpanded }) {
         }
     };
 
-    // Handle screen resize to toggle modal/expanded states
+    let lastScrollY = 0;
+
     useEffect(() => {
-        const handleResize = () => {
-            if (window.innerWidth >= 640) {
-                setModal(false); // No modal on larger screens
-                setExpanded(true); // Always expanded on larger screens
-            }
-            else {
-                setModal(false);
-                setExpanded(false);
+        const handleScroll = () => {
+            if (window.innerWidth <= 768) {
+                if (window.scrollY > lastScrollY) {
+                    setShowHeader(false);
+                } else {
+                    setShowHeader(true);
+                }
+                lastScrollY = window.scrollY;
             }
         };
 
-        window.addEventListener("resize", handleResize);
-        handleResize(); // Run on initial render
-        return () => window.removeEventListener("resize", handleResize);
-    }, [setExpanded]);
-
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
     return (
-        <>
-            {/* Toggle Button for Mobile */}
-            <button
-                onClick={() => {
-                    setModal(true);
-                    setExpanded(true);
-                }}
-                className="sm:hidden p-2 fixed top-2 left-2 z-50 bg-gray-100 rounded-md shadow-lg"
+        <motion.header
+            initial={{ y: -50, opacity: 0 }}
+            animate={{ y: showHeader ? 0 : -100, opacity: showHeader ? 1 : 0 }}
+            transition={{ duration: 0.01 }}
+            className=" bg-white border border-b-2 h-[64px] p-4 flex items-center justify-between sticky top-0 z-50"
+        >
+            {/* Left: Logo & Text */}
+            <div className="flex items-center space-x-2 cursor-pointer"
+                onClick={() => navigate("/")}
             >
-                <FiMenu size={20} />
-            </button>
-
-            <Sidebar
-                expanded={expanded}
-                setExpanded={setExpanded}
-                modal={modal}
-                setModal={setModal}
-            >
-
-                <SidebarItem icon={<LuNewspaper size={20} />} text="News" active={location.pathname === "/"} onClick={() => navigate("/")} />
-                <SidebarItem icon={<FaRegBookmark size={20} />} text="Saved" active={location.pathname === "/collection"} onClick={() => navigate("/collection")} />
-                <SidebarItem icon={<GrAggregate size={20} />} text="Aggregate" active={location.pathname.startsWith("/aggregate")} onClick={() => navigate("/aggregate")} />
-                <hr className="my-3" />
-                <SidebarItem icon={<LuSettings size={20} />} text="Settings" active={location.pathname.startsWith("/user")} onClick={() => navigate("/user")} />
-                {/* <SidebarDropdown icon={<VscColorMode size={20} />} text="Theme">
-                    <SidebarItem
-                        icon={<MdNightlightRound size={20} />}
-                        text="Dark Mode"
-                        onClick={() => dispatch(setTheme('dark'))}
-                        active={theme === 'dark'}
-                    />
-                    <SidebarItem
-                        icon={<CiLight size={20} />}
-                        text="Light Mode"
-                        onClick={() => dispatch(setTheme('light'))}
-                        active={theme === 'light'}
-                    />
-                    <SidebarItem
-                        icon={<MdAutorenew size={20} />}
-                        text="Auto Mode"
-                        onClick={() => dispatch(setTheme('auto'))}
-                        active={theme === 'auto'}
-                    />
-                </SidebarDropdown> */}
-                <hr className="my-3" />
-                <div className="mt-auto">
-                    {auth.user ? (
-                        <SidebarItem
-                            icon={<LuLogOut size={20} />}
-                            text="Logout"
-                            onClick={logOut}
-                        />
-                    ) : (
-                        <SidebarItem
-                            icon={<LuLogIn size={20} />}
-                            text="Login"
-                            onClick={() => navigate("/login")}
-                        />
-                    )}
+                <div className="">
+                    <button
+                        onClick={() => setExpanded(curr => !curr)}
+                        className="p-1.5 rounded-lg hover:bg-gray-100"
+                    >
+                        <AiOutlineMenu size={20} />
+                    </button>
                 </div>
-            </Sidebar>
-        </>
+                <img
+                    src={logo}
+                    alt="Avatar"
+                    className="w-8 h-8"
+                />
+                <span className="text-md hidden sm:block">News Recap</span>
+            </div>
+
+            {/* Center: Search Bar */}
+            <div className="relative sm:w-1/2 md:w-1/3">
+                <input
+                    type="text"
+                    placeholder="Search..."
+                    className="w-full px-4 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-orange-300"
+                />
+                <FaSearch className="absolute right-3 top-2.5 text-gray-500" size={18} />
+            </div>
+
+            {/* Right: Avatar & Dropdown */}
+            <div className="relative hidden sm:block">
+                <button onClick={() => setIsOpen(!isOpen)} className="flex items-center space-x-2 focus:outline-none">
+                    {
+                        user?.picture ?
+                            <img
+                                src={user.picture}
+                                alt="Avatar"
+                                className="w-10 h-10 rounded-full border"
+                            /> :
+                            <Avatar
+                                name={user?.name.split(" ").map((n) => n[0]).join("")}
+                                size="40"
+                                round={true}
+                                textSizeRatio={2}
+                            />
+                    }
+
+                </button>
+                {isOpen && (
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.2 }}
+                        className="absolute right-0 mt-2 w-36 bg-white shadow-xl rounded-md overflow-hidden border z-50"
+                    >
+                        <button
+                            onClick={() => navigate('/user')}
+                            className="w-full flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-orange-500 hover:text-white transition duration-300"
+                        >
+                            <FaUser className="mr-2" size={16} /> Hồ sơ
+                        </button>
+                        <button
+                            onClick={logOut}
+                            className="w-full flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-orange-500 hover:text-white transition duration-300"                        >
+                            <FaSignOutAlt className="mr-2" size={16} /> Đăng xuất
+                        </button>
+                    </motion.div>
+                )}
+            </div>
+        </motion.header>
     );
 }
-
-export default Header;
