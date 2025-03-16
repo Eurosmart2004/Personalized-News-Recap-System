@@ -51,9 +51,7 @@ const App = () => {
 
 	useEffect(() => {
 		socket.connect();
-		socket.on('message', (data) => {
-			console.log('Message from server:', data.message);
-		});
+
 		window.addEventListener('storage', handleStorageChange);
 		getUser();
 		const savedTheme = localStorage.getItem('theme') || 'auto';
@@ -61,7 +59,6 @@ const App = () => {
 
 		return () => {
 			window.removeEventListener('storage', handleStorageChange);
-			socket.disconnect();
 		};
 	}, []);
 

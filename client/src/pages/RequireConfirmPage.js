@@ -17,9 +17,9 @@ const RequireConfirmPage = () => {
     useEffect(() => {
         checkConfirm();
         setLoading(false);
+        socket.connect();
         socket.emit("join", { email });
         socket.on("message", (data) => {
-            // console.log(data.message);
         });
         socket.on("confirmation", async (data) => {
             console.log("Message confirm from socket: ", data.message);
@@ -35,6 +35,7 @@ const RequireConfirmPage = () => {
 
         return () => {
             socket.off("confirmation");
+            socket.disconnect();
         };
     }, []);
 
