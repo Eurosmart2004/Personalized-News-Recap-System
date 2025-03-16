@@ -11,7 +11,6 @@ import 'react-toastify/dist/ReactToastify.css';
 const NewsPage = () => {
     const { privateAxios } = useAxios();
     const dispatch = useDispatch();
-    // const auth = useSelector((state) => state.auth);
     const collection = useSelector((state) => state.collection.collections);
     const [listNewsFavorites, setListNewsFavorite] = useState([]);
     const [selectedTopic, setSelectedTopic] = useState([]);
@@ -55,6 +54,8 @@ const NewsPage = () => {
 
             const response = await privateAxios.get(`/news/get?${params.toString()}`);
             const fetchedNews = response.data.news;
+
+            console.log("Fetched news:", fetchedNews);
 
             dispatch(setNews(fetchedNews));
 
@@ -130,19 +131,11 @@ const NewsPage = () => {
     return (
         <>
             <div className="container mx-auto px-3 lg:px-0">
-                {/* <div className="mb-10">
-                    <MultiSelectDropdown
-                        items={preferences}
-                        selected={selectedTopic}
-                        setSelected={setSelectedTopic}
-                        name="Select topic"
-                    />
-                </div> */}
                 <div className="flex flex-wrap">
                     {/* Render News Items */}
                     {news.map((item) => (
                         selectedTopic.includes(item.topic) && selectedTopic.length > 0 ? (
-                            <div className="w-full sm:w-full md:w-1/2 lg:w-1/3 xl:w-1/4 px-4 mb-6" key={item.id}>
+                            <div className="w-full sm:w-full md:w-1/2 lg:w-1/3 xl:w-1/4 px-4 mb-6 flex" key={item.id}>
                                 <NewsCard
                                     news={item}
                                     isSaved={listNewsFavorites.includes(item.id)}
@@ -152,7 +145,7 @@ const NewsPage = () => {
                     ))}
 
                     {/* Loading Skeleton */}
-                    <div className="w-full sm:w-full md:w-1/2 lg:w-1/3 px-4 mb-6">
+                    <div className="w-full sm:w-full md:w-1/2 lg:w-1/3 xl:w-1/4 px-4 mb-6 flex">
                         <NewsCardSkeleton />
                     </div>
                 </div>

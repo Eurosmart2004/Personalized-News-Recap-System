@@ -4,6 +4,7 @@ import { jwtDecode } from 'jwt-decode';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useState } from 'react';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const validatePassword = (password) => {
     if (!password) return 'Password is required';
@@ -13,14 +14,14 @@ const validatePassword = (password) => {
         !/[0-9]/.test(password) ||
         !/[!@#$%^&*]/.test(password)
     ) {
-        return 'Password must be at least 8 characters, include 1 uppercase, 1 number, and 1 special character';
+        return 'Mật khẩu phải có ít nhất 8 ký tự, bao gồm 1 chữ hoa, 1 số và 1 ký tự đặc biệt';
     }
     return '';
 };
 
 const validateConfirmPassword = (confirmPassword, password) => {
-    if (!confirmPassword) return 'Confirm password is required';
-    if (confirmPassword !== password) return 'Passwords do not match';
+    if (!confirmPassword) return 'Bạn cần nhập xác nhận mật khẩu';
+    if (confirmPassword !== password) return 'Mật khẩu không trùng nhau';
     return '';
 };
 
@@ -30,10 +31,20 @@ const ResetPasswordPage = () => {
     const navigate = useNavigate();
 
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [confirmPassword, setConfirmPassword] = useState('');
     const [errors, setErrors] = useState({});
     const [success, setSuccess] = useState(false);
     const [loading, setLoading] = useState(false);
+
+    const toggleShowPassword = () => {
+        setShowPassword(!showPassword);
+    };
+
+    const toggleShowConfirmPassword = () => {
+        setShowConfirmPassword(!showConfirmPassword);
+    };
 
     const handlePasswordChange = (e) => {
         const value = e.target.value;
@@ -66,7 +77,7 @@ const ResetPasswordPage = () => {
 
         if (passwordError || confirmPasswordError) {
             setErrors({ password: passwordError, confirmPassword: confirmPasswordError });
-            toast.error('Please fix the errors before submitting');
+            toast.error('Vui lòng kiểm tra lại các yêu cầu');
             return;
         }
 
@@ -76,7 +87,14 @@ const ResetPasswordPage = () => {
             toast.success(response.data.message);
             setSuccess(true);
         } catch (error) {
-            toast.error(error.response?.data?.error || 'Something went wrong');
+            console.log(error);
+            if (error.response?.data?.error === "The link has expired. Please click to resend the email.") {
+                toast.error("Đường dẫn link này đã hết hạn, chúng tôi sẽ cung cấp đường dẫn mới");
+                handleResendEmail();
+            }
+            else {
+                toast.error("Đã xảy ra sự cố");
+            }
         }
         finally {
             setLoading(false);
@@ -88,9 +106,9 @@ const ResetPasswordPage = () => {
             const payload = jwtDecode(token);
             setLoading(true);
             await publicAxios.post('/user/forgot-password', { email: payload.email });
-            toast.success('Email sent successfully');
+            toast.success("Đường dẫn mới để đặt lại mật khẩu đã trong email vui lòng kiểm tra.");
         } catch (error) {
-            toast.error('Failed to resend email');
+            toast.error('Đã xảy ra sự cố');
         }
         finally {
             setLoading(false);
@@ -101,15 +119,15 @@ const ResetPasswordPage = () => {
         return (
             <div className="flex items-center justify-center h-screen bg-gray-100">
                 <div className="bg-white shadow-md rounded-lg p-6 max-w-md text-center">
-                    <h1 className="text-2xl font-semibold mb-4">Reset Password</h1>
+                    <h1 className="text-2xl font-semibold mb-4">Đặt lại mật khẩu</h1>
                     <p className="text-gray-600 mb-6">
-                        Password reset successfully. Please login with your new password.
+                        Đặt lại mật khẩu thành công. Vui lòng đăng nhập với mật khẩu mới của bạn.
                     </p>
                     <button
                         className="w-full py-2 px-4 bg-orange-400 text-white font-medium rounded-md hover:bg-orange-500"
                         onClick={() => navigate('/login')}
                     >
-                        Login
+                        Đăng nhập
                     </button>
                 </div>
             </div>
@@ -118,52 +136,68 @@ const ResetPasswordPage = () => {
 
     return (
         <div className="flex items-center justify-center h-screen bg-gray-100">
-            <ToastContainer />
+            <ToastContainer autoClose={10000} />
             <div className="bg-white shadow-md rounded-lg p-6 max-w-md w-full">
-                <h1 className="text-2xl font-semibold text-center mb-6">Reset Password</h1>
+                <h1 className="text-2xl font-semibold text-center mb-6">Đặt lại mật khẩu</h1>
                 <form onSubmit={handleSubmit} noValidate>
                     <div className="mb-4">
-                        <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                        <input
-                            type="password"
-                            id="password"
-                            placeholder="••••••••"
-                            value={password}
-                            onChange={handlePasswordChange}
-                            className={`block w-full px-4 py-2 border rounded-md focus:outline-none ${errors.password === undefined ? 'focus:ring focus:ring-orange-300' : errors.password !== '' ? 'border-red-500' : 'border-green-500'
-                                }`}
-                        />
+                        <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">Mật khẩu</label>
+                        <div className="relative">
+                            <input
+                                type={showPassword ? 'text' : 'password'}
+                                id="password"
+                                placeholder="••••••••"
+                                value={password}
+                                onChange={handlePasswordChange}
+                                className={`block w-full px-4 py-2 border rounded-md focus:outline-none ${errors.password === undefined
+                                    ? 'focus:ring focus:ring-orange-300 '
+                                    : errors.password !== ''
+                                        ? 'border-red-500'
+                                        : 'border-green-500'
+                                    }`}
+                            />
+                            <div
+                                className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
+                                onClick={toggleShowPassword}
+                            >
+                                {showPassword ? <FaEyeSlash /> : <FaEye />}
+                            </div>
+                        </div>
                         {errors.password && <small className="text-red-500">{errors.password}</small>}
                     </div>
                     <div className="mb-4">
-                        <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
-                        <input
-                            type="password"
-                            id="confirmPassword"
-                            placeholder="••••••••"
-                            value={confirmPassword}
-                            onChange={handleConfirmPasswordChange}
-                            className={`block w-full px-4 py-2 border rounded-md focus:outline-none ${errors.confirmPassword === undefined ? 'focus:ring focus:ring-orange-300' : errors.confirmPassword !== '' ? 'border-red-500' : 'border-green-500'
-                                }`}
-                        />
+                        <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">Xác nhận mật khẩu</label>
+                        <div className="relative">
+                            <input
+                                type={showConfirmPassword ? 'text' : 'password'}
+                                id="confirmPassword"
+                                placeholder="••••••••"
+                                value={confirmPassword}
+                                onChange={handleConfirmPasswordChange}
+                                className={`block w-full px-4 py-2 border rounded-md focus:outline-none ${errors.password === undefined
+                                    ? 'focus:ring focus:ring-orange-300 '
+                                    : errors.password !== ''
+                                        ? 'border-red-500'
+                                        : 'border-green-500'
+                                    }`}
+                            />
+                            <div
+                                className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
+                                onClick={toggleShowConfirmPassword}
+                            >
+                                {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                            </div>
+                        </div>
                         {errors.confirmPassword && <small className="text-red-500">{errors.confirmPassword}</small>}
                     </div>
                     <button
                         type="submit"
-                        // className="w-full py-2 px-4 bg-orange-400 text-white font-medium rounded-md hover:bg-orange-500"
                         className={`w-full py-2 px-4 text-white font-medium rounded-md ${loading ? 'bg-orange-500' : 'bg-orange-400  hover:bg-orange-500'} `}
                         disabled={loading}
                     >
-                        Reset Password
+                        Đặt lại mật khẩu
                     </button>
                 </form>
-                <button
-                    onClick={handleResendEmail}
-                    className={`w-full py-2 px-4 mt-4 text-gray-700 font-medium rounded-md ${loading ? 'bg-gray-400' : 'bg-gray-300  hover:bg-gray-400'} `}
-                    disabled={loading}
-                >
-                    Resend Email
-                </button>
             </div>
         </div>
     );

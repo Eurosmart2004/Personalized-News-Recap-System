@@ -5,7 +5,7 @@ import { setAuth } from '../redux/reducer/authReducer';
 import { useAxios } from '../axios/axios';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
-import sunLogin from '../images/sun.png';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 
 const LoginPage = () => {
@@ -13,6 +13,7 @@ const LoginPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [remember, setRemember] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const [errors, setErrors] = useState({});
     const dispatch = useDispatch();
     const auth = useSelector((state) => state.auth);
@@ -20,17 +21,20 @@ const LoginPage = () => {
     const location = useLocation();
     const from = location.state?.from?.pathname || '/';
 
+    const toggleShowPassword = () => {
+        setShowPassword(!showPassword);
+    };
 
     const validateEmail = (email) => {
-        if (!email.trim()) return 'Email is required';
-        if (!/\S+@\S+\.\S+/.test(email)) return 'Email is invalid';
+        if (!email.trim()) return 'Bạn cần nhập email';
+        if (!/\S+@\S+\.\S+/.test(email)) return 'Email không hợp lệ';
         return '';
     };
 
     const validatePassword = (password) => {
-        if (!password) return 'Password is required';
+        if (!password) return 'Bạn cần nhập mật khẩu';
         if (password.length < 8 || !/[A-Z]/.test(password) || !/[0-9]/.test(password) || !/[!@#$%^&*]/.test(password)) {
-            return 'Password must be at least 8 characters, include 1 uppercase, 1 number, and 1 special character';
+            return 'Mật khẩu phải chứa ít nhất 8 ký tự, 1 chữ cái viết hoa, 1 số và 1 ký tự đặc biệt';
         }
         return '';
     };
@@ -88,7 +92,7 @@ const LoginPage = () => {
                 email: emailError,
                 password: passwordError,
             });
-            toast.error('Please fix the errors before submitting');
+            toast.error('Vui lòng kiểm tra lại thông tin đăng nhập');
             return;
         }
 
@@ -117,8 +121,8 @@ const LoginPage = () => {
                 {/* Left Section */}
                 <div className="w-full md:w-1/2 flex flex-col justify-center p-4">
                     <div className="container p-6 mx-auto max-w-sm">
-                        <h2 className="font-bold text-2xl mb-4">Welcome back</h2>
-                        <p className="text-gray-600 mb-6">Welcome back! Please enter your details.</p>
+                        <h2 className="font-bold text-2xl mb-4">Chào mừng bạn</h2>
+                        <p className="text-gray-600 mb-6">Chào mừng trở lại! Vui lòng nhập thông tin chi tiết của bạn.</p>
 
                         <form onSubmit={login}>
                             <div className="mb-4">
@@ -126,7 +130,7 @@ const LoginPage = () => {
                                 <input
                                     type="email"
                                     id="email"
-                                    placeholder="Enter your email"
+                                    placeholder="Nhập email của bạn"
                                     value={email}
                                     onChange={handleEmailChange}
                                     className={`block w-full px-4 py-2 border rounded-md focus:outline-none ${errors.email === undefined ? 'focus:ring focus:ring-orange-300' : errors.email !== '' ? 'border-red-500' : 'border-green-500'
@@ -135,16 +139,30 @@ const LoginPage = () => {
                                 {errors.email && <small className="text-red-500">{errors.email}</small>}
                             </div>
                             <div className="mb-4">
-                                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                                <input
-                                    type="password"
-                                    id="password"
-                                    placeholder="••••••••"
-                                    value={password}
-                                    onChange={handlePasswordChange}
-                                    className={`block w-full px-4 py-2 border rounded-md focus:outline-none ${errors.password === undefined ? 'focus:ring focus:ring-orange-300 ' : errors.password !== '' ? 'border-red-500' : 'border-green-500'
-                                        }`}
-                                />
+                                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                                    Mật khẩu
+                                </label>
+                                <div className="relative">
+                                    <input
+                                        type={showPassword ? 'text' : 'password'}
+                                        id="password"
+                                        placeholder="••••••••"
+                                        value={password}
+                                        onChange={handlePasswordChange}
+                                        className={`block w-full px-4 py-2 border rounded-md focus:outline-none ${errors.password === undefined
+                                            ? 'focus:ring focus:ring-orange-300 '
+                                            : errors.password !== ''
+                                                ? 'border-red-500'
+                                                : 'border-green-500'
+                                            }`}
+                                    />
+                                    <div
+                                        className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
+                                        onClick={toggleShowPassword}
+                                    >
+                                        {showPassword ? <FaEyeSlash /> : <FaEye />}
+                                    </div>
+                                </div>
                                 {errors.password && <small className="text-red-500">{errors.password}</small>}
                             </div>
                             <div className="flex justify-between items-center mb-4">
@@ -156,29 +174,29 @@ const LoginPage = () => {
                                         onChange={(e) => setRemember(e.target.checked)}
                                         className="h-4 w-4 text-orange-400 focus:ring-orange-300 rounded focus:outline-none"
                                     />
-                                    <label htmlFor="remember" className="ml-2 text-sm text-gray-600">Remember me</label>
+                                    <label htmlFor="remember" className="ml-2 text-sm text-gray-600">Remember</label>
                                 </div>
-                                <Link to="/forgot-password" className="text-orange-400 text-sm hover:underline">Forgot Password</Link>
+                                <Link to="/forgot-password" className="text-orange-400 text-sm hover:underline">Quên mật khẩu</Link>
                             </div>
                             <button
                                 type="submit"
                                 className="w-full py-2 px-4 bg-orange-400 text-white font-medium rounded-md hover:bg-orange-500 focus:outline-none focus:ring focus:ring-orange-300 mb-4"
                             >
-                                Sign in
+                                Đăng nhập
                             </button>
                             <button
                                 type="button"
                                 className="w-full py-2 px-4 flex items-center justify-center border border-gray-300 rounded-md hover:bg-gray-50 focus:ring focus:ring-orange-300"
                                 onClick={loginGoogle}
                             >
-                                <img src="https://img.icons8.com/color/24/000000/google-logo.png" alt="Google logo" className="mr-2" />
-                                <p className="m-0">Sign in with Google</p>
+                                <img src={process.env.PUBLIC_URL + "/logo/google.png"} alt="Google logo" className="mr-2" />
+                                <p className="m-0">Đăng nhập bằng Google</p>
                             </button>
                         </form>
 
                         <div className="text-center mt-6">
                             <p className="text-gray-600">
-                                Don't have an account? <Link to="/register" className="text-orange-400 hover:underline">Register</Link>
+                                Bạn chưa có tài khoản? <Link to="/register" className="text-orange-400 hover:underline">Đăng ký</Link>
                             </p>
                         </div>
                     </div>
@@ -186,7 +204,7 @@ const LoginPage = () => {
 
                 {/* Right Section */}
                 <div className="hidden md:block w-1/2 h-screen">
-                    <img src={sunLogin} alt="" className="w-full h-full object-cover" />
+                    <img src={process.env.PUBLIC_URL + "/images/sun.png"} alt="" className="w-full h-full object-cover" />
                 </div>
             </div>
         </>

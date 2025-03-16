@@ -5,7 +5,7 @@ import { setAuth } from '../redux/reducer/authReducer';
 import { useAxios } from '../axios/axios';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
-import sunLogin from '../images/sun.png';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const RegisterPage = () => {
     const { publicAxios, privateAxios } = useAxios();
@@ -15,6 +15,8 @@ const RegisterPage = () => {
     const [name, setName] = useState('');
     const [remember, setRemember] = useState(false);
     const [registerStatus, setRegisterStatus] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const [errors, setErrors] = useState({});
 
@@ -22,6 +24,14 @@ const RegisterPage = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const from = location.state?.from?.pathname || '/';
+
+    const toggleShowPassword = () => {
+        setShowPassword(!showPassword);
+    };
+
+    const toggleShowConfirmPassword = () => {
+        setShowConfirmPassword(!showConfirmPassword);
+    };
 
     const loginGoogle = useGoogleLogin({
         onSuccess: async (res) => {
@@ -38,34 +48,34 @@ const RegisterPage = () => {
                 }));
                 navigate(from, { replace: true });
             } catch (error) {
-                console.error('Error logging in with Google:', error);
+                console.error('Lỗi đăng nhập bằng Google:', error);
             }
         },
-        onError: (error) => console.error('Login Failed:', error),
+        onError: (error) => console.error('Đăng nhập thất bại:', error),
     });
 
     const validateName = (name) => {
-        if (!name.trim()) return 'Name is required';
+        if (!name.trim()) return 'Bạn cần nhập tên';
         return '';
     };
 
     const validateEmail = (email) => {
-        if (!email.trim()) return 'Email is required';
-        if (!/\S+@\S+\.\S+/.test(email)) return 'Email is invalid';
+        if (!email.trim()) return 'Bạn cần nhập email';
+        if (!/\S+@\S+\.\S+/.test(email)) return 'Email không hợp lệ';
         return '';
     };
 
     const validatePassword = (password) => {
-        if (!password) return 'Password is required';
+        if (!password) return 'Mật khẩu là bắt buộc';
         if (password.length < 8 || !/[A-Z]/.test(password) || !/[0-9]/.test(password) || !/[!@#$%^&*]/.test(password)) {
-            return 'Password must be at least 8 characters, include 1 uppercase, 1 number, and 1 special character';
+            return 'Mật khẩu phải có ít nhất 8 ký tự, bao gồm 1 chữ hoa, 1 số và 1 ký tự đặc biệt';
         }
         return '';
     };
 
     const validateConfirmPassword = (confirmPassword, password) => {
-        if (!confirmPassword) return 'Confirm password is required';
-        if (confirmPassword !== password) return 'Passwords do not match';
+        if (!confirmPassword) return 'Bạn cần nhập lại mật khẩu';
+        if (confirmPassword !== password) return 'Mật khẩu không khớp';
         return '';
     };
 
@@ -122,7 +132,7 @@ const RegisterPage = () => {
                 password: passwordError,
                 confirmPassword: confirmPasswordError,
             });
-            toast.error('Please fix the errors before submitting');
+            toast.error('Vui lòng kiểm tra lại thông tin đăng ký');
             return;
         }
 
@@ -140,7 +150,6 @@ const RegisterPage = () => {
             }));
             setRegisterStatus(true);
         } catch (error) {
-            console.error('Registration error:', error);
             toast.error(error.response.data.error);
         }
     };
@@ -149,8 +158,6 @@ const RegisterPage = () => {
         navigate('/require-confirm');
     }
 
-    console.log(errors);
-    console.log('name in erros', !(name in errors));
     return (
         <>
             <ToastContainer />
@@ -158,16 +165,16 @@ const RegisterPage = () => {
                 {/* Left Section */}
                 <div className="w-full md:w-1/2 flex flex-col justify-center p-4">
                     <div className="container mx-auto p-6 max-w-sm">
-                        <h2 className="font-bold text-2xl mb-4">Create an Account</h2>
-                        <p className="text-gray-600 mb-6">Please enter your details to create a new account.</p>
+                        <h2 className="font-bold text-2xl mb-4">Tạo tài khoản</h2>
+                        <p className="text-gray-600 mb-6">Vui lòng nhập thông tin của bạn để tạo tài khoản mới.</p>
 
                         <form onSubmit={register}>
                             <div className="mb-4">
-                                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Tên</label>
                                 <input
                                     type="text"
                                     id="name"
-                                    placeholder="Enter your name"
+                                    placeholder="Nhập tên của bạn"
                                     value={name}
                                     onChange={handleNameChange}
                                     className={`block w-full px-4 py-2 border rounded-md focus:outline-none  ${errors.name === undefined ? 'focus:ring focus:ring-orange-300' : errors.name !== '' ? 'border-red-500' : 'border-green-500'
@@ -180,7 +187,7 @@ const RegisterPage = () => {
                                 <input
                                     type="email"
                                     id="email"
-                                    placeholder="Enter your email"
+                                    placeholder="Nhập email của bạn"
                                     value={email}
                                     onChange={handleEmailChange}
                                     className={`block w-full px-4 py-2 border rounded-md focus:outline-none ${errors.email === undefined ? 'focus:ring focus:ring-orange-300' : errors.email !== '' ? 'border-red-500' : 'border-green-500'
@@ -189,29 +196,53 @@ const RegisterPage = () => {
                                 {errors.email && <small className="text-red-500">{errors.email}</small>}
                             </div>
                             <div className="mb-4">
-                                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                                <input
-                                    type="password"
-                                    id="password"
-                                    placeholder="••••••••"
-                                    value={password}
-                                    onChange={handlePasswordChange}
-                                    className={`block w-full px-4 py-2 border rounded-md focus:outline-none ${errors.password === undefined ? 'focus:ring focus:ring-orange-300' : errors.password !== '' ? 'border-red-500' : 'border-green-500'
-                                        }`}
-                                />
+                                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">Mật khẩu</label>
+                                <div className="relative">
+                                    <input
+                                        type={showPassword ? 'text' : 'password'}
+                                        id="password"
+                                        placeholder="••••••••"
+                                        value={password}
+                                        onChange={handlePasswordChange}
+                                        className={`block w-full px-4 py-2 border rounded-md focus:outline-none ${errors.password === undefined
+                                            ? 'focus:ring focus:ring-orange-300 '
+                                            : errors.password !== ''
+                                                ? 'border-red-500'
+                                                : 'border-green-500'
+                                            }`}
+                                    />
+                                    <div
+                                        className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
+                                        onClick={toggleShowPassword}
+                                    >
+                                        {showPassword ? <FaEyeSlash /> : <FaEye />}
+                                    </div>
+                                </div>
                                 {errors.password && <small className="text-red-500">{errors.password}</small>}
                             </div>
                             <div className="mb-4">
-                                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
-                                <input
-                                    type="password"
-                                    id="confirmPassword"
-                                    placeholder="••••••••"
-                                    value={confirmPassword}
-                                    onChange={handleConfirmPasswordChange}
-                                    className={`block w-full px-4 py-2 border rounded-md focus:outline-none ${errors.confirmPassword === undefined ? 'focus:ring focus:ring-orange-300' : errors.confirmPassword !== '' ? 'border-red-500' : 'border-green-500'
-                                        }`}
-                                />
+                                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">Xác nhận mật khẩu</label>
+                                <div className="relative">
+                                    <input
+                                        type={showConfirmPassword ? 'text' : 'password'}
+                                        id="confirmPassword"
+                                        placeholder="••••••••"
+                                        value={confirmPassword}
+                                        onChange={handleConfirmPasswordChange}
+                                        className={`block w-full px-4 py-2 border rounded-md focus:outline-none ${errors.password === undefined
+                                            ? 'focus:ring focus:ring-orange-300 '
+                                            : errors.password !== ''
+                                                ? 'border-red-500'
+                                                : 'border-green-500'
+                                            }`}
+                                    />
+                                    <div
+                                        className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
+                                        onClick={toggleShowConfirmPassword}
+                                    >
+                                        {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                                    </div>
+                                </div>
                                 {errors.confirmPassword && <small className="text-red-500">{errors.confirmPassword}</small>}
                             </div>
                             <div className="flex justify-between items-center mb-4">
@@ -224,7 +255,7 @@ const RegisterPage = () => {
                                         className="peer h-4 w-4 text-orange-400 focus:ring-orange-300 rounded focus:outline-none"
                                     />
                                     <label htmlFor="remember" className="ml-2 text-sm text-gray-600 peer-checked:text-orange-400">
-                                        Remember me
+                                        Remember
                                     </label>
                                 </div>
                             </div>
@@ -232,21 +263,21 @@ const RegisterPage = () => {
                                 type="submit"
                                 className="w-full py-2 px-4 bg-orange-400 text-white font-medium rounded-md hover:bg-orange-500 focus:ring focus:ring-orange-300 mb-4"
                             >
-                                Sign up
+                                Đăng ký
                             </button>
                             <button
                                 type="button"
                                 className="w-full py-2 px-4 flex items-center justify-center border border-gray-300 rounded-md hover:bg-gray-50 focus:ring focus:ring-orange-300"
                                 onClick={loginGoogle}
                             >
-                                <img src="https://img.icons8.com/color/24/000000/google-logo.png" alt="Google logo" className="mr-2" />
-                                <p className="m-0">Sign up with Google</p>
+                                <img src={process.env.PUBLIC_URL + "/logo/google.png"} alt="Google logo" className="mr-2" />
+                                <p className="m-0">Đăng ký bằng Google</p>
                             </button>
                         </form>
 
                         <div className="text-center mt-6">
                             <p className="text-gray-600">
-                                Already have an account? <Link to="/login" className="text-orange-400 hover:underline">Login</Link>
+                                Đã có tài khoản? <Link to="/login" className="text-orange-400 hover:underline">Đăng nhập</Link>
                             </p>
                         </div>
                     </div>
@@ -254,7 +285,7 @@ const RegisterPage = () => {
 
                 {/* Right Section */}
                 <div className="hidden md:block w-1/2 h-screen">
-                    <img src={sunLogin} alt="" className="w-full h-full object-cover" />
+                    <img src={process.env.PUBLIC_URL + "/images/sun.png"} alt="Sun" className="w-full h-full object-cover" />
                 </div>
             </div>
 

@@ -18,8 +18,7 @@ export default function Header({ expanded, setExpanded }) {
     const user = useSelector((state) => state.auth.user);
     const logOut = async () => {
         try {
-            const res = await publicAxios.post('/user/logout');
-            console.log('res:', res);
+            await publicAxios.post('/user/logout');
             dispatch(removeAuth());
             navigate('/');
         } catch (err) {

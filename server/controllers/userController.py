@@ -167,7 +167,7 @@ def login_with_google(request: Request) -> Response:
 
 def logout(request: Request) -> Response:
     response = make_response(jsonify({'message': 'Logout successful'}), 200)
-    response.set_cookie('refreshToken', '', httponly=True)
+    response.set_cookie('refreshToken', '', httponly=True, samesite='None', secure=True)
     return response
 
 def get_preferences(request: Request) -> Response:

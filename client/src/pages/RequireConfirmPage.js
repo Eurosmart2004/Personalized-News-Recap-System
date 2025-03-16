@@ -19,7 +19,7 @@ const RequireConfirmPage = () => {
         setLoading(false);
         socket.emit("join", { email });
         socket.on("message", (data) => {
-            console.log(data.message);
+            // console.log(data.message);
         });
         socket.on("confirmation", async (data) => {
             console.log("Message confirm from socket: ", data.message);
@@ -42,7 +42,7 @@ const RequireConfirmPage = () => {
         try {
             const res = await publicAxios.get(`/user/confirm?email=${email}`);
         } catch (error) {
-            console.log(error);
+            // console.log(error);
             if (error.response && error.response.data.error === "User is already confirmed") {
                 setIsConfirmed(true);
             }
@@ -56,10 +56,9 @@ const RequireConfirmPage = () => {
         <div className="container mx-auto mt-10">
             <div className="max-w-md mx-auto bg-white rounded-lg shadow-lg p-8">
                 <div className="text-center">
-                    <h1 className="text-2xl font-bold mb-4">Account Created</h1>
+                    <h1 className="text-2xl font-bold mb-4">Tài khoản đã được tạo</h1>
                     <p className="text-gray-600">
-                        Your account has been created successfully. Please check your email for a
-                        confirmation link.
+                        Tài khoản của bạn đã được tạo thành công. Vui lòng kiểm tra email của bạn để nhận liên kết xác nhận.
                     </p>
                 </div>
             </div>

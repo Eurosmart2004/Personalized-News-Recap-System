@@ -10,8 +10,8 @@ const ForgotPasswordPage = () => {
     const [loading, setLoading] = useState(false);
 
     const validateEmail = (email) => {
-        if (!email.trim()) return 'Email is required';
-        if (!/\S+@\S+\.\S+/.test(email)) return 'Email is invalid';
+        if (!email.trim()) return 'Email là bắt buộc';
+        if (!/\S+@\S+\.\S+/.test(email)) return 'Email không hợp lệ';
         return '';
     };
 
@@ -39,9 +39,9 @@ const ForgotPasswordPage = () => {
         return (
             <div className="flex items-center justify-center h-screen bg-gray-100">
                 <div className="bg-white shadow-md rounded-lg p-6 max-w-md text-center">
-                    <h1 className="text-2xl font-semibold mb-4">Reset Password</h1>
+                    <h1 className="text-2xl font-semibold mb-4">Đặt lại mật khẩu</h1>
                     <p className="text-gray-600">
-                        Please click on the link sent to your email to reset your password.
+                        Vui lòng nhấp vào liên kết được gửi đến email của bạn để đặt lại mật khẩu.
                     </p>
                 </div>
             </div>
@@ -52,7 +52,7 @@ const ForgotPasswordPage = () => {
         <div className="flex items-center justify-center h-screen bg-gray-100">
             <ToastContainer />
             <div className="bg-white shadow-md rounded-lg p-6 max-w-md w-full">
-                <h1 className="text-2xl font-semibold text-center mb-6">Forgot Password</h1>
+                <h1 className="text-2xl font-semibold text-center mb-6">Quên mật khẩu</h1>
                 <form onSubmit={handleSubmit} noValidate>
                     <div className="mb-4">
                         <label
@@ -75,7 +75,7 @@ const ForgotPasswordPage = () => {
                         className={`w-full py-2 px-4 text-white font-medium rounded-md ${loading ? 'bg-orange-500' : 'bg-orange-400  hover:bg-orange-500'} `}
                         disabled={loading}
                     >
-                        Send Reset Email
+                        Gửi email
                     </button>
                 </form>
             </div>

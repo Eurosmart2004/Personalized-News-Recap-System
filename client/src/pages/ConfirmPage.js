@@ -65,21 +65,21 @@ const ConfirmPage = () => {
 
     if (confirm) {
         return renderMessage(
-            "Account Confirmed",
-            "Your account has been confirmed successfully. Turn back to your original tab."
+            "Tài khoản đã được xác nhận",
+            "Tài khoản của bạn đã được xác nhận thành công. Quay lại trang gốc của bạn."
         );
     }
 
     if (isAlreadyConfirmed) {
         return renderMessage(
-            "Already Confirmed",
-            "Your account has already been confirmed. Turn back to your original tab."
+            "Đã xác nhận",
+            "Tài khoản của bạn đã được xác nhận. Quay lại trang gốc của bạn."
         );
     }
 
     return renderMessage(
-        "Link Expired",
-        "Your confirmation link has expired. Please check your email for a new link."
+        "Liên kết đã hết hạn",
+        "Liên kết xác nhận của bạn đã hết hạn. Vui lòng kiểm tra email của bạn để nhận liên kết mới."
     );
 };
 
