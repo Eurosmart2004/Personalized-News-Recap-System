@@ -9,6 +9,7 @@ from jinja2 import Environment, FileSystemLoader
 from .tools.sendEmail import send_email
 from services import userService
 from dotenv import load_dotenv
+import random
 import os
 
 load_dotenv()
@@ -60,6 +61,10 @@ def send_news_worker():
     title = f"Your Daily News {date}"
 
     for user, news_list in user_news_map.items():
+        
+        # Select random 10 news
+        news_list  = random.sample(news_list, 10)
+
         # Sort news by date (most recent first)
         news_list = sorted(news_list, key=lambda x: x.date, reverse=True)
 
@@ -69,15 +74,6 @@ def send_news_worker():
         try:
             # Send the email
             send_email(user, title, body)
-
-            # # Track sent news by adding records to UserNews
-            # for news in news_list:
-            #     user_news_entry = UserNews(user_id=user.id, news_id=news.id)
-            #     db.session.add(user_news_entry)
-
-            # # Commit after each successful email
-            # db.session.commit()
-            # print(f"Email sent successfully to {user.email}")
 
         except SQLAlchemyError as e:
             # Roll back if any database error occurs

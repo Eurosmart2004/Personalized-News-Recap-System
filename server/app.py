@@ -18,7 +18,7 @@ mongo = PyMongo(app)
 if __name__ == '__main__':
     init_db(app)
     # Configure logging
-    logging.basicConfig(level=logging.DEBUG)
+    logging.getLogger('geventwebsocket.handler').setLevel(logging.INFO)
 
     http_server = WSGIServer(('0.0.0.0', 5000), app, handler_class=WebSocketHandler)
     http_server.serve_forever()

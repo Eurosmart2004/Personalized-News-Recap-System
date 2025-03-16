@@ -21,7 +21,7 @@ const RoleRoute = ({ roles, children }) => {
 
     if (user.role === 'user') {
         if (!user.isFirstLogin && location.pathname === PREFERENCE_PATH) {
-            // return <Navigate to={HOME_PATH} state={{ from: location }} replace />;
+            return <Navigate to={HOME_PATH} state={{ from: location }} replace />;
         }
 
         if (!user.isConfirmed && location.pathname !== REQUIRE_CONFIRM_PATH) {
