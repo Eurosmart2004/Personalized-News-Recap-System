@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const validatePassword = (password) => {
-    if (!password) return 'Password is required';
+    if (!password) return 'Bạn cần nhập mật khẩu mới';
     if (
         password.length < 8 ||
         !/[A-Z]/.test(password) ||
@@ -89,7 +89,9 @@ const ResetPasswordPage = () => {
         } catch (error) {
             console.log(error);
             if (error.response?.data?.error === "The link has expired. Please click to resend the email.") {
-                toast.error("Đường dẫn link này đã hết hạn, chúng tôi sẽ cung cấp đường dẫn mới");
+                toast.error("Đường dẫn link này đã hết hạn, chúng tôi sẽ cung cấp đường dẫn mới", {
+                    autoClose: 10000,
+                });
                 handleResendEmail();
             }
             else {
@@ -106,7 +108,9 @@ const ResetPasswordPage = () => {
             const payload = jwtDecode(token);
             setLoading(true);
             await publicAxios.post('/user/forgot-password', { email: payload.email });
-            toast.success("Đường dẫn mới để đặt lại mật khẩu đã trong email vui lòng kiểm tra.");
+            toast.success("Đường dẫn mới để đặt lại mật khẩu đã trong email vui lòng kiểm tra.", {
+                autoClose: 10000,
+            });
         } catch (error) {
             toast.error('Đã xảy ra sự cố');
         }
@@ -136,7 +140,7 @@ const ResetPasswordPage = () => {
 
     return (
         <div className="flex items-center justify-center h-screen bg-gray-100">
-            <ToastContainer autoClose={10000} />
+            <ToastContainer />
             <div className="bg-white shadow-md rounded-lg p-6 max-w-md w-full">
                 <h1 className="text-2xl font-semibold text-center mb-6">Đặt lại mật khẩu</h1>
                 <form onSubmit={handleSubmit} noValidate>
