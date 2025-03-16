@@ -50,8 +50,6 @@ const PreferencePage = () => {
                     schedule: time,
                 });
             }
-
-            // toast.success("Preferences updated successfully!");
             const res = await privateAxios.get("/user");
             dispatch(setAuth({ user: res.data }));
             navigate("/");

@@ -9,9 +9,7 @@ import timezone from 'dayjs/plugin/timezone';
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-export default function Time(props) {
-    const { setTime, time } = props;
-
+export default function Time({ setTime, time }) {
     const convertToUTC = (date) => {
         // Parse the date in the UTC+7 timezone (Asia/Ho_Chi_Minh)
         const utc7Date = dayjs().tz('Asia/Ho_Chi_Minh').hour(date.hour).minute(date.minute).second(0).millisecond(0);
@@ -23,7 +21,7 @@ export default function Time(props) {
     };
 
     const [time1, setTime1] = useState(convertToUTC(time[0]));
-    const [time2, setTime2] = useState(convertToUTC(time[1]));
+    // const [time2, setTime2] = useState(convertToUTC(time[1]));
 
     const extractHourMinuteUTC7 = (date) => {
         const utc7Date = date.tz('Asia/Ho_Chi_Minh');
@@ -35,26 +33,31 @@ export default function Time(props) {
 
     const sendDataToBackend = () => {
         const time_sent_1 = extractHourMinuteUTC7(time1);
-        const time_sent_2 = extractHourMinuteUTC7(time2);
-        const data = [time_sent_1, time_sent_2];
+        // const time_sent_2 = extractHourMinuteUTC7(time2);
+        // const data = [time_sent_1, time_sent_2];
+        const data = [time_sent_1];
         return data;
     };
 
+    // useEffect(() => {
+    //     setTime(sendDataToBackend);
+    // }, [time1, time2]);
+
     useEffect(() => {
         setTime(sendDataToBackend);
-    }, [time1, time2]);
+    }, [time1]);
 
-    const shouldDisableTime1 = (time) => {
-        const timeInUTC7 = time.tz('Asia/Ho_Chi_Minh');
-        const time2InUTC7 = time2.tz('Asia/Ho_Chi_Minh');
-        return timeInUTC7.hour() === time2InUTC7.hour() && timeInUTC7.minute() === time2InUTC7.minute();
-    };
+    // const shouldDisableTime1 = (time) => {
+    //     const timeInUTC7 = time.tz('Asia/Ho_Chi_Minh');
+    //     // const time2InUTC7 = time2.tz('Asia/Ho_Chi_Minh');
+    //     return timeInUTC7.hour() === time2InUTC7.hour() && timeInUTC7.minute() === time2InUTC7.minute();
+    // };
 
-    const shouldDisableTime2 = (time) => {
-        const timeInUTC7 = time.tz('Asia/Ho_Chi_Minh');
-        const time1InUTC7 = time1.tz('Asia/Ho_Chi_Minh');
-        return timeInUTC7.hour() === time1InUTC7.hour() && timeInUTC7.minute() === time1InUTC7.minute();
-    };
+    // const shouldDisableTime2 = (time) => {
+    //     const timeInUTC7 = time.tz('Asia/Ho_Chi_Minh');
+    //     const time1InUTC7 = time1.tz('Asia/Ho_Chi_Minh');
+    //     return timeInUTC7.hour() === time1InUTC7.hour() && timeInUTC7.minute() === time1InUTC7.minute();
+    // };
 
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -64,14 +67,14 @@ export default function Time(props) {
                         label="Thời gian nhận email"
                         value={time1}
                         onChange={(newTime1) => setTime1(newTime1)}
-                        shouldDisableTime={shouldDisableTime1}
+                        // shouldDisableTime={shouldDisableTime1}
                         views={['hours', 'minutes']}
                         format="HH:mm"
                         ampm={false}
                         timeSteps={{ minutes: 1 }}
                         timezone="default"
                     />
-                    <TimePicker
+                    {/* <TimePicker
                         label="Thời gian nhận email"
                         value={time2}
                         onChange={(newTime2) => setTime2(newTime2)}
@@ -81,7 +84,7 @@ export default function Time(props) {
                         ampm={false}
                         timeSteps={{ minutes: 1 }}
                         timezone="default"
-                    />
+                    /> */}
                 </div>
             </div>
         </LocalizationProvider>

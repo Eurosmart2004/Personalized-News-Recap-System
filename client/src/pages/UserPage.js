@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import { FaCamera, FaSave, FaUser, FaEnvelope, FaLock, FaTags, FaClock, FaCheckCircle } from "react-icons/fa";
 import Time from "../components/Time";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { TOPIC } from "../utils/Main";
 
 const UserProfilePage = () => {
@@ -35,15 +35,10 @@ const UserProfilePage = () => {
   const [selectedPreferences, setSelectedPreferences] = useState(
     []
   );
-  const [receiveDailyEmails, setReceiveDailyEmails] = useState(
-    user?.schedule ? true : false
-  );
-  const [time, setTime] = useState(
-    user?.schedule || [
-      { hour: 9, minute: 0 },
-      { hour: 18, minute: 0 },
-    ]
-  );
+  const [receiveDailyEmails, setReceiveDailyEmails] = useState();
+  const [time, setTime] = useState([
+    { hour: 9, minute: 0 },
+  ]);
 
   // UI states
   const [activeTab, setActiveTab] = useState("profile");
@@ -160,8 +155,6 @@ const UserProfilePage = () => {
         setPreferences(res.data.preferences.map((item) => item.name));
         setLoading(false);
       } catch (err) {
-        console.error(err);
-        toast.error("Failed to load preferences.");
         setLoading(false);
       }
     };
@@ -179,11 +172,25 @@ const UserProfilePage = () => {
         dispatch(setAfterTime(null));
         dispatch(setBeforeTime(null));
       } catch (err) {
-        console.error(err);
-        toast.error("Failed to load user preferences.");
       }
     };
     fetchUserPreferences();
+  }, []);
+
+  // Fetch user schedule
+  useEffect(() => {
+    const fetchUserSchedule = async () => {
+      try {
+        const res = await privateAxios.get("/user/schedule");
+        if (res.data.schedule.length > 0) {
+          setReceiveDailyEmails(true);
+          setTime(res.data.schedule);
+        }
+      } catch (err) {
+
+      }
+    };
+    fetchUserSchedule();
   }, []);
 
   // Submit handlers
@@ -204,7 +211,7 @@ const UserProfilePage = () => {
         newPassword: newPasswordError,
         confirmPassword: confirmPasswordError,
       });
-      toast.error("Please fix the errors before submitting");
+      toast.error("Vui lòng kiểm tra lại thông tin!");
       return;
     }
 
@@ -248,7 +255,7 @@ const UserProfilePage = () => {
 
   const handlePreferencesUpdate = async () => {
     if (selectedPreferences.length === 0) {
-      toast.error("Please select at least one preference.");
+      toast.error("Vui lòng chọn ít nhất một sở thích!");
       return;
     }
 
@@ -263,13 +270,15 @@ const UserProfilePage = () => {
         await privateAxios.put("/user/schedule", {
           schedule: time,
         });
+      } else {
+        await privateAxios.delete("/user/schedule");
       }
 
-      toast.success("Preferences updated successfully!");
+      toast.success("Câp nhập sở thích thành công!");
       setIsSubmitting(false);
     } catch (err) {
       console.error(err);
-      toast.error("Failed to update preferences. Please try again.");
+      toast.error("Cập nhập sở thích thất bại!");
       setIsSubmitting(false);
     }
   };
@@ -546,26 +555,27 @@ const UserProfilePage = () => {
                   Nhận email hàng ngày
                 </label>
               </div>
-
-              {receiveDailyEmails && (
-                <motion.div
-                  className="mb-6 pl-7"
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0, transition: { duration: 0.5 } }}
-                  transition={{ duration: 0.3 }}
-                  layout
-                >
-                  <h3 className="text-lg font-semibold text-gray-700 dark:text-white mb-2">
-                    Thời gian nhận email:
-                  </h3>
-                  <Time
-                    className="text-gray-700 dark:text-slate-50"
-                    setTime={setTime}
-                    time={time}
-                  />
-                </motion.div>
-              )}
+              <AnimatePresence>
+                {receiveDailyEmails && (
+                  <motion.div
+                    className="mb-6 pl-7"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0, transition: { duration: 0.3 } }}
+                    transition={{ duration: 0.3 }}
+                    layout
+                  >
+                    <h3 className="text-lg font-semibold text-gray-700 dark:text-white mb-2">
+                      Thời gian nhận email:
+                    </h3>
+                    <Time
+                      className="text-gray-700 dark:text-slate-50"
+                      setTime={setTime}
+                      time={time}
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             <button

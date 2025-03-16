@@ -64,7 +64,7 @@ function SideBarComponent({ expanded, setExpanded }) {
         <SidebarItem
           icon={<FaRegBookmark size={16} />}
           text="Bộ sưu tập"
-          active={location.pathname === "/collection"}
+          active={location.pathname.startsWith("/collection")}
           onClick={() => navigate("/collection")}
         />
         <SidebarItem

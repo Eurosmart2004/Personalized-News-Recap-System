@@ -316,12 +316,12 @@ def update_schedule(userID: str, schedules: list) -> list[Schedule.to_json]:
         raise ValueError('User does not exist')
 
     schedulesList: list[Schedule.to_json] = []
-    if len(schedules) != 2:
-        raise ValueError('Invalid number of schedules')
+    # if len(schedules) != 2:
+    #     raise ValueError('Invalid number of schedules')
     
-    if (int(schedules[0]['hour']) == int(schedules[1]['hour']) and 
-        int(schedules[0]['minute']) == int(schedules[1]['minute'])):
-        raise ValueError('Schedules cannot be the same')
+    # if (int(schedules[0]['hour']) == int(schedules[1]['hour']) and 
+    #     int(schedules[0]['minute']) == int(schedules[1]['minute'])):
+    #     raise ValueError('Schedules cannot be the same')
     
     try:
         # Remove existing schedules

@@ -109,7 +109,10 @@ export default function Header({ expanded, setExpanded }) {
                         className="absolute right-0 mt-2 w-36 bg-white shadow-xl rounded-md overflow-hidden border z-50"
                     >
                         <button
-                            onClick={() => navigate('/user')}
+                            onClick={() => {
+                                navigate('/user');
+                                setIsOpen(false);
+                            }}
                             className="w-full flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-orange-500 hover:text-white transition duration-300"
                         >
                             <FaUser className="mr-2" size={16} /> Hồ sơ

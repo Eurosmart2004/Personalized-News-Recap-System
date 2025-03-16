@@ -5,6 +5,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAxios } from "../axios/axios";
 import { TfiArrowLeft } from "react-icons/tfi";
 import Loading from "../components/Loading";
+import { formatDateTime } from "../utils/Main";
 
 const CollectionDetailPage = () => {
     const { id } = useParams();
@@ -84,7 +85,7 @@ const CollectionDetailPage = () => {
                 newsList && newsList.map(news => (
                     <div key={news.id} className="mb-6 p-4 border rounded-lg dark:border-gray-700">
                         <h2 className="text-xl font-semibold">{news.title}</h2>
-                        <small className="my-2 text-gray-500 dark:text-gray-400">{news.date}</small>
+                        <small className="my-2 text-gray-500 dark:text-gray-400">{formatDateTime(news.date)}</small>
                         <p className="my-2 text-gray-500">{news.summary}</p>
                         <a href={news.link} target="_blank" rel="noopener noreferrer" className="text-blue-500 dark:text-blue-300">Read more</a>
                     </div>
