@@ -53,7 +53,7 @@ export default function Header({ expanded, setExpanded }) {
         >
             {/* Left: Logo & Text */}
             <div className="flex items-center space-x-2 cursor-pointer"
-                onClick={() => navigate("/")}
+
             >
                 <div className="">
                     <button
@@ -63,12 +63,16 @@ export default function Header({ expanded, setExpanded }) {
                         <AiOutlineMenu size={20} />
                     </button>
                 </div>
-                <img
-                    src={logo}
-                    alt="Avatar"
-                    className="w-8 h-8"
-                />
-                <span className="text-md hidden sm:block">News Recap</span>
+                <button
+                    className="flex items-center space-x-2"
+                    onClick={() => navigate("/")}>
+                    <img
+                        src={logo}
+                        alt="Avatar"
+                        className="w-8 h-8"
+                    />
+                    <span className="text-md hidden sm:block">News Recap</span>
+                </button>
             </div>
 
             {/* Center: Search Bar */}

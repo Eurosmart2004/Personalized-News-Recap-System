@@ -24,7 +24,7 @@ const CustomParagraph = ({ children }) => (
     <p className="text-gray-800 dark:text-gray-300 leading-relaxed mb-2">{children}</p>
 );
 
-export default function ReactMarkDownCustom({ children }) {
+export default function ReactMarkDownCustom({ children }, ...props) {
     return (
         <ReactMarkdown
             components={{
@@ -35,6 +35,7 @@ export default function ReactMarkDownCustom({ children }) {
                 h6: CustomH6,
                 p: CustomParagraph,
             }}
+            {...props}
         >
             {children}
         </ReactMarkdown>

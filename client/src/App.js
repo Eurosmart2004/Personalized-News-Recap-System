@@ -93,7 +93,6 @@ const App = () => {
 					<Header expanded={expanded} setExpanded={setExpanded} />
 					<SideBarComponent expanded={expanded} setExpanded={setExpanded} />
 					<main className={`transition-all dark:bg-black ml-0 ${expanded ? "sm:ml-[200px]" : "sm:ml-[65px]"}`}>
-						<div className="my-3"></div>
 						<Outlet />
 					</main>
 				</div>

@@ -25,7 +25,7 @@ const NewsCard = ({ news, isSaved }) => {
 
     return (
         <>
-            <div className="flex flex-col w-full xl:w-[17rem] h-full md:h-[25rem] lg:h-auto cursor-pointer transition-all duration-200 bg-white hover:bg-gray-100 dark:bg-black dark:border-gray-700 dark:border dark:hover:bg-gray-800 shadow-lg rounded-lg overflow-hidden"
+            <div className="flex flex-col w-full xl:w-[20rem] h-full md:h-[25rem] lg:h-auto cursor-pointer transition-all duration-200 bg-white hover:bg-gray-100 dark:bg-black dark:border-gray-700 dark:border dark:hover:bg-gray-800 shadow-lg rounded-lg overflow-hidden"
                 onClick={openModal}>
                 <img
                     src={news.image}
@@ -41,11 +41,11 @@ const NewsCard = ({ news, isSaved }) => {
                         {source && (
                             <>
                                 <img src={source.logo} alt={source.name} className="w-5 h-5 mr-2" />
-                                <span className="text-[12px] text-gray-600 dark:text-gray-400">{source.name}</span>
+                                <span className="text-[10px] text-gray-600 dark:text-gray-400">{source.name}</span>
                             </>
                         )}
                     </div>
-                    <h5 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
+                    <h5 className="text-md font-semibold text-gray-800 dark:text-gray-200 mb-2">
                         {news.title}
                     </h5>
                     <div className='flex flex-wrap gap-1 mb-2'>
