@@ -1,11 +1,30 @@
+import { formatDate } from "../../utils/Main";
+
 const setCluster = (state, action) => {
-    if (!state.cluster[action.payload.duration]) {
-        state.cluster[action.payload.duration] = action.payload.clusterList;
+    if (formatDate(state.date) in state.clusters) {
+        state.clusters[formatDate(state.date)][state.duration] = action.payload;
+    } else {
+        state.clusters[formatDate(state.date)] = {
+            'day': [],
+            'week': [],
+            'month': [],
+        };
+        state.clusters[formatDate(state.date)][state.duration] = action.payload;
     }
+
 };
 
+const setDuration = (state, action) => {
+    state.duration = action.payload;
+};
+
+const setDate = (state, action) => {
+    state.date = action.payload;
+};
+
+
 const clusterAction = {
-    setCluster
+    setCluster, setDuration, setDate
 };
 
 export default clusterAction;

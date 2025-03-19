@@ -170,14 +170,14 @@ const CollectionPage = () => {
   };
 
   useEffect(() => {
-    console.log("Updated collection:", collection);
+    // console.log("Updated collection:", collection);
   }, [collection]);
 
   return (
-    <div className="p-3 my-[40px] min-h-screen md:h-auto md:mt-0 mx-auto ">
+    <div className="pl-4 p-3 my-[40px] min-h-screen md:h-auto md:mt-0 mx-auto ">
       <ToastContainer />
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-[40px] font-light mb-4 dark:text-white">Lists</h1>
+        <h1 className="text-[30px] font-light mb-4 dark:text-white">Bộ sưu tập</h1>
         <button
           type="button"
           onClick={openCreateModal}

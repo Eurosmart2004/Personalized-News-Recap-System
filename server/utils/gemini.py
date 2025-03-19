@@ -324,12 +324,13 @@ Sáng nay, giá USD tại các ngân hàng đi ngang.Vietcombank niêm yết t�
         return contents
     
     def invoke(self, data) -> str:
-        response = client.models.generate_content(
-            model="gemini-2.0-flash-lite",
-            config=types.GenerateContentConfig(
-                system_instruction=self.format_string(self.system_instruction, data)),
-            contents=self.create_content(data)
-        )
-
+        response = None
+        while response is None:
+            response = client.models.generate_content(
+                model="gemini-2.0-flash-lite",
+                config=types.GenerateContentConfig(
+                    system_instruction=self.format_string(self.system_instruction, data)),
+                contents=self.create_content(data)
+            )
         return response.text.strip()
     

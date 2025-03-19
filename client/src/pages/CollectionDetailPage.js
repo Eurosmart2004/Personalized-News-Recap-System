@@ -84,6 +84,7 @@ const CollectionDetailPage = () => {
             {
                 newsList && newsList.map(news => (
                     <div key={news.id} className="mb-6 p-4 border rounded-lg dark:border-gray-700">
+                        <img src={news.title} alt="" />
                         <h2 className="text-xl font-semibold">{news.title}</h2>
                         <small className="my-2 text-gray-500 dark:text-gray-400">{formatDateTime(news.date)}</small>
                         <p className="my-2 text-gray-500">{news.summary}</p>

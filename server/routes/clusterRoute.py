@@ -11,3 +11,8 @@ def init(app: Flask):
     @authentication
     def get_cluster(duration):
         return clusterController.get_cluster(request, duration)
+    
+    @app.route(f'{route}', methods=['GET'])
+    @authentication
+    def get_cluster_default():
+        return clusterController.get_cluster_id(request)

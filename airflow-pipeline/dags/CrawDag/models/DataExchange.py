@@ -1,5 +1,4 @@
 from airflow.models import TaskInstance
-
 class DataExchange:
     def __init__(self, task_instance: TaskInstance):
         self.task_instance = task_instance

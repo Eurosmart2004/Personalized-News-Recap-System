@@ -130,12 +130,12 @@ const NewsPage = () => {
 
     return (
         <>
-            <div className="container mx-auto p-3">
+            <div className=" w-full p-3 pt-4">
                 <div className="flex flex-wrap">
                     {/* Render News Items */}
                     {news.map((item) => (
                         selectedTopic.includes(item.topic) && selectedTopic.length > 0 ? (
-                            <div className="w-full sm:w-full md:w-1/2 lg:w-1/3 xl:w-1/4 px-2 mb-6 flex" key={item.id}>
+                            <div className="w-full sm:w-full md:w-1/2 lg:w-1/3 xl:w-1/4 px-2 mb-4 flex" key={item.id}>
                                 <NewsCard
                                     news={item}
                                     isSaved={listNewsFavorites.includes(item.id)}
@@ -145,7 +145,7 @@ const NewsPage = () => {
                     ))}
 
                     {/* Loading Skeleton */}
-                    <div className="w-full sm:w-full md:w-1/2 lg:w-1/3 xl:w-1/4 px-4 mb-6 flex">
+                    <div className="w-full sm:w-full md:w-1/2 lg:w-1/3 xl:w-1/4 px-2 mb-4 flex">
                         <NewsCardSkeleton />
                     </div>
                 </div>

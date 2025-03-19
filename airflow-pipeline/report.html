@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title id="head-title">report.html</title>
+      <style type="text/css">body {
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 12px;
+  /* do not increase min-width as some may use split screens */
+  min-width: 800px;
+  color: #999;
+}
+
+h1 {
+  font-size: 24px;
+  color: black;
+}
+
+h2 {
+  font-size: 16px;
+  color: black;
+}
+
+p {
+  color: black;
+}
+
+a {
+  color: #999;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+/******************************
+ * SUMMARY INFORMATION
+ ******************************/
+#environment td {
+  padding: 5px;
+  border: 1px solid #e6e6e6;
+  vertical-align: top;
+}
+#environment tr:nth-child(odd) {
+  background-color: #f6f6f6;
+}
+#environment ul {
+  margin: 0;
+  padding: 0 20px;
+}
+
+/******************************
+ * TEST RESULT COLORS
+ ******************************/
+span.passed,
+.passed .col-result {
+  color: green;
+}
+
+span.skipped,
+span.xfailed,
+span.rerun,
+.skipped .col-result,
+.xfailed .col-result,
+.rerun .col-result {
+  color: orange;
+}
+
+span.error,
+span.failed,
+span.xpassed,
+.error .col-result,
+.failed .col-result,
+.xpassed .col-result {
+  color: red;
+}
+
+.col-links__extra {
+  margin-right: 3px;
+}
+
+/******************************
+ * RESULTS TABLE
+ *
+ * 1. Table Layout
+ * 2. Extra
+ * 3. Sorting items
+ *
+ ******************************/
+/*------------------
+ * 1. Table Layout
+ *------------------*/
+#results-table {
+  border: 1px solid #e6e6e6;
+  color: #999;
+  font-size: 12px;
+  width: 100%;
+}
+#results-table th,
+#results-table td {
+  padding: 5px;
+  border: 1px solid #e6e6e6;
+  text-align: left;
+}
+#results-table th {
+  font-weight: bold;
+}
+
+/*------------------
+ * 2. Extra
+ *------------------*/
+.logwrapper {
+  max-height: 230px;
+  overflow-y: scroll;
+  background-color: #e6e6e6;
+}
+.logwrapper.expanded {
+  max-height: none;
+}
+.logwrapper.expanded .logexpander:after {
+  content: "collapse [-]";
+}
+.logwrapper .logexpander {
+  z-index: 1;
+  position: sticky;
+  top: 10px;
+  width: max-content;
+  border: 1px solid;
+  border-radius: 3px;
+  padding: 5px 7px;
+  margin: 10px 0 10px calc(100% - 80px);
+  cursor: pointer;
+  background-color: #e6e6e6;
+}
+.logwrapper .logexpander:after {
+  content: "expand [+]";
+}
+.logwrapper .logexpander:hover {
+  color: #000;
+  border-color: #000;
+}
+.logwrapper .log {
+  min-height: 40px;
+  position: relative;
+  top: -50px;
+  height: calc(100% + 50px);
+  border: 1px solid #e6e6e6;
+  color: black;
+  display: block;
+  font-family: "Courier New", Courier, monospace;
+  padding: 5px;
+  padding-right: 80px;
+  white-space: pre-wrap;
+}
+
+div.media {
+  border: 1px solid #e6e6e6;
+  float: right;
+  height: 240px;
+  margin: 0 5px;
+  overflow: hidden;
+  width: 320px;
+}
+
+.media-container {
+  display: grid;
+  grid-template-columns: 25px auto 25px;
+  align-items: center;
+  flex: 1 1;
+  overflow: hidden;
+  height: 200px;
+}
+
+.media-container--fullscreen {
+  grid-template-columns: 0px auto 0px;
+}
+
+.media-container__nav--right,
+.media-container__nav--left {
+  text-align: center;
+  cursor: pointer;
+}
+
+.media-container__viewport {
+  cursor: pointer;
+  text-align: center;
+  height: inherit;
+}
+.media-container__viewport img,
+.media-container__viewport video {
+  object-fit: cover;
+  width: 100%;
+  max-height: 100%;
+}
+
+.media__name,
+.media__counter {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  flex: 0 0 25px;
+  align-items: center;
+}
+
+.collapsible td:not(.col-links) {
+  cursor: pointer;
+}
+.collapsible td:not(.col-links):hover::after {
+  color: #bbb;
+  font-style: italic;
+  cursor: pointer;
+}
+
+.col-result {
+  width: 130px;
+}
+.col-result:hover::after {
+  content: " (hide details)";
+}
+
+.col-result.collapsed:hover::after {
+  content: " (show details)";
+}
+
+#environment-header h2:hover::after {
+  content: " (hide details)";
+  color: #bbb;
+  font-style: italic;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+#environment-header.collapsed h2:hover::after {
+  content: " (show details)";
+  color: #bbb;
+  font-style: italic;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+/*------------------
+ * 3. Sorting items
+ *------------------*/
+.sortable {
+  cursor: pointer;
+}
+.sortable.desc:after {
+  content: " ";
+  position: relative;
+  left: 5px;
+  bottom: -12.5px;
+  border: 10px solid #4caf50;
+  border-bottom: 0;
+  border-left-color: transparent;
+  border-right-color: transparent;
+}
+.sortable.asc:after {
+  content: " ";
+  position: relative;
+  left: 5px;
+  bottom: 12.5px;
+  border: 10px solid #4caf50;
+  border-top: 0;
+  border-left-color: transparent;
+  border-right-color: transparent;
+}
+
+.hidden, .summary__reload__button.hidden {
+  display: none;
+}
+
+.summary__data {
+  flex: 0 0 550px;
+}
+.summary__reload {
+  flex: 1 1;
+  display: flex;
+  justify-content: center;
+}
+.summary__reload__button {
+  flex: 0 0 300px;
+  display: flex;
+  color: white;
+  font-weight: bold;
+  background-color: #4caf50;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.summary__reload__button:hover {
+  background-color: #46a049;
+}
+.summary__spacer {
+  flex: 0 0 550px;
+}
+
+.controls {
+  display: flex;
+  justify-content: space-between;
+}
+
+.filters,
+.collapse {
+  display: flex;
+  align-items: center;
+}
+.filters button,
+.collapse button {
+  color: #999;
+  border: none;
+  background: none;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.filters button:hover,
+.collapse button:hover {
+  color: #ccc;
+}
+
+.filter__label {
+  margin-right: 10px;
+}
+
+      </style>
+    
+  </head>
+  <body>
+    <h1 id="title">report.html</h1>
+    <p>Report generated on 19-Mar-2025 at 12:20:08 by <a href="https://pypi.python.org/pypi/pytest-html">pytest-html</a>
+        v4.1.1</p>
+    <div id="environment-header">
+      <h2>Environment</h2>
+    </div>
+    <table id="environment"></table>
+    <!-- TEMPLATES -->
+      <template id="template_environment_row">
+      <tr>
+        <td></td>
+        <td></td>
+      </tr>
+    </template>
+    <template id="template_results-table__body--empty">
+      <tbody class="results-table-row">
+        <tr id="not-found-message">
+          <td colspan="4">No results found. Check the filters.</th>
+        </tr>
+    </template>
+    <template id="template_results-table__tbody">
+      <tbody class="results-table-row">
+        <tr class="collapsible">
+        </tr>
+        <tr class="extras-row">
+          <td class="extra" colspan="4">
+            <div class="extraHTML"></div>
+            <div class="media">
+              <div class="media-container">
+                  <div class="media-container__nav--left"><</div>
+                  <div class="media-container__viewport">
+                    <img src="" />
+                    <video controls>
+                      <source src="" type="video/mp4">
+                    </video>
+                  </div>
+                  <div class="media-container__nav--right">></div>
+                </div>
+                <div class="media__name"></div>
+                <div class="media__counter"></div>
+            </div>
+            <div class="logwrapper">
+              <div class="logexpander"></div>
+              <div class="log"></div>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </template>
+    <!-- END TEMPLATES -->
+    <div class="summary">
+      <div class="summary__data">
+        <h2>Summary</h2>
+        <div class="additional-summary prefix">
+        </div>
+        <p class="run-count">7 tests took 00:00:23.</p>
+        <p class="filter">(Un)check the boxes to filter the results.</p>
+        <div class="summary__reload">
+          <div class="summary__reload__button hidden" onclick="location.reload()">
+            <div>There are still tests running. <br />Reload this page to get the latest results!</div>
+          </div>
+        </div>
+        <div class="summary__spacer"></div>
+        <div class="controls">
+          <div class="filters">
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="failed" disabled/>
+            <span class="failed">0 Failed,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="passed" />
+            <span class="passed">7 Passed,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="skipped" disabled/>
+            <span class="skipped">0 Skipped,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="xfailed" disabled/>
+            <span class="xfailed">0 Expected failures,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="xpassed" disabled/>
+            <span class="xpassed">0 Unexpected passes,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="error" disabled/>
+            <span class="error">0 Errors,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="rerun" disabled/>
+            <span class="rerun">0 Reruns</span>
+          </div>
+          <div class="collapse">
+            <button id="show_all_details">Show all details</button>&nbsp;/&nbsp;<button id="hide_all_details">Hide all details</button>
+          </div>
+        </div>
+      </div>
+      <div class="additional-summary summary">
+      </div>
+      <div class="additional-summary postfix">
+      </div>
+    </div>
+    <table id="results-table">
+      <thead id="results-table-head">
+        <tr>
+          <th class="sortable" data-column-type="result">Result</th>
+          <th class="sortable" data-column-type="testId">Test</th>
+          <th class="sortable" data-column-type="duration">Duration</th>
+          <th>Links</th>
+        </tr>
+      </thead>
+    </table>
+  </body>
+  <footer>
+    <div id="data-container" data-jsonblob="{&#34;environment&#34;: {&#34;Python&#34;: &#34;3.9.8&#34;, &#34;Platform&#34;: &#34;Windows-10-10.0.26100&#34;, &#34;Packages&#34;: {&#34;pytest&#34;: &#34;8.3.5&#34;, &#34;pluggy&#34;: &#34;1.5.0&#34;}, &#34;Plugins&#34;: {&#34;anyio&#34;: &#34;4.4.0&#34;, &#34;dotenv&#34;: &#34;0.5.2&#34;, &#34;html&#34;: &#34;4.1.1&#34;, &#34;metadata&#34;: &#34;3.1.1&#34;, &#34;time-machine&#34;: &#34;2.15.0&#34;}, &#34;JAVA_HOME&#34;: &#34;C:\\Program Files\\Java\\jdk-11.0.13&#34;}, &#34;tests&#34;: {&#34;dags/CrawDag/tests/test_01_crawling.py::TestCrawlers::test_baotintuc_crawler&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;dags/CrawDag/tests/test_01_crawling.py::TestCrawlers::test_baotintuc_crawler&#34;, &#34;duration&#34;: &#34;00:00:03&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;dags/CrawDag/tests/test_01_crawling.py::TestCrawlers::test_baotintuc_crawler&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:03&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;dags/CrawDag/tests/test_01_crawling.py::TestCrawlers::test_dantri_crawler&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;dags/CrawDag/tests/test_01_crawling.py::TestCrawlers::test_dantri_crawler&#34;, &#34;duration&#34;: &#34;00:00:02&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;dags/CrawDag/tests/test_01_crawling.py::TestCrawlers::test_dantri_crawler&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:02&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;dags/CrawDag/tests/test_01_crawling.py::TestCrawlers::test_thanhnien_crawler&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;dags/CrawDag/tests/test_01_crawling.py::TestCrawlers::test_thanhnien_crawler&#34;, &#34;duration&#34;: &#34;00:00:06&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;dags/CrawDag/tests/test_01_crawling.py::TestCrawlers::test_thanhnien_crawler&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:06&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;dags/CrawDag/tests/test_01_crawling.py::TestCrawlers::test_vietnamnet_crawler&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;dags/CrawDag/tests/test_01_crawling.py::TestCrawlers::test_vietnamnet_crawler&#34;, &#34;duration&#34;: &#34;00:00:02&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;dags/CrawDag/tests/test_01_crawling.py::TestCrawlers::test_vietnamnet_crawler&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:02&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;dags/CrawDag/tests/test_01_crawling.py::TestCrawlers::test_vnexpress_crawler&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;dags/CrawDag/tests/test_01_crawling.py::TestCrawlers::test_vnexpress_crawler&#34;, &#34;duration&#34;: &#34;00:00:02&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;dags/CrawDag/tests/test_01_crawling.py::TestCrawlers::test_vnexpress_crawler&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:02&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;dags/CrawDag/tests/test_02_scraping.py::TestScraping::test_scrape_article&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;dags/CrawDag/tests/test_02_scraping.py::TestScraping::test_scrape_article&#34;, &#34;duration&#34;: &#34;00:00:03&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;dags/CrawDag/tests/test_02_scraping.py::TestScraping::test_scrape_article&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:03&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stdout call -----------------------------\nGi\u00e1 v\u00e0ng t\u0103ng l\u00ean 100 tri\u1ec7u \u0111\u1ed3ng/l\u01b0\u1ee3ng\nC\u00f4ng ty B\u1ea3o T\u00edn Minh Ch\u00e2u t\u0103ng 1,2 tri\u1ec7u \u0111\u1ed3ng m\u1ed7i l\u01b0\u1ee3ng v\u00e0ng nh\u1eabn, mua v\u00e0o l\u00ean 98,4 tri\u1ec7u \u0111\u1ed3ng, b\u00e1n ra 100 tri\u1ec7u \u0111\u1ed3ng. \u0110\u00e2y l\u00e0 \u0111\u01a1n v\u1ecb c\u00f3 m\u1ee9c gi\u00e1 cao nh\u1ea5t tr\u00ean th\u1ecb tr\u01b0\u1eddng v\u00e0 l\u00e0 cao nh\u1ea5t c\u1ee7a v\u00e0ng nh\u1eabn t\u1eeb tr\u01b0\u1edbc \u0111\u1ebfn nay. C\u00e1c c\u00f4ng ty kh\u00e1c nh\u01b0 Ph\u00fa Qu\u00fd, Doji\u2026 c\u0169ng t\u0103ng gi\u00e1 v\u00e0ng nh\u1eabn l\u00ean 99,9 tri\u1ec7u \u0111\u1ed3ng m\u1ed7i l\u01b0\u1ee3ng \u1edf chi\u1ec1u b\u00e1n ra, trong khi mua v\u00e0o 98,3 - 98,4 tri\u1ec7u \u0111\u1ed3ng. C\u00f4ng ty SJC mua v\u00e0ng nh\u1eabn l\u00ean 97,8 tri\u1ec7u \u0111\u1ed3ng, b\u00e1n ra 99,4 tri\u1ec7u \u0111\u1ed3ng\u2026\n\nKh\u00e1ch b\u00e1n 10 l\u01b0\u1ee3ng v\u00e0ng ch\u1ed1t l\u1eddi khi gi\u00e1 t\u0103ng l\u00ean k\u1ef7 l\u1ee5c \u1ea2NH: THANH XU\u00c2N\n\nKh\u00e1ch b\u00e1n v\u00e0ng nhi\u1ec1u h\u01a1n mua v\u00e0o\n\nV\u00e0ng mi\u1ebfng SJC c\u0169ng li\u00ean t\u1ee5c \u0111\u01b0\u1ee3c c\u00e1c \u0111\u01a1n v\u1ecb \u0111i\u1ec1u ch\u1ec9nh gi\u00e1 t\u0103ng l\u00ean trong s\u00e1ng 19.3. C\u00e1c \u0111\u01a1n v\u1ecb mua v\u00e0o 97,9 tri\u1ec7u \u0111\u1ed3ng, b\u00e1n ra 99,4 tri\u1ec7u \u0111\u1ed3ng. Gi\u00e1 v\u00e0ng trong n\u01b0\u1edbc c\u00f3 m\u1ee9c t\u0103ng 1,2 tri\u1ec7u \u0111\u1ed3ng m\u1ed7i l\u01b0\u1ee3ng, trong khi v\u00e0ng th\u1ebf gi\u1edbi c\u00f3 m\u1ee9c t\u0103ng ch\u1eadm h\u01a1n. Kim lo\u1ea1i qu\u00fd th\u1ebf gi\u1edbi \u0111\u00e3 t\u0103ng th\u00eam 5 USD/ounce so v\u1edbi \u0111\u1ea7u ng\u00e0y, l\u00ean 3.035 USD/ounce.\n\nKh\u00e1ch mua v\u00e0ng nh\u1eabn chuy\u1ec3n kho\u1ea3n ch\u1edd \u0111\u1ebfn tr\u01b0a v\u00e0o giao d\u1ecbch\n\nKhu v\u1ef1c mua v\u00e0ng nh\u1eabn b\u1eb1ng ti\u1ec1n m\u1eb7t c\u0169ng lu\u00f4n \u0111\u00f4ng kh\u00e1ch\n\nKh\u00e1ch \u0111\u1ebfn mua v\u00e0ng \u0111i\u1ec1n th\u00f4ng tin, khi n\u00e0o c\u00f4ng ty c\u00f3 v\u00e0ng s\u1ebd \u0111i\u1ec7n tho\u1ea1i \u0111\u1ebfn mua\n\nKh\u00e1ch mua 1 ch\u1ec9 v\u00e0ng mi\u1ebfng SJC\n-------------------\nPh\u00f3 th\u1ee7 t\u01b0\u1edbng mu\u1ed1n t\u1eadp \u0111o\u00e0n Anh \u0111\u1ea7u t\u01b0 v\u00e0o trung t\u00e2m t\u00e0i ch\u00ednh qu\u1ed1c t\u1ebf Vi\u1ec7t Nam\nPh\u00f3 th\u1ee7 t\u01b0\u1edbng Nguy\u1ec5n H\u00f2a B\u00ecnh mong T\u1eadp \u0111o\u00e0n Swire tham gia x\u00e2y d\u1ef1ng Trung t\u00e2m t\u00e0i ch\u00ednh qu\u1ed1c t\u1ebf t\u1ea1i TPHCM v\u00e0 \u0110\u00e0 N\u1eb5ng.\n\nN\u1ed9i dung tr\u00ean \u0111\u01b0\u1ee3c Ph\u00f3 th\u1ee7 t\u01b0\u1edbng Th\u01b0\u1eddng tr\u1ef1c Nguy\u1ec5n H\u00f2a B\u00ecnh n\u00eau t\u1ea1i cu\u1ed9c g\u1eb7p l\u00e3nh \u0111\u1ea1o T\u1eadp \u0111o\u00e0n Swire nh\u00e2n chuy\u1ebfn th\u0103m l\u00e0m vi\u1ec7c t\u1ea1i Anh, ng\u00e0y 18/3. Swire l\u00e0 m\u1ed9t trong nh\u1eefng t\u1eadp \u0111o\u00e0n h\u00e0ng \u0111\u1ea7u c\u1ee7a Anh, ho\u1ea1t \u0111\u1ed9ng t\u1ea1i nhi\u1ec1u qu\u1ed1c gia ch\u00e2u \u00c1. T\u1ea1i Vi\u1ec7t Nam, h\u1ecd \u0111\u00e3 \u0111\u1ea7u t\u01b0 v\u00e0o Coca-Cola v\u00e0 Cathay Pacific.\n\nPh\u00f3 th\u1ee7 t\u01b0\u1edbng n\u00f3i quy\u1ebft \u0111\u1ecbnh x\u00e2y d\u1ef1ng trung t\u00e2m t\u00e0i ch\u00ednh qu\u1ed1c t\u1ebf t\u1ea1i TPHCM v\u00e0 \u0110\u00e0 N\u1eb5ng l\u00e0 b\u01b0\u1edbc \u0111i c\u1ea7n thi\u1ebft \u0111\u1ec3 n\u00e2ng t\u1ea7m v\u1ecb th\u1ebf v\u00e0 ph\u00e1t tri\u1ec3n kinh t\u1ebf Vi\u1ec7t Nam.\n\nL\u00e3nh \u0111\u1ea1o Ch\u00ednh ph\u1ee7 mu\u1ed1n Swire \u0111\u1ed3ng h\u00e0nh v\u00e0 tr\u1edf th\u00e0nh m\u1ed9t ph\u1ea7n quan tr\u1ecdng trong qu\u00e1 tr\u00ecnh x\u00e2y d\u1ef1ng c\u00e1c trung t\u00e2m t\u00e0i ch\u00ednh n\u00e0y, b\u00ean c\u1ea1nh c\u00e1c l\u0129nh v\u1ef1c \u01b0u ti\u00ean nh\u01b0 kinh t\u1ebf xanh, kinh t\u1ebf s\u1ed1, n\u0103ng l\u01b0\u1ee3ng t\u00e1i t\u1ea1o.\n\nPh\u00f3 th\u1ee7 t\u01b0\u1edbng Th\u01b0\u1eddng tr\u1ef1c Nguy\u1ec5n H\u00f2a B\u00ecnh l\u00e0m vi\u1ec7c v\u1edbi l\u00e3nh \u0111\u1ea1o T\u1eadp \u0111o\u00e0n Swire, t\u1ea1i Anh. \u1ea2nh: VGP\n\n\u0110\u1ea1i di\u1ec7n Swire n\u00f3i Cathay Pacific, m\u1ed9t doanh nghi\u1ec7p nh\u1eadn \u0111\u1ea7u t\u01b0 c\u1ee7a h\u1ecd, s\u1eb5n s\u00e0ng h\u1ee3p t\u00e1c v\u1edbi Vietnam Airlines \u0111\u1ec3 t\u0103ng k\u1ebft n\u1ed1i h\u00e0ng kh\u00f4ng gi\u1eefa Vi\u1ec7t Nam v\u00e0 c\u00e1c trung t\u00e2m t\u00e0i ch\u00ednh qu\u1ed1c t\u1ebf. Swire c\u0169ng chia s\u1ebb kinh nghi\u1ec7m trong l\u0129nh v\u1ef1c quy ho\u1ea1ch \u0111\u00f4 th\u1ecb v\u00e0 b\u1ea5t \u0111\u1ed9ng s\u1ea3n t\u1eeb kinh nghi\u1ec7m t\u1ea1i Hong Kong (Trung Qu\u1ed1c) v\u00e0 Th\u01b0\u1ee3ng H\u1ea3i.\n\nT\u1ea1i Vi\u1ec7t Nam, Swire \u0111\u00e3 \u0111\u1ea7u t\u01b0 v\u00e0o d\u1ef1 \u00e1n Empire City t\u1ea1i khu \u0111\u00f4 th\u1ecb Th\u1ee7 Thi\u00eam, h\u1ea1t nh\u00e2n c\u1ee7a Trung t\u00e2m t\u00e0i ch\u00ednh TPHCM. H\u1ecd cam k\u1ebft ti\u1ebfp t\u1ee5c \u0111\u00f3ng g\u00f3p v\u00e0o quy ho\u1ea1ch ph\u00e1t tri\u1ec3n khu v\u1ef1c n\u00e0y.\n\nTheo k\u1ebf ho\u1ea1ch c\u1ee7a Ch\u00ednh ph\u1ee7 Vi\u1ec7t Nam, hai trung t\u00e2m t\u00e0i ch\u00ednh s\u1ebd \u0111\u01b0\u1ee3c th\u00e0nh l\u1eadp, v\u1eadn h\u00e0nh trong 2025. Nh\u00e0 \u0111i\u1ec1u h\u00e0nh \u0111ang trong qu\u00e1 tr\u00ecnh ho\u00e0n thi\u1ec7n th\u1ec3 ch\u1ebf, x\u00e2y d\u1ef1ng c\u00e1c ch\u00ednh s\u00e1ch \u0111\u1ec3 ph\u00e1t tri\u1ec3n c\u00e1c trung t\u00e2m t\u00e0i ch\u00ednh khu v\u1ef1c v\u00e0 qu\u1ed1c t\u1ebf n\u00e0y. \u0110\u00e2y l\u00e0 ch\u1ee7 tr\u01b0\u01a1ng l\u1edbn c\u1ee7a B\u1ed9 Ch\u00ednh tr\u1ecb, Ch\u00ednh ph\u1ee7 nh\u1eb1m huy \u0111\u1ed9ng ngu\u1ed3n l\u1ef1c cho ph\u00e1t tri\u1ec3n \u0111\u1ea5t n\u01b0\u1edbc trong k\u1ef7 nguy\u00ean m\u1edbi.\n\nChuy\u1ebfn c\u00f4ng t\u00e1c c\u1ee7a Ph\u00f3 th\u1ee7 t\u01b0\u1edbng l\u1ea7n n\u00e0y nh\u1eb1m t\u00ecm hi\u1ec3u kinh nghi\u1ec7m, th\u00fac \u0111\u1ea9y h\u1ee3p t\u00e1c cho vi\u1ec7c h\u00ecnh th\u00e0nh v\u00e0 ph\u00e1t tri\u1ec3n c\u1ee7a 2 trung t\u00e2m t\u00e0i ch\u00ednh n\u00e0y. B\u1edfi Anh l\u00e0 th\u1ecb tr\u01b0\u1eddng t\u00e0i ch\u00ednh l\u1edbn, l\u00e2u \u0111\u1eddi, c\u00f3 nhi\u1ec1u kinh nghi\u1ec7m v\u1eadn h\u00e0nh c\u00e1c trung t\u00e2m t\u00e0i ch\u00ednh qu\u1ed1c t\u1ebf.\n\nTr\u01b0\u1edbc \u0111\u00f3, trong bu\u1ed5i ti\u1ebfp Ph\u00f3 th\u1ee7 t\u01b0\u1edbng chi\u1ec1u 17/3, Vincent Keaveny, Ph\u00f3 Th\u1ecb tr\u01b0\u1edfng Trung t\u00e2m t\u00e0i ch\u00ednh London, n\u00f3i s\u1eb5n s\u00e0ng ti\u1ebfp t\u1ee5c h\u1ed7 tr\u1ee3 Vi\u1ec7t Nam trong qu\u00e1 tr\u00ecnh x\u00e2y d\u1ef1ng trung t\u00e2m t\u00e0i ch\u00ednh. \u00d4ng nh\u1ea5n m\u1ea1nh n\u0103m nguy\u00ean t\u1eafc c\u1ed1t l\u00f5i trong x\u00e2y d\u1ef1ng trung t\u00e2m t\u00e0i ch\u00ednh th\u00e0nh c\u00f4ng l\u00e0 m\u00f4i tr\u01b0\u1eddng kinh doanh c\u1edfi m\u1edf, khung ph\u00e1p l\u00fd minh b\u1ea1ch, c\u01a1 ch\u1ebf gi\u1ea3i quy\u1ebft tranh ch\u1ea5p hi\u1ec7u qu\u1ea3, h\u1ea1 t\u1ea7ng s\u1ed1 hi\u1ec7n \u0111\u1ea1i, ch\u1ea5t l\u01b0\u1ee3ng s\u1ed1ng v\u00e0 ngu\u1ed3n nh\u00e2n l\u1ef1c cao.\n-------------------\nGi\u00e1 b\u00e1n v\u00e0ng nh\u1eabn tr\u01a1n \u0111\u1ea1t \u0111\u1ec9nh 100 tri\u1ec7u \u0111\u1ed3ng/l\u01b0\u1ee3ng\nGi\u00e1 v\u00e0ng t\u0103ng\n\nC\u1eadp nh\u1eadt \u0111\u1ebfn 11h ng\u00e0y 19/3 cho th\u1ea5y m\u1ed7i l\u01b0\u1ee3ng v\u00e0ng mi\u1ebfng SJC t\u0103ng ti\u1ebfp 300.000 \u0111\u1ed3ng \u1edf c\u1ea3 chi\u1ec1u mua v\u00e0 b\u00e1n, l\u00ean v\u00f9ng gi\u00e1 k\u1ef7 l\u1ee5c m\u1edbi 97,9-99,4 tri\u1ec7u \u0111\u1ed3ng/l\u01b0\u1ee3ng (mua - b\u00e1n).\n\nGi\u00e1 v\u00e0ng nh\u1eabn tr\u00f2n tr\u01a1n t\u1ea1i SJC ghi nh\u1eadn m\u1ed1c gi\u00e1 cao nh\u1ea5t t\u1eeb tr\u01b0\u1edbc \u0111\u1ebfn nay t\u1ea1i 97,8-99,3 tri\u1ec7u \u0111\u1ed3ng/l\u01b0\u1ee3ng, t\u0103ng 300.000 \u0111\u1ed3ng m\u1ed7i chi\u1ec1u.\n\n\u1ede m\u1ed9t s\u1ed1 th\u01b0\u01a1ng hi\u1ec7u v\u00e0ng t\u01b0 nh\u00e2n, gi\u00e1 b\u00e1n v\u00e0ng nh\u1eabn tr\u00f2n tr\u01a1n c\u00e1n m\u1ed1c 100 tri\u1ec7u \u0111\u1ed3ng/l\u01b0\u1ee3ng chi\u1ec1u b\u00e1n ra.\n\nTr\u01b0\u1edbc \u0111\u00f3, ng\u00e0y 18/3, gi\u00e1 v\u00e0ng c\u0169ng bi\u1ebfn \u0111\u1ed9ng m\u1ea1nh khi t\u0103ng h\u01a1n 2 tri\u1ec7u \u0111\u1ed3ng/l\u01b0\u1ee3ng m\u1ed7i chi\u1ec1u trong ng\u00e0y.\n\nGi\u00e1 v\u00e0ng trong n\u01b0\u1edbc li\u00ean t\u1ee5c l\u1eadp k\u1ef7 l\u1ee5c trong b\u1ed1i c\u1ea3nh gi\u00e1 th\u1ebf gi\u1edbi v\u01b0\u1ee3t ng\u01b0\u1ee1ng 3.033 USD/ounce, t\u0103ng h\u01a1n 35 USD so v\u1edbi tr\u01b0\u1edbc \u0111\u00f3. Quy \u0111\u1ed5i theo t\u1ef7 gi\u00e1 ch\u01b0a t\u00ednh thu\u1ebf, ph\u00ed, kim lo\u1ea1i qu\u00fd t\u01b0\u01a1ng \u0111\u01b0\u01a1ng 94 tri\u1ec7u \u0111\u1ed3ng/l\u01b0\u1ee3ng.\n\nV\u00e0ng th\u1ebf gi\u1edbi l\u1eadp \u0111\u1ec9nh k\u1ef7 l\u1ee5c khi c\u00e1c nh\u00e0 \u0111\u1ea7u t\u01b0 \u0111\u1ed5 x\u00f4 v\u00e0o kim lo\u1ea1i qu\u00fd n\u00e0y \u0111\u1ec3 t\u00ecm ki\u1ebfm n\u01a1i tr\u00fa \u1ea9n an to\u00e0n tr\u01b0\u1edbc lo ng\u1ea1i xung \u0111\u1ed9t leo thang \u1edf Trung \u0110\u00f4ng v\u00e0 lo ng\u1ea1i li\u00ean quan \u0111\u1ebfn k\u1ebf ho\u1ea1ch \u00e1p thu\u1ebf c\u1ee7a T\u1ed5ng th\u1ed1ng M\u1ef9 Donald Trump.\n\nGi\u00e1 v\u00e0ng nh\u1eabn \u1edf m\u1ed9t s\u1ed1 th\u01b0\u01a1ng hi\u1ec7u t\u01b0 nh\u00e2n ti\u1ec7m c\u1eadn m\u1ed1c gi\u00e1 99 tri\u1ec7u \u0111\u1ed3ng/l\u01b0\u1ee3ng \u1edf chi\u1ec1u b\u00e1n ra (\u1ea2nh: M\u1ea1nh Qu\u00e2n).\n\nS\u1ef1 ch\u00fa \u00fd c\u1ee7a gi\u1edbi \u0111\u1ea7u t\u01b0 s\u1ebd \u0111\u1ed5 d\u1ed3n v\u00e0o cu\u1ed9c h\u1ecdp ch\u00ednh s\u00e1ch ti\u1ec1n t\u1ec7 c\u1ee7a C\u1ee5c D\u1ef1 tr\u1eef Li\u00ean bang M\u1ef9 (Fed) v\u00e0 c\u00e1c ng\u00e2n h\u00e0ng trung \u01b0\u01a1ng kh\u00e1c trong tu\u1ea7n n\u00e0y.\n\nFed \u0111\u00e3 quy\u1ebft \u0111\u1ecbnh gi\u1eef nguy\u00ean l\u00e3i su\u1ea5t t\u1ea1i cu\u1ed9c h\u1ecdp \u0111\u1ea7u ti\u00ean c\u1ee7a n\u0103m nay sau khi th\u1ef1c hi\u1ec7n 3 l\u1ea7n c\u1eaft gi\u1ea3m l\u00e3i su\u1ea5t trong n\u0103m 2024. Hi\u1ec7n t\u1ea1i, th\u1ecb tr\u01b0\u1eddng k\u1ef3 v\u1ecdng vi\u1ec7c n\u1edbi l\u1ecfng s\u1ebd ti\u1ebfp t\u1ee5c v\u00e0o th\u00e1ng 6.\n\nT\u1ef7 gi\u00e1 trung t\u00e2m t\u0103ng m\u1ea1nh\n\nT\u1ef7 gi\u00e1 trung t\u00e2m k\u1ebft phi\u00ean 18/3 \u0111\u01b0\u1ee3c Ng\u00e2n h\u00e0ng Nh\u00e0 n\u01b0\u1edbc c\u00f4ng b\u1ed1 \u1edf m\u1ee9c 24.793 \u0111\u1ed3ng, t\u0103ng 35 \u0111\u1ed3ng so v\u1edbi tr\u01b0\u1edbc \u0111\u00f3. \u00c1p d\u1ee5ng bi\u00ean \u0111\u1ed9 5%, t\u1ef7 gi\u00e1 USD \u0111\u01b0\u1ee3c c\u00e1c ng\u00e2n h\u00e0ng th\u01b0\u01a1ng m\u1ea1i \u0111\u01b0\u1ee3c ph\u00e9p giao d\u1ecbch t\u1eeb 23.554 \u0111\u1ed3ng \u0111\u1ebfn 26.030 \u0111\u1ed3ng.\n\nNg\u00e2n h\u00e0ng l\u1edbn ni\u00eam y\u1ebft t\u1ef7 gi\u00e1 t\u1ea1i 25.320-25.710 \u0111\u1ed3ng (mua - b\u00e1n), t\u0103ng 30 \u0111\u1ed3ng \u1edf c\u1ea3 chi\u1ec1u mua v\u00e0 b\u00e1n so v\u1edbi tr\u01b0\u1edbc \u0111\u00f3. Ng\u00e2n h\u00e0ng c\u1ed5 ph\u1ea7n giao d\u1ecbch USD t\u1ea1i v\u00f9ng gi\u00e1 25.320-25.720 \u0111\u1ed3ng (mua - b\u00e1n).\n-------------------\nGi\u00e1 d\u1ea7u h\u1ea1 nhi\u1ec7t sau cu\u1ed9c \u0111i\u1ec7n \u0111\u00e0m M\u1ef9 - Nga\nGi\u00e0n khoan d\u1ea7u t\u1ea1i Texas, M\u1ef9. \u1ea2nh: THX/TTXVN\n\nTrong khi \u0111\u00f3, th\u1ecb tr\u01b0\u1eddng ch\u1ee9ng kho\u00e1n ch\u00e2u \u00c1 giao d\u1ecbch \u1ea3m \u0111\u1ea1m, gi\u00e1 v\u00e0ng \u201cneo\u201d g\u1ea7n m\u1ee9c cao k\u1ef7 l\u1ee5c. T\u00e2m l\u00fd th\u1eadn tr\u1ecdng bao tr\u00f9m th\u1ecb tr\u01b0\u1eddng do lo ng\u1ea1i v\u1ec1 kinh t\u1ebf v\u00e0 nh\u1eefng di\u1ec5n bi\u1ebfn \u0111\u1ecba ch\u00ednh tr\u1ecb ph\u1ee9c t\u1ea1p. \u0110\u1ed3ng yen Nh\u1eadt B\u1ea3n suy y\u1ebfu nh\u1eb9 tr\u01b0\u1edbc th\u1ec1m quy\u1ebft \u0111\u1ecbnh ch\u00ednh s\u00e1ch c\u1ee7a Ng\u00e2n h\u00e0ng trung \u01b0\u01a1ng Nh\u1eadt B\u1ea3n (BoJ).\n\nV\u00e0o l\u00fac 8 gi\u1edd 06 ph\u00fat theo gi\u1edd Vi\u1ec7t Nam, gi\u00e1 d\u1ea7u Brent Bi\u1ec3n B\u1eafc gi\u1ea3m 12 xu (0,2%) xu\u1ed1ng 70,44 USD/th\u00f9ng. Gi\u00e1 d\u1ea7u th\u00f4 ng\u1ecdt nh\u1eb9 c\u1ee7a M\u1ef9 (WTI) c\u1ee7a M\u1ef9 gi\u1ea3m 15 xu (0,2%) xu\u1ed1ng 66,75 USD/th\u00f9ng.\n\nT\u1ed5ng th\u1ed1ng Nga Vladimir Putin ng\u00e0y 18/3 (theo gi\u1edd \u0111\u1ecba ph\u01b0\u01a1ng) \u0111\u00e3 \u0111\u1ed3ng \u00fd v\u1edbi s\u00e1ng ki\u1ebfn ng\u1eebng b\u1eafn 30 ng\u00e0y v\u00e0o h\u1ea1 t\u1ea7ng n\u0103ng l\u01b0\u1ee3ng. Nga l\u00e0 m\u1ed9t trong nh\u1eefng nh\u00e0 cung c\u1ea5p d\u1ea7u h\u00e0ng \u0111\u1ea7u th\u1ebf gi\u1edbi, nh\u01b0ng s\u1ea3n l\u01b0\u1ee3ng \u0111\u00e3 gi\u1ea3m k\u1ec3 t\u1eeb khi xung \u0111\u1ed9t n\u1ed5 ra, d\u1eabn \u0111\u1ebfn c\u00e1c l\u1ec7nh tr\u1eebng ph\u1ea1t \u0111\u1ed1i v\u1edbi n\u0103ng l\u01b0\u1ee3ng Nga.\n\nC\u00e1c nh\u00e0 ph\u00e2n t\u00edch nh\u1eadn \u0111\u1ecbnh, m\u1ed9t l\u1ec7nh ng\u1eebng b\u1eafn ti\u1ec1m n\u0103ng c\u00f3 th\u1ec3 gi\u00fap n\u1edbi l\u1ecfng c\u00e1c l\u1ec7nh tr\u1eebng ph\u1ea1t, t\u1eeb \u0111\u00f3 l\u00e0m t\u0103ng ngu\u1ed3n cung d\u1ea7u v\u00e0 h\u1ea1 nhi\u1ec7t gi\u00e1.\n\nTuy nhi\u00ean, \u00f4ng Chris Weston, tr\u01b0\u1edfng b\u1ed9 ph\u1eadn nghi\u00ean c\u1ee9u t\u1ea1i Pepperstone, cho r\u1eb1ng d\u00f9 c\u00e1c cu\u1ed9c \u0111\u00e0m ph\u00e1n ng\u1eebng b\u1eafn Nga - Ukraine \u0111ang di\u1ec5n ra, song h\u1ea7u h\u1ebft gi\u1edbi quan s\u00e1t c\u1ea3m th\u1ea5y r\u1eb1ng ch\u00fang ta ch\u01b0a ti\u1ebfn g\u1ea7n h\u01a1n \u0111\u1ebfn b\u1ea5t k\u1ef3 \u0111i\u1ec1u g\u00ec v\u00e0 m\u1ed9t th\u1ecfa thu\u1eadn l\u00e2u d\u00e0i.\n\nTh\u1ecb tr\u01b0\u1eddng c\u0169ng ch\u1ecbu \u00e1p l\u1ef1c t\u1eeb nh\u1eefng lo ng\u1ea1i kh\u00e1c. Vi\u1ec7c M\u1ef9 \u00e1p thu\u1ebf \u0111\u1ed1i v\u1edbi Canada, Mexico v\u00e0 Trung Qu\u1ed1c \u0111\u00e3 l\u00e0m d\u1ea5y l\u00ean quan ng\u1ea1i v\u1ec1 suy tho\u00e1i kinh t\u1ebf, g\u00e2y \u00e1p l\u1ef1c gi\u1ea3m l\u00ean gi\u00e1 d\u1ea7u do nhu c\u1ea7u d\u1ea7u th\u00f4 c\u00f3 th\u1ec3 gi\u1ea3m.\n\n\u1ede chi\u1ec1u ng\u01b0\u1ee3c l\u1ea1i, t\u00ecnh h\u00ecnh b\u1ea5t \u1ed5n ti\u1ebfp t\u1ee5c \u1edf Trung \u0110\u00f4ng \u0111\u00e3 h\u1ea1n ch\u1ebf \u0111\u00e0 gi\u1ea3m c\u1ee7a gi\u00e1 d\u1ea7u. \u00d4ng Trump tuy\u00ean b\u1ed1 s\u1ebd ti\u1ebfp t\u1ee5c c\u00e1c cu\u1ed9c t\u1ea5n c\u00f4ng c\u1ee7a M\u1ef9 v\u00e0o l\u1ef1c l\u01b0\u1ee3ng Houthi \u1edf Yemen, \u0111\u1ed3ng th\u1eddi cho bi\u1ebft s\u1ebd bu\u1ed9c Iran ch\u1ecbu tr\u00e1ch nhi\u1ec7m v\u1ec1 b\u1ea5t k\u1ef3 cu\u1ed9c t\u1ea5n c\u00f4ng n\u00e0o do nh\u00f3m n\u00e0y th\u1ef1c hi\u1ec7n, g\u00e2y gi\u00e1n \u0111o\u1ea1n ho\u1ea1t \u0111\u1ed9ng v\u1eadn chuy\u1ec3n \u1edf Bi\u1ec3n \u0110\u1ecf.\n\nV\u1ec1 ph\u00eda ngu\u1ed3n cung, d\u1eef li\u1ec7u v\u1ec1 kho d\u1ef1 tr\u1eef d\u1ea7u th\u00f4 c\u1ee7a M\u1ef9 cho th\u1ea5y m\u1ed9t b\u1ee9c tranh tr\u00e1i chi\u1ec1u. Theo Vi\u1ec7n X\u0103ng D\u1ea7u M\u1ef9 (API), d\u1ef1 tr\u1eef d\u1ea7u th\u00f4 t\u0103ng 4,59 tri\u1ec7u th\u00f9ng trong tu\u1ea7n k\u1ebft th\u00fac v\u00e0o ng\u00e0y 14/3, trong khi d\u1ef1 tr\u1eef x\u0103ng v\u00e0 s\u1ea3n ph\u1ea9m ch\u01b0ng c\u1ea5t gi\u1ea3m.\n\nT\u00e2m \u0111i\u1ec3m trong ng\u00e0y s\u1ebd \u0111\u1ed5 d\u1ed3n v\u00e0o BoJ. Th\u1ecb tr\u01b0\u1eddng d\u1ef1 \u0111o\u00e1n BoJ s\u1ebd gi\u1eef nguy\u00ean l\u00e3i su\u1ea5t v\u00e0 \u0111ang ch\u1edd \u0111\u1ee3i b\u00e0i ph\u00e1t bi\u1ec3u c\u1ee7a Th\u1ed1ng \u0111\u1ed1c Kazuo Ueda \u0111\u1ec3 t\u00ecm ki\u1ebfm manh m\u1ed1i v\u1ec1 th\u1eddi \u0111i\u1ec3m ng\u00e2n h\u00e0ng trung \u01b0\u01a1ng c\u00f3 th\u1ec3 t\u0103ng l\u00e3i su\u1ea5t ti\u1ebfp theo.\n\nC\u00e1c chi\u1ebfn l\u01b0\u1ee3c gia c\u1ee7a ANZ cho bi\u1ebft trong b\u1ed1i c\u1ea3nh ho\u1ea1t \u0111\u1ed9ng kinh t\u1ebf v\u00e0 gi\u00e1 c\u1ea3 c\u00f3 th\u1ec3 di\u1ec5n ra theo d\u1ef1 b\u00e1o c\u1ee7a BoJ, ng\u00e2n h\u00e0ng n\u00e0y d\u1ef1 ki\u1ebfn s\u1ebd t\u0103ng l\u00e3i su\u1ea5t th\u00eam hai l\u1ea7n n\u1eefa trong n\u0103m 2025, m\u1ed7i l\u1ea7n 25 \u0111i\u1ec3m c\u01a1 b\u1ea3n v\u00e0o th\u00e1ng 5 v\u00e0 th\u00e1ng 10/2025.\n\nT\u00e2m l\u00fd mong manh c\u1ee7a nh\u00e0 \u0111\u1ea7u t\u01b0 khi\u1ebfn c\u00e1c bi\u1ebfn \u0111\u1ed9ng th\u1ecb tr\u01b0\u1eddng b\u1ecb h\u1ea1n ch\u1ebf. Ch\u1ec9 s\u1ed1 MSCI c\u1ee7a khu v\u1ef1c ch\u00e2u \u00c1 - Th\u00e1i B\u00ecnh D\u01b0\u01a1ng (ngo\u1ea1i tr\u1eeb Nh\u1eadt B\u1ea3n) \u0111\u00e3 gi\u1ea3m 0,12%, trong khi ch\u1ec9 s\u1ed1 Nikkei 225 c\u1ee7a Nh\u1eadt B\u1ea3n t\u0103ng 0,5% nh\u1edd \u0111\u1ed3ng yen y\u1ebfu.\n-------------------\nR\u1ed3ng r\u1eafn x\u1ebfp h\u00e0ng, d\u00e2n H\u00e0 N\u1ed9i \u0111\u1ed5 x\u00f4 mua v\u00e0ng gi\u00e1 \u0111\u1ec9nh 100 tri\u1ec7u \u0111\u1ed3ng\nS\u00e1ng nay 19/3, ph\u1ed1 Tr\u1ea7n Nh\u00e2n T\u00f4ng (Hai B\u00e0 Tr\u01b0ng - H\u00e0 N\u1ed9i) - n\u01a1i t\u1eadp trung nhi\u1ec1u c\u1eeda h\u00e0ng kinh doanh v\u00e0ng b\u1ea1c \u0111\u00e1 qu\u00fd - nh\u1ed9n nh\u1ecbp h\u01a1n bao gi\u1edd h\u1ebft. Gi\u00e1 v\u00e0ng trong n\u01b0\u1edbc ti\u1ebfp t\u1ee5c t\u0103ng d\u1ef1ng \u0111\u1ee9ng theo gi\u00e1 v\u00e0ng th\u1ebf gi\u1edbi, ti\u1ebfn s\u00e1t ng\u01b0\u1ee1ng 100 tri\u1ec7u \u0111\u1ed3ng/l\u01b0\u1ee3ng, \u0111\u00e3 thu h\u00fat \u0111\u00f4ng \u0111\u1ea3o ng\u01b0\u1eddi d\u00e2n \u0111\u1ebfn mua v\u00e0ng \u0111\u1ec3 \u0111\u1ea7u t\u01b0 v\u00e0 t\u00edch tr\u1eef.\n\n\u0110\u1ebfn g\u1ea7n 11h tr\u01b0a nay, B\u1ea3o T\u00edn Minh Ch\u00e2u ni\u00eam y\u1ebft gi\u00e1 v\u00e0ng \u1edf m\u1ee9c 98,1 tri\u1ec7u \u0111\u1ed3ng/l\u01b0\u1ee3ng (mua v\u00e0o) v\u00e0 99,7 tri\u1ec7u \u0111\u1ed3ng/l\u01b0\u1ee3ng (b\u00e1n ra), t\u0103ng th\u00eam n\u1eeda tri\u1ec7u so v\u1edbi \u0111\u1ea7u gi\u1edd s\u00e1ng.\n\nNh\u00e2n vi\u00ean t\u1ea1i B\u1ea3o T\u00edn Minh Ch\u00e2u th\u00f4ng b\u00e1o, h\u00f4m nay c\u1eeda h\u00e0ng kh\u00f4ng b\u00e1n v\u00e0ng mi\u1ebfng v\u00e0 gi\u1edbi h\u1ea1n m\u1ed7i kh\u00e1ch h\u00e0ng ch\u1ec9 \u0111\u01b0\u1ee3c mua n\u1eeda ch\u1ec9.\n\nGi\u1eefa d\u00f2ng ng\u01b0\u1eddi r\u1ed3ng r\u1eafn x\u1ebfp h\u00e0ng tr\u01b0\u1edbc c\u1eeda h\u00e0ng B\u1ea3o T\u00edn Minh Ch\u00e2u, \u00f4ng Nguy\u1ec5n V\u0103n H\u01b0ng, 60 tu\u1ed5i (Hai B\u00e0 Tr\u01b0ng- H\u00e0 N\u1ed9i), chia s\u1ebb: &amp;quot;C\u1ea3nh n\u00e0y khi\u1ebfn t\u00f4i nh\u1edb l\u1ea1i th\u1eddi bao c\u1ea5p, khi m\u1ecdi ng\u01b0\u1eddi ph\u1ea3i x\u1ebfp h\u00e0ng d\u00e0i \u0111\u1ec3 mua th\u1ef1c ph\u1ea9m&amp;quot;.\n\n\u00d4ng H\u01b0ng cho hay, v\u1edbi s\u1ed1 ti\u1ec1n nh\u00e0n r\u1ed7i ti\u1ebft ki\u1ec7m \u0111\u01b0\u1ee3c, \u00f4ng quy\u1ebft \u0111\u1ecbnh mua v\u00e0ng \u0111\u1ec3 t\u00edch tr\u1eef, k\u1ef3 v\u1ecdng gi\u00e1 v\u00e0ng s\u1ebd ti\u1ebfp t\u1ee5c t\u0103ng v\u00e0 c\u00f3 th\u1ec3 v\u01b0\u1ee3t ng\u01b0\u1ee1ng 100 tri\u1ec7u \u0111\u1ed3ng/l\u01b0\u1ee3ng trong th\u1eddi gian t\u1edbi.\n\nD\u00f2ng ng\u01b0\u1eddi x\u1ebfp h\u00e0ng d\u00e0i tr\u01b0\u1edbc c\u1eeda h\u00e0ng v\u00e0ng B\u1ea3o T\u00edn Minh Ch\u00e2u tr\u00ean ph\u1ed1 Tr\u1ea7n Nh\u00e2n T\u00f4ng. \u1ea2nh: Ng\u1ecdc C\u01b0\u01a1ng\n\nCh\u1ecb Lan, nh\u00e2n vi\u00ean v\u0103n ph\u00f2ng tr\u00ean ph\u1ed1 Quang Trung, (H\u00e0 N\u1ed9i), n\u00f3i: &amp;quot;M\u1eb7c d\u00f9 gi\u00e1 v\u00e0ng \u0111ang \u1edf m\u1ee9c cao, t\u00f4i v\u1eabn quy\u1ebft \u0111\u1ecbnh mua v\u00e0o, ch\u1ea5p nh\u1eadn r\u1ee7i ro v\u1edbi hy v\u1ecdng gi\u00e1 ti\u1ebfp t\u1ee5c t\u0103ng&amp;quot;.\n\nCh\u1ecb Lan hi\u1ec3u r\u1eb1ng \u0111\u1ea7u t\u01b0 v\u00e0o v\u00e0ng l\u00fac n\u00e0y c\u00f3 th\u1ec3 thua l\u1ed7 n\u1ebfu gi\u00e1 gi\u1ea3m, nh\u01b0ng ch\u1ecb v\u1eabn tin t\u01b0\u1edfng v\u00e0o xu h\u01b0\u1edbng t\u0103ng c\u1ee7a th\u1ecb tr\u01b0\u1eddng.\n\nAnh Tu\u1ea5n, ch\u1ee7 m\u1ed9t doanh nghi\u1ec7p nh\u1ecf (H\u00e0 \u0110\u00f4ng - H\u00e0 N\u1ed9i) cho hay anh \u0111\u00e3 theo d\u00f5i th\u1ecb tr\u01b0\u1eddng v\u00e0ng su\u1ed1t th\u1eddi gian qua. Anh quy\u1ebft \u0111\u1ecbnh mua v\u00e0ng \u0111\u1ec3 \u0111\u1ea7u t\u01b0 d\u00e0i h\u1ea1n, coi \u0111\u00e2y l\u00e0 k\u00eanh an to\u00e0n trong b\u1ed1i c\u1ea3nh kinh t\u1ebf c\u00f3 nhi\u1ec1u bi\u1ebfn \u0111\u1ed9ng. Anh Tu\u1ea5n ph\u00e2n t\u00edch, d\u00f9 gi\u00e1 v\u00e0ng c\u00f3 th\u1ec3 bi\u1ebfn \u0111\u1ed9ng ng\u1eafn h\u1ea1n, nh\u01b0ng v\u1ec1 l\u00e2u d\u00e0i, v\u00e0ng v\u1eabn l\u00e0 t\u00e0i s\u1ea3n c\u00f3 gi\u00e1 tr\u1ecb.\n\n\u201cV\u00e0ng c\u00f2n t\u0103ng n\u1eefa. T\u00f4i tin ch\u1eafc ch\u1ec9 trong v\u00e0i ng\u00e0y t\u1edbi, gi\u00e1 s\u1ebd v\u01b0\u1ee3t m\u1ed1c 100 tri\u1ec7u \u0111\u1ed3ng/l\u01b0\u1ee3ng. V\u00e0ng v\u1eabn l\u00e0 k\u00eanh tr\u00fa \u1ea9n an to\u00e0n nh\u1ea5t\u201d anh Tu\u1ea5n n\u00f3i.\n\nKhi \u0111\u01b0\u1ee3c h\u1ecfi v\u1ec1 r\u1ee7i ro n\u1ebfu gi\u00e1 v\u00e0ng \u0111\u1ea3o chi\u1ec1u, anh l\u1eafc \u0111\u1ea7u: \u201cT\u00f4i mua \u0111\u1ec3 gi\u1eef d\u00e0i h\u1ea1n. Th\u1ecb tr\u01b0\u1eddng c\u00f3 th\u1ec3 \u0111i\u1ec1u ch\u1ec9nh ng\u1eafn h\u1ea1n nh\u01b0ng trong d\u00e0i h\u1ea1n, v\u00e0ng ch\u1ec9 c\u00f3 t\u0103ng gi\u00e1.\u201d\n\nB\u00e0 Hoa, m\u1ed9t gi\u00e1o vi\u00ean v\u1ec1 h\u01b0u \u1edf \u0110\u1ed9i C\u1ea5n (Ba \u0110\u00ecnh - H\u00e0 N\u1ed9i) \u0111\u1ebfn c\u1eeda h\u00e0ng mua m\u1ed9t chi\u1ebfc l\u1eafc tay v\u00e0ng \u0111\u1ec3 t\u1eb7ng con g\u00e1i nh\u00e2n d\u1ecbp sinh nh\u1eadt. B\u00e0 k\u1ec3, d\u00f9 gi\u00e1 v\u00e0ng \u0111ang cao ng\u1ea5t ng\u01b0\u1edfng nh\u01b0ng v\u1eabn mu\u1ed1n t\u1eb7ng con m\u1ed9t m\u00f3n qu\u00e0 c\u00f3 gi\u00e1 tr\u1ecb v\u00e0 \u00fd ngh\u0129a. B\u00e0 quan ni\u1ec7m v\u00e0ng kh\u00f4ng ch\u1ec9 l\u00e0 trang s\u1ee9c m\u00e0 c\u00f2n l\u00e0 t\u00e0i s\u1ea3n t\u00edch l\u0169y cho t\u01b0\u01a1ng lai.\n\nL\u00fd do mua v\u00e0ng gi\u00e1 \u0111\u1ec9nh c\u1ee7a v\u1ee3 ch\u1ed3ng \u00f4ng Minh, 65 tu\u1ed5i (Ho\u00e0n Ki\u1ebfm, H\u00e0 N\u1ed9i) l\u00e0 \u0111\u1ec3 k\u1ef7 ni\u1ec7m 40 n\u0103m ng\u00e0y c\u01b0\u1edbi. \u00d4ng cho bi\u1ebft: &amp;quot;Ch\u00fang t\u00f4i mu\u1ed1n k\u1ef7 ni\u1ec7m ng\u00e0y \u0111\u1eb7c bi\u1ec7t n\u00e0y b\u1eb1ng \u0111\u00f4i nh\u1eabn v\u00e0ng, v\u1eeba mang \u00fd ngh\u0129a tinh th\u1ea7n, v\u1eeba l\u00e0 t\u00e0i s\u1ea3n t\u00edch l\u0169y&amp;quot;.\n\nKh\u00e1c v\u1edbi d\u00f2ng ng\u01b0\u1eddi \u0111\u1ebfn mua, anh \u0110\u1ee9c \u1edf Nguy\u1ec5n Tr\u00e3i (Thanh Xu\u00e2n - H\u00e0 N\u1ed9i) \u0111\u1ebfn c\u1eeda h\u00e0ng kh\u00f4ng ph\u1ea3i \u0111\u1ec3 mua v\u00e0o m\u00e0 xem x\u00e9t c\u00f3 n\u00ean b\u00e1n hay kh\u00f4ng. Anh \u0111\u00e3 mua 5 l\u01b0\u1ee3ng v\u00e0ng c\u00e1ch \u0111\u00e2y h\u01a1n 4 th\u00e1ng, khi gi\u00e1 kho\u1ea3ng 86 tri\u1ec7u \u0111\u1ed3ng/l\u01b0\u1ee3ng. V\u1edbi gi\u00e1 hi\u1ec7n t\u1ea1i, anh l\u00e3i g\u1ea7n 60 tri\u1ec7u \u0111\u1ed3ng.\n\n\u201c\u0110ang c\u00f3 l\u00e3i c\u0169ng mu\u1ed1n ch\u1ed1t, nh\u01b0ng l\u1ee1 v\u00e0ng c\u00f2n t\u0103ng n\u1eefa th\u00ec sao? B\u00e1n b\u00e2y gi\u1edd m\u00e0 sau v\u00e0ng l\u00ean 100 tri\u1ec7u th\u00ec ti\u1ebfc l\u1eafm\u201d, anh \u0110\u1ee9c b\u0103n kho\u0103n. Sau m\u1ed9t h\u1ed3i \u0111\u1ee9ng l\u01b0\u1ee1ng l\u1ef1 tr\u01b0\u1edbc qu\u1ea7y giao d\u1ecbch, anh quy\u1ebft \u0111\u1ecbnh ch\u01b0a b\u00e1n.\n\nTuy nhi\u00ean, c\u0169ng tr\u00ean con ph\u1ed1 n\u00e0y, t\u1ea1i c\u00e1c c\u1eeda h\u00e0ng v\u00e0ng kh\u00e1c nh\u01b0 Ph\u00fa Qu\u00fd, Doji, SJC,... l\u1ea1i kh\u00e1 v\u1eafng kh\u00e1ch.\n-------------------\n&#34;}], &#34;dags/CrawDag/tests/test_03_saving.py::TestScraping::test_saving&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;dags/CrawDag/tests/test_03_saving.py::TestScraping::test_saving&#34;, &#34;duration&#34;: &#34;00:00:05&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;dags/CrawDag/tests/test_03_saving.py::TestScraping::test_saving&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:05&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}]}, &#34;renderCollapsed&#34;: [&#34;passed&#34;], &#34;initialSort&#34;: &#34;result&#34;, &#34;title&#34;: &#34;report.html&#34;}"></div>
+    <script>
+      (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+const { getCollapsedCategory, setCollapsedIds } = require('./storage.js')
+
+class DataManager {
+    setManager(data) {
+        const collapsedCategories = [...getCollapsedCategory(data.renderCollapsed)]
+        const collapsedIds = []
+        const tests = Object.values(data.tests).flat().map((test, index) => {
+            const collapsed = collapsedCategories.includes(test.result.toLowerCase())
+            const id = `test_${index}`
+            if (collapsed) {
+                collapsedIds.push(id)
+            }
+            return {
+                ...test,
+                id,
+                collapsed,
+            }
+        })
+        const dataBlob = { ...data, tests }
+        this.data = { ...dataBlob }
+        this.renderData = { ...dataBlob }
+        setCollapsedIds(collapsedIds)
+    }
+
+    get allData() {
+        return { ...this.data }
+    }
+
+    resetRender() {
+        this.renderData = { ...this.data }
+    }
+
+    setRender(data) {
+        this.renderData.tests = [...data]
+    }
+
+    toggleCollapsedItem(id) {
+        this.renderData.tests = this.renderData.tests.map((test) =>
+            test.id === id ? { ...test, collapsed: !test.collapsed } : test,
+        )
+    }
+
+    set allCollapsed(collapsed) {
+        this.renderData = { ...this.renderData, tests: [...this.renderData.tests.map((test) => (
+            { ...test, collapsed }
+        ))] }
+    }
+
+    get testSubset() {
+        return [...this.renderData.tests]
+    }
+
+    get environment() {
+        return this.renderData.environment
+    }
+
+    get initialSort() {
+        return this.data.initialSort
+    }
+}
+
+module.exports = {
+    manager: new DataManager(),
+}
+
+},{"./storage.js":8}],2:[function(require,module,exports){
+const mediaViewer = require('./mediaviewer.js')
+const templateEnvRow = document.getElementById('template_environment_row')
+const templateResult = document.getElementById('template_results-table__tbody')
+
+function htmlToElements(html) {
+    const temp = document.createElement('template')
+    temp.innerHTML = html
+    return temp.content.childNodes
+}
+
+const find = (selector, elem) => {
+    if (!elem) {
+        elem = document
+    }
+    return elem.querySelector(selector)
+}
+
+const findAll = (selector, elem) => {
+    if (!elem) {
+        elem = document
+    }
+    return [...elem.querySelectorAll(selector)]
+}
+
+const dom = {
+    getStaticRow: (key, value) => {
+        const envRow = templateEnvRow.content.cloneNode(true)
+        const isObj = typeof value === 'object' && value !== null
+        const values = isObj ? Object.keys(value).map((k) => `${k}: ${value[k]}`) : null
+
+        const valuesElement = htmlToElements(
+            values ? `<ul>${values.map((val) => `<li>${val}</li>`).join('')}<ul>` : `<div>${value}</div>`)[0]
+        const td = findAll('td', envRow)
+        td[0].textContent = key
+        td[1].appendChild(valuesElement)
+
+        return envRow
+    },
+    getResultTBody: ({ testId, id, log, extras, resultsTableRow, tableHtml, result, collapsed }) => {
+        const resultBody = templateResult.content.cloneNode(true)
+        resultBody.querySelector('tbody').classList.add(result.toLowerCase())
+        resultBody.querySelector('tbody').id = testId
+        resultBody.querySelector('.collapsible').dataset.id = id
+
+        resultsTableRow.forEach((html) => {
+            const t = document.createElement('template')
+            t.innerHTML = html
+            resultBody.querySelector('.collapsible').appendChild(t.content)
+        })
+
+        if (log) {
+            // Wrap lines starting with "E" with span.error to color those lines red
+            const wrappedLog = log.replace(/^E.*$/gm, (match) => `<span class="error">${match}</span>`)
+            resultBody.querySelector('.log').innerHTML = wrappedLog
+        } else {
+            resultBody.querySelector('.log').remove()
+        }
+
+        if (collapsed) {
+            resultBody.querySelector('.collapsible > td')?.classList.add('collapsed')
+            resultBody.querySelector('.extras-row').classList.add('hidden')
+        } else {
+            resultBody.querySelector('.collapsible > td')?.classList.remove('collapsed')
+        }
+
+        const media = []
+        extras?.forEach(({ name, format_type, content }) => {
+            if (['image', 'video'].includes(format_type)) {
+                media.push({ path: content, name, format_type })
+            }
+
+            if (format_type === 'html') {
+                resultBody.querySelector('.extraHTML').insertAdjacentHTML('beforeend', `<div>${content}</div>`)
+            }
+        })
+        mediaViewer.setup(resultBody, media)
+
+        // Add custom html from the pytest_html_results_table_html hook
+        tableHtml?.forEach((item) => {
+            resultBody.querySelector('td[class="extra"]').insertAdjacentHTML('beforeend', item)
+        })
+
+        return resultBody
+    },
+}
+
+module.exports = {
+    dom,
+    htmlToElements,
+    find,
+    findAll,
+}
+
+},{"./mediaviewer.js":6}],3:[function(require,module,exports){
+const { manager } = require('./datamanager.js')
+const { doSort } = require('./sort.js')
+const storageModule = require('./storage.js')
+
+const getFilteredSubSet = (filter) =>
+    manager.allData.tests.filter(({ result }) => filter.includes(result.toLowerCase()))
+
+const doInitFilter = () => {
+    const currentFilter = storageModule.getVisible()
+    const filteredSubset = getFilteredSubSet(currentFilter)
+    manager.setRender(filteredSubset)
+}
+
+const doFilter = (type, show) => {
+    if (show) {
+        storageModule.showCategory(type)
+    } else {
+        storageModule.hideCategory(type)
+    }
+
+    const currentFilter = storageModule.getVisible()
+    const filteredSubset = getFilteredSubSet(currentFilter)
+    manager.setRender(filteredSubset)
+
+    const sortColumn = storageModule.getSort()
+    doSort(sortColumn, true)
+}
+
+module.exports = {
+    doFilter,
+    doInitFilter,
+}
+
+},{"./datamanager.js":1,"./sort.js":7,"./storage.js":8}],4:[function(require,module,exports){
+const { redraw, bindEvents, renderStatic } = require('./main.js')
+const { doInitFilter } = require('./filter.js')
+const { doInitSort } = require('./sort.js')
+const { manager } = require('./datamanager.js')
+const data = JSON.parse(document.getElementById('data-container').dataset.jsonblob)
+
+function init() {
+    manager.setManager(data)
+    doInitFilter()
+    doInitSort()
+    renderStatic()
+    redraw()
+    bindEvents()
+}
+
+init()
+
+},{"./datamanager.js":1,"./filter.js":3,"./main.js":5,"./sort.js":7}],5:[function(require,module,exports){
+const { dom, find, findAll } = require('./dom.js')
+const { manager } = require('./datamanager.js')
+const { doSort } = require('./sort.js')
+const { doFilter } = require('./filter.js')
+const {
+    getVisible,
+    getCollapsedIds,
+    setCollapsedIds,
+    getSort,
+    getSortDirection,
+    possibleFilters,
+} = require('./storage.js')
+
+const removeChildren = (node) => {
+    while (node.firstChild) {
+        node.removeChild(node.firstChild)
+    }
+}
+
+const renderStatic = () => {
+    const renderEnvironmentTable = () => {
+        const environment = manager.environment
+        const rows = Object.keys(environment).map((key) => dom.getStaticRow(key, environment[key]))
+        const table = document.getElementById('environment')
+        removeChildren(table)
+        rows.forEach((row) => table.appendChild(row))
+    }
+    renderEnvironmentTable()
+}
+
+const addItemToggleListener = (elem) => {
+    elem.addEventListener('click', ({ target }) => {
+        const id = target.parentElement.dataset.id
+        manager.toggleCollapsedItem(id)
+
+        const collapsedIds = getCollapsedIds()
+        if (collapsedIds.includes(id)) {
+            const updated = collapsedIds.filter((item) => item !== id)
+            setCollapsedIds(updated)
+        } else {
+            collapsedIds.push(id)
+            setCollapsedIds(collapsedIds)
+        }
+        redraw()
+    })
+}
+
+const renderContent = (tests) => {
+    const sortAttr = getSort(manager.initialSort)
+    const sortAsc = JSON.parse(getSortDirection())
+    const rows = tests.map(dom.getResultTBody)
+    const table = document.getElementById('results-table')
+    const tableHeader = document.getElementById('results-table-head')
+
+    const newTable = document.createElement('table')
+    newTable.id = 'results-table'
+
+    // remove all sorting classes and set the relevant
+    findAll('.sortable', tableHeader).forEach((elem) => elem.classList.remove('asc', 'desc'))
+    tableHeader.querySelector(`.sortable[data-column-type="${sortAttr}"]`)?.classList.add(sortAsc ? 'desc' : 'asc')
+    newTable.appendChild(tableHeader)
+
+    if (!rows.length) {
+        const emptyTable = document.getElementById('template_results-table__body--empty').content.cloneNode(true)
+        newTable.appendChild(emptyTable)
+    } else {
+        rows.forEach((row) => {
+            if (!!row) {
+                findAll('.collapsible td:not(.col-links', row).forEach(addItemToggleListener)
+                find('.logexpander', row).addEventListener('click',
+                    (evt) => evt.target.parentNode.classList.toggle('expanded'),
+                )
+                newTable.appendChild(row)
+            }
+        })
+    }
+
+    table.replaceWith(newTable)
+}
+
+const renderDerived = () => {
+    const currentFilter = getVisible()
+    possibleFilters.forEach((result) => {
+        const input = document.querySelector(`input[data-test-result="${result}"]`)
+        input.checked = currentFilter.includes(result)
+    })
+}
+
+const bindEvents = () => {
+    const filterColumn = (evt) => {
+        const { target: element } = evt
+        const { testResult } = element.dataset
+
+        doFilter(testResult, element.checked)
+        const collapsedIds = getCollapsedIds()
+        const updated = manager.renderData.tests.map((test) => {
+            return {
+                ...test,
+                collapsed: collapsedIds.includes(test.id),
+            }
+        })
+        manager.setRender(updated)
+        redraw()
+    }
+
+    const header = document.getElementById('environment-header')
+    header.addEventListener('click', () => {
+        const table = document.getElementById('environment')
+        table.classList.toggle('hidden')
+        header.classList.toggle('collapsed')
+    })
+
+    findAll('input[name="filter_checkbox"]').forEach((elem) => {
+        elem.addEventListener('click', filterColumn)
+    })
+
+    findAll('.sortable').forEach((elem) => {
+        elem.addEventListener('click', (evt) => {
+            const { target: element } = evt
+            const { columnType } = element.dataset
+            doSort(columnType)
+            redraw()
+        })
+    })
+
+    document.getElementById('show_all_details').addEventListener('click', () => {
+        manager.allCollapsed = false
+        setCollapsedIds([])
+        redraw()
+    })
+    document.getElementById('hide_all_details').addEventListener('click', () => {
+        manager.allCollapsed = true
+        const allIds = manager.renderData.tests.map((test) => test.id)
+        setCollapsedIds(allIds)
+        redraw()
+    })
+}
+
+const redraw = () => {
+    const { testSubset } = manager
+
+    renderContent(testSubset)
+    renderDerived()
+}
+
+module.exports = {
+    redraw,
+    bindEvents,
+    renderStatic,
+}
+
+},{"./datamanager.js":1,"./dom.js":2,"./filter.js":3,"./sort.js":7,"./storage.js":8}],6:[function(require,module,exports){
+class MediaViewer {
+    constructor(assets) {
+        this.assets = assets
+        this.index = 0
+    }
+
+    nextActive() {
+        this.index = this.index === this.assets.length - 1 ? 0 : this.index + 1
+        return [this.activeFile, this.index]
+    }
+
+    prevActive() {
+        this.index = this.index === 0 ? this.assets.length - 1 : this.index -1
+        return [this.activeFile, this.index]
+    }
+
+    get currentIndex() {
+        return this.index
+    }
+
+    get activeFile() {
+        return this.assets[this.index]
+    }
+}
+
+
+const setup = (resultBody, assets) => {
+    if (!assets.length) {
+        resultBody.querySelector('.media').classList.add('hidden')
+        return
+    }
+
+    const mediaViewer = new MediaViewer(assets)
+    const container = resultBody.querySelector('.media-container')
+    const leftArrow = resultBody.querySelector('.media-container__nav--left')
+    const rightArrow = resultBody.querySelector('.media-container__nav--right')
+    const mediaName = resultBody.querySelector('.media__name')
+    const counter = resultBody.querySelector('.media__counter')
+    const imageEl = resultBody.querySelector('img')
+    const sourceEl = resultBody.querySelector('source')
+    const videoEl = resultBody.querySelector('video')
+
+    const setImg = (media, index) => {
+        if (media?.format_type === 'image') {
+            imageEl.src = media.path
+
+            imageEl.classList.remove('hidden')
+            videoEl.classList.add('hidden')
+        } else if (media?.format_type === 'video') {
+            sourceEl.src = media.path
+
+            videoEl.classList.remove('hidden')
+            imageEl.classList.add('hidden')
+        }
+
+        mediaName.innerText = media?.name
+        counter.innerText = `${index + 1} / ${assets.length}`
+    }
+    setImg(mediaViewer.activeFile, mediaViewer.currentIndex)
+
+    const moveLeft = () => {
+        const [media, index] = mediaViewer.prevActive()
+        setImg(media, index)
+    }
+    const doRight = () => {
+        const [media, index] = mediaViewer.nextActive()
+        setImg(media, index)
+    }
+    const openImg = () => {
+        window.open(mediaViewer.activeFile.path, '_blank')
+    }
+    if (assets.length === 1) {
+        container.classList.add('media-container--fullscreen')
+    } else {
+        leftArrow.addEventListener('click', moveLeft)
+        rightArrow.addEventListener('click', doRight)
+    }
+    imageEl.addEventListener('click', openImg)
+}
+
+module.exports = {
+    setup,
+}
+
+},{}],7:[function(require,module,exports){
+const { manager } = require('./datamanager.js')
+const storageModule = require('./storage.js')
+
+const genericSort = (list, key, ascending, customOrder) => {
+    let sorted
+    if (customOrder) {
+        sorted = list.sort((a, b) => {
+            const aValue = a.result.toLowerCase()
+            const bValue = b.result.toLowerCase()
+
+            const aIndex = customOrder.findIndex((item) => item.toLowerCase() === aValue)
+            const bIndex = customOrder.findIndex((item) => item.toLowerCase() === bValue)
+
+            // Compare the indices to determine the sort order
+            return aIndex - bIndex
+        })
+    } else {
+        sorted = list.sort((a, b) => a[key] === b[key] ? 0 : a[key] > b[key] ? 1 : -1)
+    }
+
+    if (ascending) {
+        sorted.reverse()
+    }
+    return sorted
+}
+
+const durationSort = (list, ascending) => {
+    const parseDuration = (duration) => {
+        if (duration.includes(':')) {
+            // If it's in the format "HH:mm:ss"
+            const [hours, minutes, seconds] = duration.split(':').map(Number)
+            return (hours * 3600 + minutes * 60 + seconds) * 1000
+        } else {
+            // If it's in the format "nnn ms"
+            return parseInt(duration)
+        }
+    }
+    const sorted = list.sort((a, b) => parseDuration(a['duration']) - parseDuration(b['duration']))
+    if (ascending) {
+        sorted.reverse()
+    }
+    return sorted
+}
+
+const doInitSort = () => {
+    const type = storageModule.getSort(manager.initialSort)
+    const ascending = storageModule.getSortDirection()
+    const list = manager.testSubset
+    const initialOrder = ['Error', 'Failed', 'Rerun', 'XFailed', 'XPassed', 'Skipped', 'Passed']
+
+    storageModule.setSort(type)
+    storageModule.setSortDirection(ascending)
+
+    if (type?.toLowerCase() === 'original') {
+        manager.setRender(list)
+    } else {
+        let sortedList
+        switch (type) {
+        case 'duration':
+            sortedList = durationSort(list, ascending)
+            break
+        case 'result':
+            sortedList = genericSort(list, type, ascending, initialOrder)
+            break
+        default:
+            sortedList = genericSort(list, type, ascending)
+            break
+        }
+        manager.setRender(sortedList)
+    }
+}
+
+const doSort = (type, skipDirection) => {
+    const newSortType = storageModule.getSort(manager.initialSort) !== type
+    const currentAsc = storageModule.getSortDirection()
+    let ascending
+    if (skipDirection) {
+        ascending = currentAsc
+    } else {
+        ascending = newSortType ? false : !currentAsc
+    }
+    storageModule.setSort(type)
+    storageModule.setSortDirection(ascending)
+
+    const list = manager.testSubset
+    const sortedList = type === 'duration' ? durationSort(list, ascending) : genericSort(list, type, ascending)
+    manager.setRender(sortedList)
+}
+
+module.exports = {
+    doInitSort,
+    doSort,
+}
+
+},{"./datamanager.js":1,"./storage.js":8}],8:[function(require,module,exports){
+const possibleFilters = [
+    'passed',
+    'skipped',
+    'failed',
+    'error',
+    'xfailed',
+    'xpassed',
+    'rerun',
+]
+
+const getVisible = () => {
+    const url = new URL(window.location.href)
+    const settings = new URLSearchParams(url.search).get('visible')
+    const lower = (item) => {
+        const lowerItem = item.toLowerCase()
+        if (possibleFilters.includes(lowerItem)) {
+            return lowerItem
+        }
+        return null
+    }
+    return settings === null ?
+        possibleFilters :
+        [...new Set(settings?.split(',').map(lower).filter((item) => item))]
+}
+
+const hideCategory = (categoryToHide) => {
+    const url = new URL(window.location.href)
+    const visibleParams = new URLSearchParams(url.search).get('visible')
+    const currentVisible = visibleParams ? visibleParams.split(',') : [...possibleFilters]
+    const settings = [...new Set(currentVisible)].filter((f) => f !== categoryToHide).join(',')
+
+    url.searchParams.set('visible', settings)
+    window.history.pushState({}, null, unescape(url.href))
+}
+
+const showCategory = (categoryToShow) => {
+    if (typeof window === 'undefined') {
+        return
+    }
+    const url = new URL(window.location.href)
+    const currentVisible = new URLSearchParams(url.search).get('visible')?.split(',').filter(Boolean) ||
+        [...possibleFilters]
+    const settings = [...new Set([categoryToShow, ...currentVisible])]
+    const noFilter = possibleFilters.length === settings.length || !settings.length
+
+    noFilter ? url.searchParams.delete('visible') : url.searchParams.set('visible', settings.join(','))
+    window.history.pushState({}, null, unescape(url.href))
+}
+
+const getSort = (initialSort) => {
+    const url = new URL(window.location.href)
+    let sort = new URLSearchParams(url.search).get('sort')
+    if (!sort) {
+        sort = initialSort || 'result'
+    }
+    return sort
+}
+
+const setSort = (type) => {
+    const url = new URL(window.location.href)
+    url.searchParams.set('sort', type)
+    window.history.pushState({}, null, unescape(url.href))
+}
+
+const getCollapsedCategory = (renderCollapsed) => {
+    let categories
+    if (typeof window !== 'undefined') {
+        const url = new URL(window.location.href)
+        const collapsedItems = new URLSearchParams(url.search).get('collapsed')
+        switch (true) {
+        case !renderCollapsed && collapsedItems === null:
+            categories = ['passed']
+            break
+        case collapsedItems?.length === 0 || /^["']{2}$/.test(collapsedItems):
+            categories = []
+            break
+        case /^all$/.test(collapsedItems) || collapsedItems === null && /^all$/.test(renderCollapsed):
+            categories = [...possibleFilters]
+            break
+        default:
+            categories = collapsedItems?.split(',').map((item) => item.toLowerCase()) || renderCollapsed
+            break
+        }
+    } else {
+        categories = []
+    }
+    return categories
+}
+
+const getSortDirection = () => JSON.parse(sessionStorage.getItem('sortAsc')) || false
+const setSortDirection = (ascending) => sessionStorage.setItem('sortAsc', ascending)
+
+const getCollapsedIds = () => JSON.parse(sessionStorage.getItem('collapsedIds')) || []
+const setCollapsedIds = (list) => sessionStorage.setItem('collapsedIds', JSON.stringify(list))
+
+module.exports = {
+    getVisible,
+    hideCategory,
+    showCategory,
+    getCollapsedIds,
+    setCollapsedIds,
+    getSort,
+    setSort,
+    getSortDirection,
+    setSortDirection,
+    getCollapsedCategory,
+    possibleFilters,
+}
+
+},{}]},{},[4]);
+    </script>
+  </footer>
+</html>

@@ -4,7 +4,7 @@
     color: #333;
 }
 
-.marrdown p,
+
 .markdown h1,
 .markdown h2,
 .markdown h3,
@@ -33,6 +33,12 @@
 .markdown ol {
     margin: 1em 0;
     padding-left: 2em;
+}
+
+.markdown ul li {
+    margin-bottom: 0.5em;
+    list-style-type: disc;
+    margin-left: 1.5em;
 }
 
 .markdown blockquote {

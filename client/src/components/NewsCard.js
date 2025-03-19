@@ -74,7 +74,7 @@ export default NewsCard;
 
 export const NewsCardSkeleton = () => {
     return (
-        <div className="flex flex-col sm:w-full xl:w-[17rem] h-full md:h-[25rem] lg:h-96 transition-all duration-200 bg-white dark:bg-black dark:border-gray-700 dark:border shadow-lg rounded-lg overflow-hidden">
+        <div className="flex flex-col sm:w-full xl:w-[20rem] h-full md:h-[25rem] lg:h-96 transition-all duration-200 bg-white dark:bg-black dark:border-gray-700 dark:border shadow-lg rounded-lg overflow-hidden">
             <div className="w-full h-40 bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
             <div className="p-4 flex flex-col flex-grow">
                 <div className="flex items-center mb-2">

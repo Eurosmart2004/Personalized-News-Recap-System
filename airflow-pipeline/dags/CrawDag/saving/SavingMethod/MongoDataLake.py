@@ -12,14 +12,13 @@ class MongoDataLake(DataLake):
         pass
 
     def __connect(self):      
-        uri = f"mongodb+srv://admin:admin@cluster0.5vezm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
         uri = (
         "mongodb+srv://{}:{}@{}/?retryWrites=true&w=majority&appName=Cluster0".format(
             os.getenv("MONGO_INITDB_ROOT_USERNAME"), os.getenv("MONGO_INITDB_ROOT_PASSWORD"),
             os.getenv("MONGO_HOST"),
             )
         )
-    
+
         client = MongoClient(uri, server_api=ServerApi('1'))
         database = client.get_database(os.getenv("MONGO_DATABASE"))
         return database

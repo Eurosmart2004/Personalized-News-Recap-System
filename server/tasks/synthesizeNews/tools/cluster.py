@@ -48,7 +48,10 @@ def cluster(now: datetime, duration: str):
     response = requests.post(
         url=f'{Config.SERVER_SLAVE}/api/cluster',
         headers={'Authorization': f'Bearer {Config.SERVER_SALVE_BEARER}'},
-        json={'embeddings': embeddings})
+        json={
+            'embeddings': embeddings,
+            'duration': duration
+        })
     
     labels = response.json()['labels']
 

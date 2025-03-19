@@ -87,7 +87,7 @@ const Router = () => {
                         <AggregatePage />
                     </RoleRoute>
                 } />
-                <Route path="/aggregate/:duration/:id" element={
+                <Route path="/aggregate/:id" element={
                     <RoleRoute roles={['user']}>
                         <AggregatePageDetail />
                     </RoleRoute>

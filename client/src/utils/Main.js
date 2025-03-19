@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 export const BASEURL = `${process.env.REACT_APP_SERVER_URL}/api` || 'http://localhost:5000/api';
 export const TOPIC = {
     "news": "Thời sự",
@@ -41,6 +42,10 @@ export const formatDateTime = (input) => {
     const formattedTime = time.slice(0, 5); // "11:53"
 
     return `${formattedDate} ${formattedTime}`;
+};
+
+export const formatDate = (date) => {
+    return dayjs(date).format('YYYY-MM-DD');
 };
 
 export const extractDomain = (url) => {

@@ -26,7 +26,6 @@ const App = () => {
 		try {
 			setLoading(true);
 			const response = await privateAxios.get('/user');
-			console.log(response);
 			dispatch(setAuth({ "user": response.data }));
 			localStorage.setItem('isAuth', true);
 		} catch (error) {
