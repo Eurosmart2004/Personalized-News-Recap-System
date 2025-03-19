@@ -29,6 +29,7 @@ const AggregatePageDetail = () => {
     };
 
     useEffect(() => {
+        window.scrollTo(0, 0);
         getClusters();
     }, []);
 
