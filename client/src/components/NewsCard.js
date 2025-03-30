@@ -4,7 +4,7 @@ import CollectionButton from './CollectionButton';
 import { useSelector } from 'react-redux';
 import { BASEURL, TOPIC, formatDateTime, extractDomain, DOMAIN } from '../utils/Main';
 
-const NewsCard = ({ news, isSaved }) => {
+const NewsCard = ({ news, isSaved, isFavorite = false }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const auth = useSelector((state) => state.auth);
 
@@ -44,15 +44,22 @@ const NewsCard = ({ news, isSaved }) => {
                                 <span className="text-[10px] text-gray-600 dark:text-gray-400">{source.name}</span>
                             </>
                         )}
+
                     </div>
                     <h5 className="text-md font-semibold text-gray-800 dark:text-gray-200 mb-2">
                         {news.title}
                     </h5>
-                    <div className='flex flex-wrap gap-1 mb-2'>
+                    <div className='flex flex-wrap items-center gap-x-2 mb-2'>
                         <span className="inline-block bg-orange-200 text-orange-800 text-xs px-2 py-1 rounded-full">
                             {TOPIC[news.topic]}
                         </span>
+                        {isFavorite && (
+                            <span className="inline-block bg-red-200 text-red-800 text-xs px-2 py-1 rounded-full">
+                                Recommend
+                            </span>
+                        )}
                     </div>
+
                     <div className="mt-auto flex items-center justify-between">
                         <small className="text-gray-500 dark:text-gray-400">{formatDateTime(news.date)}</small>
                         <div onClick={handleFavoriteClick}>

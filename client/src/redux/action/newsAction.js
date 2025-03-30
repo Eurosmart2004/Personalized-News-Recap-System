@@ -12,10 +12,20 @@ const setNews = (state, action) => {
     state.news = [...state.news, ...filteredNews];
 };
 
+const setFavoriateNews = (state, action) => {
+    state.favoriateNews = action.payload;
+};
+
+const setFavoriteQueries = (state, action) => {
+    state.favoriteQueries = action.payload;
+};
+
 const newsAction = {
     setBeforeTime,
     setAfterTime,
-    setNews
+    setNews,
+    setFavoriateNews,
+    setFavoriteQueries
 };
 
 export default newsAction;

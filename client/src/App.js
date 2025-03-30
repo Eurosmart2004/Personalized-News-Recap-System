@@ -49,8 +49,6 @@ const App = () => {
 	};
 
 	useEffect(() => {
-		socket.connect();
-
 		window.addEventListener('storage', handleStorageChange);
 		getUser();
 		const savedTheme = localStorage.getItem('theme') || 'auto';

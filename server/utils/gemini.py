@@ -2,6 +2,7 @@ from google import genai
 from google.genai import types
 from dotenv import load_dotenv
 import os
+import logging
 load_dotenv()
 client = genai.Client(api_key=os.getenv('GEMINI_API_KEY'))
 class SynthesizeModel:
@@ -128,13 +129,13 @@ Tập Thể Dục Đều Đặn Cải Thiện Trí Nhớ va Khả Nang Hoc Tap
         return contents
 
     def validate_with_model(self, text: str) -> bool:
-        """
-        Sử dụng model để kiểm tra xem văn bản có chỉ chứa chữ, số, dấu cách và dấu nháy đơn
+
+        if "\n" in text:
+            return False
+        
+        validation_prompt = f"""Sử dụng model để kiểm tra xem văn bản có chỉ chứa chữ, số, dấu cách và dấu nháy đơn
         và chỉ bao gồm 1 câu trả lời (không chứa nhiều đáp án được đánh số riêng lẻ) hay không.
         Nếu hợp lệ, model chỉ trả lời 'Valid', nếu không hợp lệ trả lời 'Invalid'.
-        """
-        validation_prompt = f"""Hãy kiểm tra xem đây có phải là 1 tiêu đề hoàn chỉnh không.
-Nếu tiêu đề hợp lệ, chỉ trả lời 'Valid'. Nếu không, chỉ trả lời 'Invalid'.
 
 Văn bản: {text}"""
 
@@ -157,7 +158,7 @@ Văn bản: {text}"""
         """
         attempts = 0
         final_output = ""
-        while attempts < 3:
+        while True:
             response = client.models.generate_content(
                 model="gemini-2.0-flash-lite",
                 config=types.GenerateContentConfig(
@@ -168,7 +169,10 @@ Văn bản: {text}"""
             output = response.text.strip().replace('*', '').replace('#', '')
             if self.is_valid_output(output):
                 final_output = output
+                logging.info(f"Valid output: {output}")
                 break
+
+            logging.info(f"Invalid output: {output}")
             attempts += 1
         return final_output
 

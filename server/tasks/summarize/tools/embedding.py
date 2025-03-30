@@ -24,7 +24,7 @@ def embedding(news_list_add: list[News], news_list_update: list[News]):
                 json={'text': content})
             embedding = response.json()['embedding']
             embeddings_add.append(embedding)
-            logging.info(f"Embedded news {titles_add[i]}")
+            logging.info(f"Embedded news {titles_add[i]} {i+1}/{len(contents_add)}")
         except Exception as e:
             logging.exception(f"Error embedding news {news_ids_add[i]}")
             logging.exception(e)
@@ -65,7 +65,7 @@ def embedding(news_list_add: list[News], news_list_update: list[News]):
                     }
                 }
             )
-            logging.info(f"Updated embedding for news {news_ids_update[i]}")
+            logging.info(f"Updated embedding for news {news_ids_update[i]} {i+1}/{len(contents_update)}")
         except Exception as e:
             logging.exception(f"Error updating embedding for news {news_ids_update[i]}")
             logging.exception(e)

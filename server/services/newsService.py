@@ -1,9 +1,12 @@
 from database.database import db
-from models import News, User, UserPreference, Preference
+from models import News, User, UserPreference, Preference, FavoriteNews
 from sqlalchemy import and_ 
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import urllib.parse
 import logging
+from pymongo import MongoClient
+import requests
+
 async def hanhdle_summarize(article_ids: list[str]) -> str:
     from app import celery
     try:
@@ -83,3 +86,124 @@ def get_image(image_url: str) -> dict:
         return image_bytes
     except Exception as e:
         raise e
+        
+def get_favorite_news(user_id: str) -> list[dict]:
+    try:
+        favorite_news_query: list[FavoriteNews] = FavoriteNews.query.filter_by(user_id=user_id).all()
+        return [f.to_json() for f in favorite_news_query]
+
+    except Exception as e:
+        raise e
+    
+def post_favorite_news(user_id: str, query: str) -> list[dict]:
+    try:
+        favorite_news = FavoriteNews(user_id=user_id, search=query)
+        db.session.add(favorite_news)
+        db.session.commit()
+        return get_favorite_news(user_id)
+    except Exception as e:
+        db.session.rollback()
+        raise e
+    
+def put_favorite_news(user_id: str, query_id: str, new_query: str) -> list[dict]:
+    try:
+        favorite_news_query: FavoriteNews = FavoriteNews.query.filter_by(user_id=user_id, id=query_id).first()
+        favorite_news_query.search = new_query
+        favorite_news_query.updateAt = datetime.now()
+        db.session.commit()
+        return get_favorite_news(user_id)
+    except Exception as e:
+        db.session.rollback()
+        raise e
+    
+def delete_favorite_news(user_id: str, query_id: str) -> list[dict]:
+    try:
+        favorite_news_query: FavoriteNews = FavoriteNews.query.filter_by(user_id=user_id, id=query_id).first()
+        db.session.delete(favorite_news_query)
+        db.session.commit()
+        return get_favorite_news(user_id)
+    except Exception as e:
+        db.session.rollback()
+        raise e
+    
+def search_news(userID: str, searchList: str) -> list[dict]:
+    from config.app_config import Config
+
+    searchs: list[FavoriteNews] = FavoriteNews.query.filter_by(user_id=userID).all()
+    try:
+        array_of_results = []
+        for search in searchs:
+            if search.search not in searchList:
+                continue
+
+            response = requests.post(
+                    headers={'Authorization': f'Bearer {Config.SERVER_SALVE_BEARER}'},
+                    url=f'{Config.SERVER_SLAVE}/api/embedding', 
+                    json={'text': search.search})
+            query_embedding = response.json()['embedding']
+
+            MONGO_URI = Config.MONGO_URI
+
+            client = MongoClient(MONGO_URI)
+            DB_NAME = "personalized-news-recap-system"
+            COLLECTION_EMBEDDINGS_NAME = "news_embeddings"
+            collection_embeddings = client[DB_NAME][COLLECTION_EMBEDDINGS_NAME]
+
+            seven_days_ago = datetime.now() - timedelta(days=7)
+        
+            pipeline = [
+                {
+                    "$vectorSearch": {
+                        "index": "query_recommend",
+                        "queryVector": query_embedding,
+                        "path": "embedding",
+                        "exact": True,
+                        "limit": 50
+                    }
+                },
+                {
+                    "$match": {
+                        "date": {"$gte": seven_days_ago},
+                    }
+                },
+                {
+                    "$sort": {
+                        "date": -1
+                    }
+                },
+                {
+                    "$project": {
+                        "_id": 1,
+                        "title": 1,
+                        "date": 1,
+                        "news_id": 1,
+                        "score": {
+                            "$meta": "vectorSearchScore"
+                        }
+                    }
+                }
+            ]
+
+            results = collection_embeddings.aggregate(pipeline)
+           
+            for doc in results:
+                if doc['score'] > 0.7:
+                    array_of_results.append({
+                        "doc": doc,
+                        "search": search.search,
+                    })
+            
+        list_news_favorite = []
+        for result in array_of_results:
+            news: News = News.query.filter_by(id=result["doc"]['news_id']).first()
+            if news:
+                list_news_favorite.append({
+                    **news.to_json(),
+                    "search": result["search"],
+                    "score": result["doc"]['score'],
+                })
+
+        return list_news_favorite
+
+    except Exception as e:
+        logging.error(f'Error creating search record: {e}')

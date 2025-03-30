@@ -43,4 +43,66 @@ def get_image(request: Request) -> Response:
         return send_file(image_bytes, mimetype='image/jpeg')
     except ValueError as e:
         return make_response(jsonify({'error': str(e)}), 400)
+    
 
+def get_favorite_news(request: Request) -> Response:
+    user_id = request.userID
+    try:
+        news_query = newsService.get_favorite_news(user_id)
+        return jsonify({
+            'news_query': news_query,
+            'message': 'News fetched successfully'
+        })
+    except ValueError as e:
+        return make_response(jsonify({'error': str(e)}), 400)
+    
+def post_favorite_news(request: Request) -> Response:
+    user_id = request.userID
+    query = request.get_json()['query']
+    
+    try:
+        news_query = newsService.post_favorite_news(user_id, query)
+        return jsonify({
+            'message': 'News added to favorites',
+            'news_query': news_query
+            })
+    except ValueError as e:
+        return make_response(jsonify({'error': str(e)}), 400)
+
+def put_favorite_news(request: Request) -> Response:
+    user_id = request.userID
+    query_id = request.get_json()['query_id']
+    new_query = request.get_json()['new_query']
+    
+    try:
+        news_query = newsService.put_favorite_news(user_id, query_id, new_query)
+        return jsonify({
+            'message': 'News updated in favorites',
+            'news_query': news_query
+        })
+    except ValueError as e:
+        return make_response(jsonify({'error': str(e)}), 400)
+    
+def delete_favorite_news(request: Request) -> Response:
+    user_id = request.userID
+    query_id = request.get_json()['query_id']
+    
+    try:
+        news_query = newsService.delete_favorite_news(user_id, query_id)
+        return jsonify({
+            'message': 'News deleted from favorites',
+            'news_query': news_query
+        })
+    except ValueError as e:
+        return make_response(jsonify({'error': str(e)}), 400)
+    
+def search_news(request: Request) -> Response:
+    userID = request.userID
+    searchs = request.get_json()['searchs']
+    try:
+        news = newsService.search_news(userID, searchs)
+        return jsonify({
+            'news': news
+        })
+    except ValueError as e:
+        return make_response(jsonify({'error': str(e)}), 400)

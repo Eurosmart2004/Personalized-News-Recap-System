@@ -75,7 +75,7 @@ const AggregatePage = () => {
         <div className="text-gray-900 min-h-screen">
             < div className="flex flex-col lg:flex-row justify-between" >
                 <div className="relative lg:hidden">
-                    <IconButton onClick={toggleChart} className="fixed top-1/2 transform -translate-y-1/2 bg-white z-50">
+                    <IconButton onClick={toggleChart} className="fixed top-[40px] transform -translate-y-1/2 bg-white z-50">
                         {showChart ? <ChevronLeft /> : <ChevronRight />}
                     </IconButton>
                     <AnimatePresence>
@@ -86,10 +86,12 @@ const AggregatePage = () => {
                                 animate={{ opacity: 1, x: 0 }}
                                 exit={{ opacity: 0, x: '100%' }}
                                 transition={{ duration: 0.5 }}
-                                className="fixed top-0 right-0 w-64 h-full bg-white z-50 p-4"
+                                className="fixed top-0 right-0 w-fit  h-full bg-white z-50 p-4"
                             >
                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                    <DateCalendar value={dayjs(date)} onChange={(newDate) => dispatch(setDate(newDate.toISOString()))} />
+                                    <DateCalendar
+                                        sx={{ width: '100%', height: '100%' }}
+                                        value={dayjs(date)} onChange={(newDate) => dispatch(setDate(newDate.toISOString()))} />
                                 </LocalizationProvider>
                             </motion.div>
                         )}

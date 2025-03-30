@@ -22,5 +22,23 @@ def init(app: Flask):
     def get_image():
         return newsController.get_image(request)
     
+    @app.route(route + '/favorite', methods=['GET', 'POST', 'PUT', 'DELETE'])
+    @authentication
+    def news_favorite():
+        if request.method == 'GET':
+            return newsController.get_favorite_news(request)
 
+        if request.method == 'POST':
+            return newsController.post_favorite_news(request)
+        
+        if request.method == 'PUT':
+            return newsController.put_favorite_news(request)
+    
+        if request.method == 'DELETE':
+            return newsController.delete_favorite_news(request)
+
+    @app.route(route + '/favorite/search', methods=['POST'])
+    @authentication
+    def search_favorite_news():
+        return newsController.search_news(request)
 
