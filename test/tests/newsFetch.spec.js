@@ -33,7 +33,6 @@ test.describe('News Fetching Functionality', () => {
     await page.click('button[type="submit"]');
     
     // 4. Wait for login to complete (redirect or dashboard to load)
-    // You might need to adjust this based on your app's behavior
     await page.waitForNavigation({ waitUntil: 'networkidle' }).catch(() => {
       console.log('No navigation occurred after login, continuing...');
     });
