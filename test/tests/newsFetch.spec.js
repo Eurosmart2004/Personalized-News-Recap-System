@@ -26,8 +26,8 @@ test.describe('News Fetching Functionality', () => {
     await page.screenshot({ path: 'test-results/images/login-page.png' });
     
     // 2. Fill in login credentials
-    await page.fill('input[type="email"]', 'sjnk8604@gmail.com');
-    await page.fill('input[type="password"]', '*Sinh08062004'); 
+    await page.fill('input[type="email"]', 'testuser@example.com');
+    await page.fill('input[type="password"]', '*securePassword123'); 
     
     // 3. Submit the login form
     await page.click('button[type="submit"]');

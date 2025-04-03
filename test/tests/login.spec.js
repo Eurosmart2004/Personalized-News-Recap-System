@@ -2,14 +2,14 @@ import { test, expect } from '@playwright/test';
 
 // Test data
 const newUser = {
-  email: 'hoaiphuong190904@gmail.com',
-  password: '*Abcdef123456',
+  email: 'testuser@example.com',  
+  password: '*securePassword123',
   isFirstLogin: true
 };
 
 const existingUser = {
-  email: 'hoainamkin03@gmail.com',
-  password: '*Abcdef123456',
+  email: 'existinguser@example.com',
+  password: '*existingPassword456',
   isFirstLogin: false
 };
 
